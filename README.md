@@ -29,19 +29,19 @@
 
 This quickstart is a minimal **AI SaaS Dashboard** demonstrating how to use **Clerk’s new Organization-Scoped API Keys** together with **multi-tenant, org-aware UI & API routes**.
 
-This example consists of:
+This example consists of a simple dashboard page renders a table of “agents.”
+For demo purposes, agent data is stored inside the **organization’s `publicMetadata`**.
 
-- A simple dashboard page renders a table of “Agents.”
-- For demo purposes, agent data is stored inside the **organization’s `publicMetadata`**.
+## Features 
 
 The example shows how to:
 
-- Force users into **organization-only mode** by disabling personal accounts.
-- Allow org members with the correct **system permissions** view, generate, and revoke organization API keys.
-- Use both Clerk’s `<OrganizationProfile />` and `<APIKeys />` component to easily add API Keys as a feature in your application.
+- Force users into **organization-only mode** by disabling personal accounts
+- Allow org members with the correct **system permissions** view, generate, and revoke organization API keys
+- Use both Clerk’s `<OrganizationProfile />` and `<APIKeys />` component to easily add API Keys as a feature in your application
 - Protect resources with API routes that accept both **session tokens** *and* **organization API keys** 
-- Scope resources to the **active organization**.
-- Allow org users to switch between organizations via the Clerk Org Switcher and see different data per org.
+- Scope resources to the **active organization**
+- Allow org users to switch between organizations via the Clerk Org Switcher and see different data per org
 
 ---
 
@@ -111,22 +111,24 @@ Both authentication modes access the same org-scoped data.
 
 Adding UI support for API Keys is as simple as using Clerk's drop in components:
 
-#### 1. OrganizationProfile component 
+#### 1. <OrganizationProfile /> component 
 
-Using:
 
 ```tsx
+import { OrganizationProfile } from '@clerk/nextjs'
+
 <OrganizationProfile />
 ```
 
-Contains an **“API Keys”** tab that automatically appears for users with the required permissions.
+This component contains an **“API Keys”** tab that automatically appears for users with the required permissions.
 This tab will also appear in modals that show that the organization profile.
 
-#### 2. Dedicated API Keys drop-in component
+#### 2. Dedicated API Keys component
 
-The provided:
 
 ```tsx
+import { APIKeys } from '@clerk/nextjs'
+
 <APIKeys />
 ```
 
