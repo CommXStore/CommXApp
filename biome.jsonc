@@ -10,16 +10,13 @@
       }
     }
   },
-  // "formatter": {
-  //   "enabled": true,
-  //   "indentStyle": "space",
-  //   "indentWidth": 2,
-  //   "lineWidth": 75,
-  //   "lineEnding": "lf",
-  //   "bracketSpacing": true,
-  //   "formatWithErrors": true
-  // },
-
+  "linter": {
+    "rules": {
+      "a11y": {
+        "noSvgWithoutTitle": "off"
+      }
+    }
+  },
   "javascript": {
     "formatter": {
       "arrowParentheses": "asNeeded",

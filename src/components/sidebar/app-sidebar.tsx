@@ -1,15 +1,13 @@
 'use client'
 
 import type * as React from 'react'
-import { BookOpen, Settings2, SquareTerminal } from 'lucide-react'
+import { Settings2, SquareTerminal } from 'lucide-react'
 import { ActiveOrg } from '@/components/sidebar/active-org'
 import { NavMain } from '@/components/sidebar/nav-main'
 import { NavSecondary } from '@/components/sidebar/nav-secondary'
-import { NavUser } from '@/components/sidebar/nav-user'
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
@@ -34,10 +32,6 @@ const navMain = [
       },
       {
         title: 'API Keys',
-        url: '/dashboard/settings/organization-api-keys',
-      },
-      {
-        title: 'API Keys (custom)',
         url: '/dashboard/settings/api-keys',
       },
     ],
@@ -46,9 +40,12 @@ const navMain = [
 
 const navSecondary = [
   {
-    title: 'Documentation',
+    title: 'Docs',
     url: 'https://clerk.com/docs/guides/development/machine-auth/overview#api-keys',
-    icon: BookOpen,
+  },
+  {
+    title: 'Github',
+    url: 'https://clerk.com/docs/guides/development/machine-auth/overview#api-keys',
   },
 ]
 
@@ -66,9 +63,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={navMain} />
         <NavSecondary className="mt-auto" items={navSecondary} />
       </SidebarContent>
-      <SidebarFooter>
-        <NavUser />
-      </SidebarFooter>
     </Sidebar>
   )
 }

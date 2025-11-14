@@ -1,6 +1,6 @@
 import type * as React from 'react'
 import Link from 'next/link'
-import type { LucideIcon } from 'lucide-react'
+import { type LucideIcon, ExternalLink } from 'lucide-react'
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -16,7 +16,7 @@ export function NavSecondary({
   items: {
     title: string
     url: string
-    icon: LucideIcon
+    icon?: LucideIcon
   }[]
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   return (
@@ -30,8 +30,9 @@ export function NavSecondary({
                   href={item.url}
                   target={item.url.startsWith('https') ? '_blank' : '_self'}
                 >
-                  <item.icon />
+                  {item.icon && <item.icon />}
                   {item.title}
+                  {item.url.startsWith('https') && <ExternalLink />}
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

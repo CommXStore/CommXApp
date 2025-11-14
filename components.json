@@ -19,6 +19,7 @@
     "hooks": "@/hooks"
   },
   "registries": {
-    "@clerk": "https://clerk.com/r/{name}.json"
+    "@clerk": "https://clerk.com/r/{name}.json",
+    "@animate-ui": "https://animate-ui.com/r/{name}.json"
   }
 }

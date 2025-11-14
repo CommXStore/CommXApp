@@ -1,6 +1,3 @@
-'use client'
-
-import { useTheme } from 'next-themes'
 import { ClerkProvider as ClerkNextJSProvider } from '@clerk/nextjs'
 import { shadcn } from '@clerk/themes'
 
@@ -11,7 +8,6 @@ export function ClerkProvider({
   appearance = {},
   ...props
 }: ClerkProviderProps) {
-  const { resolvedTheme } = useTheme()
   return (
     <ClerkNextJSProvider
       {...props}
@@ -23,8 +19,7 @@ export function ClerkProvider({
           helpPageUrl: 'https://clerk.com/docs',
           privacyPageUrl: 'https://clerk.com/legal/privacy',
           termsPageUrl: 'https://clerk.com/legal/terms',
-          logoImageUrl:
-            resolvedTheme === 'dark' ? '/clerk-dark.png' : '/clerk-light.png',
+          logoImageUrl: '/clerk-light.png',
           unsafe_disableDevelopmentModeWarnings: true,
         },
       }}

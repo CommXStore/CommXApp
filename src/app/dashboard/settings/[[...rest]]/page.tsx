@@ -1,13 +1,4 @@
-'use client'
-
-import dynamic from 'next/dynamic'
-
-const OrganizationProfile = dynamic(
-  () => import('@clerk/nextjs').then(mod => mod.OrganizationProfile),
-  {
-    ssr: false,
-  }
-)
+import { OrganizationProfile } from '@clerk/nextjs'
 
 export default function SettingsPage() {
   return (
