@@ -33,7 +33,7 @@ export function RequestTester() {
       <div className="max-w-md">
         <Input
           onChange={e => setApiKey(e.target.value)}
-          placeholder="Enter API key to prefill the sample request snippets"
+          placeholder="Enter API key to prefill the sample requests"
           type="text"
           value={apiKey}
         />
