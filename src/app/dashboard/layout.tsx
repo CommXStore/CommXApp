@@ -24,9 +24,15 @@ export default function DashboardLayout({
                 className="mr-2 data-[orientation=vertical]:h-4"
                 orientation="vertical"
               />
+              {/* api keys tab will be visible when you click 'manage' on an organization in the list */}
               <OrganizationSwitcher />
             </div>
-            <UserButton />
+            <UserButton
+              userProfileProps={{
+                // hide personal api keys if they are enabled
+                apiKeysProps: { hide: true },
+              }}
+            />
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</div>

@@ -29,7 +29,7 @@ export async function createAgent(organizationId: string, agent: AgentInput) {
   })
   const newAgent = agentSchema.parse({
     ...agentInputSchema.parse(agent),
-    id: nanoid(),
+    id: `agent_${nanoid()}`,
   })
   await clerk.organizations.updateOrganizationMetadata(organizationId, {
     publicMetadata: {
