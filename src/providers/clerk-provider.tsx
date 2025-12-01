@@ -23,7 +23,7 @@ export function ClerkProvider({
           unsafe_disableDevelopmentModeWarnings: true,
         },
       }}
-      supportEmail="nick.scott@clerk.dev"
+      supportEmail="support@clerk.dev"
     >
       {children}
     </ClerkNextJSProvider>

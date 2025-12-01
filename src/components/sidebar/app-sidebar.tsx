@@ -45,7 +45,7 @@ const navSecondary = [
   },
   {
     title: 'Github',
-    url: 'https://clerk.com/docs/guides/development/machine-auth/overview#api-keys',
+    url: 'https://github.com/clerk/demo-api-keys',
   },
 ]
 

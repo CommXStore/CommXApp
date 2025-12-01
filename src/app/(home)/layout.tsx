@@ -1,6 +1,6 @@
 import { Header } from '@/components/header'
 
-export default function AuthLayout({
+export default function DefaultLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
@@ -8,9 +8,9 @@ export default function AuthLayout({
   return (
     <div className="flex min-h-svh flex-col">
       <Header />
-      <div className="flex flex-1 items-center justify-center">
-        <div className="w-full max-w-xs">{children}</div>
-      </div>
+      <main className="flex flex-1 items-center justify-center">
+        {children}
+      </main>
     </div>
   )
 }
