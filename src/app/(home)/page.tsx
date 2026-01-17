@@ -26,7 +26,7 @@ export default function Home() {
       <BotIcon className="mb-4 size-10" />
       <div className="flex flex-col items-center">
         <h1 className="mb-2 font-semibold text-2xl md:text-3xl lg:text-4xl">
-          AgentOps
+          CommX App
         </h1>
         <p className="text-center text-muted-foreground text-sm md:text-base lg:text-lg">
           Configure and manage your AI agents with ease.

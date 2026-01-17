@@ -6,7 +6,7 @@ export function ActiveOrg() {
     <SidebarMenuButton className="pl-0" size="lg">
       <Bot className="size-7!" />
       <div className="grid flex-1 text-left text-sm leading-tight">
-        <span className="truncate font-medium">AgentOps</span>
+        <span className="truncate font-medium">CommX App</span>
       </div>
     </SidebarMenuButton>
   )
