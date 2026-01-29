@@ -2,8 +2,10 @@ import { clerkClient } from '@clerk/nextjs/server'
 import {
   parseContentTypes,
   parseCustomFields,
+  parseContentEntries,
   type ContentType,
   type CustomField,
+  type ContentEntry,
 } from './content-schemas'
 
 export async function getContentStore(organizationId: string) {
@@ -16,6 +18,7 @@ export async function getContentStore(organizationId: string) {
     publicMetadata,
     contentTypes: parseContentTypes(publicMetadata.contentTypes),
     customFields: parseCustomFields(publicMetadata.customFields),
+    contentEntries: parseContentEntries(publicMetadata.contentEntries),
   }
 }
 
@@ -23,7 +26,8 @@ export async function saveContentStore(
   organizationId: string,
   publicMetadata: Record<string, unknown>,
   contentTypes: ContentType[],
-  customFields: CustomField[]
+  customFields: CustomField[],
+  contentEntries: Record<string, ContentEntry[]>
 ) {
   const clerk = await clerkClient()
   await clerk.organizations.updateOrganizationMetadata(organizationId, {
@@ -31,6 +35,7 @@ export async function saveContentStore(
       ...publicMetadata,
       contentTypes,
       customFields,
+      contentEntries,
     },
   })
 }

@@ -34,6 +34,16 @@ export const customFieldSchema = z.object({
   updatedAt: z.string(),
 })
 
+export const contentEntrySchema = z.object({
+  id: z.string(),
+  contentTypeId: z.string(),
+  slug: z.string().min(1),
+  status: contentTypeStatusSchema,
+  fields: z.record(z.string(), z.unknown()),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+})
+
 export const contentTypeInputSchema = contentTypeSchema
   .omit({
     id: true,
@@ -59,10 +69,25 @@ export const customFieldInputSchema = customFieldSchema
     attachedTo: z.string().nullable().optional(),
   })
 
+export const contentEntryInputSchema = contentEntrySchema
+  .omit({
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+  })
+  .extend({
+    id: z.string().optional(),
+    slug: z.string().optional(),
+    status: contentTypeStatusSchema.optional(),
+    fields: z.record(z.string(), z.unknown()).optional(),
+  })
+
 export type ContentType = z.infer<typeof contentTypeSchema>
 export type CustomField = z.infer<typeof customFieldSchema>
+export type ContentEntry = z.infer<typeof contentEntrySchema>
 export type ContentTypeInput = z.input<typeof contentTypeInputSchema>
 export type CustomFieldInput = z.input<typeof customFieldInputSchema>
+export type ContentEntryInput = z.input<typeof contentEntryInputSchema>
 
 export function parseContentTypes(value: unknown): ContentType[] {
   const parsed = z.array(contentTypeSchema).safeParse(value)
@@ -72,4 +97,9 @@ export function parseContentTypes(value: unknown): ContentType[] {
 export function parseCustomFields(value: unknown): CustomField[] {
   const parsed = z.array(customFieldSchema).safeParse(value)
   return parsed.success ? parsed.data : []
+}
+
+export function parseContentEntries(value: unknown): Record<string, ContentEntry[]> {
+  const parsed = z.record(z.array(contentEntrySchema)).safeParse(value)
+  return parsed.success ? parsed.data : {}
 }

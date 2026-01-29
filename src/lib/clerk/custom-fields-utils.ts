@@ -42,7 +42,7 @@ export async function createCustomField(
   organizationId: string,
   input: CustomFieldInput
 ) {
-  const { publicMetadata, contentTypes, customFields } =
+  const { publicMetadata, contentTypes, customFields, contentEntries } =
     await getContentStore(organizationId)
 
   const payload = customFieldInputSchema.parse(input)
@@ -87,7 +87,8 @@ export async function createCustomField(
     organizationId,
     publicMetadata,
     updatedContentTypes,
-    [...customFields, newItem]
+    [...customFields, newItem],
+    contentEntries
   )
 
   return newItem
@@ -98,7 +99,7 @@ export async function updateCustomField(
   id: string,
   input: CustomFieldInput
 ) {
-  const { publicMetadata, contentTypes, customFields } =
+  const { publicMetadata, contentTypes, customFields, contentEntries } =
     await getContentStore(organizationId)
 
   const existing = customFields.find(item => item.id === id)
@@ -165,14 +166,15 @@ export async function updateCustomField(
     organizationId,
     publicMetadata,
     updatedContentTypes,
-    updatedCustomFields
+    updatedCustomFields,
+    contentEntries
   )
 
   return updatedCustomFields.find(item => item.id === id) || null
 }
 
 export async function deleteCustomField(organizationId: string, id: string) {
-  const { publicMetadata, contentTypes, customFields } =
+  const { publicMetadata, contentTypes, customFields, contentEntries } =
     await getContentStore(organizationId)
 
   const existing = customFields.find(item => item.id === id)
@@ -190,7 +192,8 @@ export async function deleteCustomField(organizationId: string, id: string) {
     organizationId,
     publicMetadata,
     updatedContentTypes,
-    updatedCustomFields
+    updatedCustomFields,
+    contentEntries
   )
 
   return { success: true }

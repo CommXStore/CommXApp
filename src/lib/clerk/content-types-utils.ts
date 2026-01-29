@@ -32,11 +32,19 @@ export async function getContentType(organizationId: string, id: string) {
   return contentTypes.find(item => item.id === id) || null
 }
 
+export async function getContentTypeBySlug(
+  organizationId: string,
+  slug: string
+) {
+  const { contentTypes } = await getContentStore(organizationId)
+  return contentTypes.find(item => item.slug === slug) || null
+}
+
 export async function createContentType(
   organizationId: string,
   input: ContentTypeInput
 ) {
-  const { publicMetadata, contentTypes, customFields } =
+  const { publicMetadata, contentTypes, customFields, contentEntries } =
     await getContentStore(organizationId)
 
   const payload = contentTypeInputSchema.parse(input)
@@ -84,7 +92,8 @@ export async function createContentType(
     organizationId,
     publicMetadata,
     [...contentTypes, newItem],
-    updatedCustomFields
+    updatedCustomFields,
+    contentEntries
   )
 
   return newItem
@@ -95,7 +104,7 @@ export async function updateContentType(
   id: string,
   input: ContentTypeInput
 ) {
-  const { publicMetadata, contentTypes, customFields } =
+  const { publicMetadata, contentTypes, customFields, contentEntries } =
     await getContentStore(organizationId)
 
   const existing = contentTypes.find(item => item.id === id)
@@ -157,14 +166,15 @@ export async function updateContentType(
     organizationId,
     publicMetadata,
     updatedContentTypes,
-    updatedCustomFields
+    updatedCustomFields,
+    contentEntries
   )
 
   return updatedContentTypes.find(item => item.id === id) || null
 }
 
 export async function deleteContentType(organizationId: string, id: string) {
-  const { publicMetadata, contentTypes, customFields } =
+  const { publicMetadata, contentTypes, customFields, contentEntries } =
     await getContentStore(organizationId)
 
   const existing = contentTypes.find(item => item.id === id)
@@ -177,11 +187,15 @@ export async function deleteContentType(organizationId: string, id: string) {
     field.attachedTo === id ? { ...field, attachedTo: null } : field
   )
 
+  const updatedContentEntries = { ...contentEntries }
+  delete updatedContentEntries[id]
+
   await saveContentStore(
     organizationId,
     publicMetadata,
     updatedContentTypes,
-    updatedCustomFields
+    updatedCustomFields,
+    updatedContentEntries
   )
 
   return { success: true }
