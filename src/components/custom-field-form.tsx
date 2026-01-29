@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import {
   Field,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
   FieldSet,
@@ -25,6 +26,7 @@ import {
   createCustomFieldAction,
   updateCustomFieldAction,
 } from '@/lib/clerk/actions'
+import { isKebabCase } from '@/lib/content-utils'
 import type { ContentType, CustomField } from '@/lib/clerk/content-schemas'
 
 type CustomFieldFormProps = {
@@ -58,6 +60,7 @@ export function CustomFieldForm({
   const [optionsInput, setOptionsInput] = useState(
     initialData?.options?.join(', ') ?? ''
   )
+  const [errors, setErrors] = useState<Record<string, string>>({})
 
   const attachedOptions = useMemo(
     () =>
@@ -84,6 +87,24 @@ export function CustomFieldForm({
             .map(option => option.trim())
             .filter(Boolean)
         : undefined
+
+    const nextErrors: Record<string, string> = {}
+    if (!label) {
+      nextErrors.label = 'Nome é obrigatório.'
+    }
+    if (key && !isKebabCase(key)) {
+      nextErrors.key = 'Chave inválida. Use apenas letras minúsculas, números e hífens.'
+    }
+    if (type === 'select' && (!options || options.length === 0)) {
+      nextErrors.options = 'Informe ao menos uma opção.'
+    }
+    if (Object.keys(nextErrors).length > 0) {
+      setErrors(nextErrors)
+      setIsSubmitting(false)
+      return
+    }
+
+    setErrors({})
 
     const payload = {
       label,
@@ -129,6 +150,7 @@ export function CustomFieldForm({
               required
               type="text"
             />
+            {errors.label && <FieldError>{errors.label}</FieldError>}
           </Field>
           <Field>
             <FieldLabel htmlFor="key">Chave</FieldLabel>
@@ -140,6 +162,7 @@ export function CustomFieldForm({
               placeholder="autor"
               type="text"
             />
+            {errors.key && <FieldError>{errors.key}</FieldError>}
           </Field>
           <Field>
             <FieldLabel>Tipo</FieldLabel>
@@ -188,6 +211,7 @@ export function CustomFieldForm({
               type="text"
               value={optionsInput}
             />
+            {errors.options && <FieldError>{errors.options}</FieldError>}
           </Field>
           <Field>
             <FieldLabel>Vincular ao tipo de conteúdo</FieldLabel>

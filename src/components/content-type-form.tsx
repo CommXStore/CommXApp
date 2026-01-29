@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import {
   Field,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
   FieldSet,
@@ -25,6 +26,7 @@ import {
   createContentTypeAction,
   updateContentTypeAction,
 } from '@/lib/clerk/actions'
+import { isKebabCase } from '@/lib/content-utils'
 import type { ContentType, CustomField } from '@/lib/clerk/content-schemas'
 
 type ContentTypeFormProps = {
@@ -46,6 +48,7 @@ export function ContentTypeForm({
   const [selectedFields, setSelectedFields] = useState<string[]>(
     initialData?.fields ?? []
   )
+  const [errors, setErrors] = useState<Record<string, string>>({})
 
   const availableFields = useMemo(
     () =>
@@ -70,6 +73,21 @@ export function ContentTypeForm({
     const slug = String(formData.get('slug') ?? '').trim()
     const descriptionRaw = String(formData.get('description') ?? '').trim()
     const iconRaw = String(formData.get('icon') ?? '').trim()
+
+    const nextErrors: Record<string, string> = {}
+    if (!name) {
+      nextErrors.name = 'Nome é obrigatório.'
+    }
+    if (slug && !isKebabCase(slug)) {
+      nextErrors.slug = 'Slug inválido. Use apenas letras minúsculas, números e hífens.'
+    }
+    if (Object.keys(nextErrors).length > 0) {
+      setErrors(nextErrors)
+      setIsSubmitting(false)
+      return
+    }
+
+    setErrors({})
 
     const payload = {
       name,
@@ -114,6 +132,7 @@ export function ContentTypeForm({
               required
               type="text"
             />
+            {errors.name && <FieldError>{errors.name}</FieldError>}
           </Field>
           <Field>
             <FieldLabel htmlFor="slug">Slug</FieldLabel>
@@ -125,6 +144,7 @@ export function ContentTypeForm({
               placeholder="artigos"
               type="text"
             />
+            {errors.slug && <FieldError>{errors.slug}</FieldError>}
           </Field>
           <Field>
             <FieldLabel htmlFor="description">Descrição</FieldLabel>

@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import {
   Field,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
   FieldSet,
@@ -25,6 +26,7 @@ import {
   createContentEntryAction,
   updateContentEntryAction,
 } from '@/lib/clerk/actions'
+import { isKebabCase } from '@/lib/content-utils'
 import type {
   ContentEntry,
   ContentType,
@@ -52,6 +54,7 @@ export function ContentEntryForm({
     initialData?.status ?? 'draft'
   )
   const [slug, setSlug] = useState(initialData?.slug ?? '')
+  const [errors, setErrors] = useState<Record<string, string>>({})
 
   const initialValues = useMemo(() => {
     const values: FieldValues = {}
@@ -85,8 +88,47 @@ export function ContentEntryForm({
     event.preventDefault()
     setIsSubmitting(true)
 
+    const nextErrors: Record<string, string> = {}
+    const trimmedSlug = slug.trim()
+    if (trimmedSlug && !isKebabCase(trimmedSlug)) {
+      nextErrors.slug = 'Slug inválido. Use apenas letras minúsculas, números e hífens.'
+    }
+
+    for (const field of fields) {
+      const value = values[field.key]
+      const isEmpty =
+        value === undefined ||
+        value === null ||
+        (typeof value === 'string' && value.trim() === '')
+
+      if (field.required && field.type !== 'boolean' && isEmpty) {
+        nextErrors[field.key] = 'Campo obrigatório.'
+      }
+
+      if (field.type === 'number' && !isEmpty) {
+        const numericValue = Number(value)
+        if (Number.isNaN(numericValue)) {
+          nextErrors[field.key] = 'Informe um número válido.'
+        }
+      }
+
+      if (field.type === 'select' && !isEmpty) {
+        if (!field.options?.includes(String(value))) {
+          nextErrors[field.key] = 'Selecione uma opção válida.'
+        }
+      }
+    }
+
+    if (Object.keys(nextErrors).length > 0) {
+      setErrors(nextErrors)
+      setIsSubmitting(false)
+      return
+    }
+
+    setErrors({})
+
     const payload = {
-      slug: slug.trim() || undefined,
+      slug: trimmedSlug || undefined,
       status,
       fields: values,
     }
@@ -142,6 +184,7 @@ export function ContentEntryForm({
               type="text"
               value={slug}
             />
+            {errors.slug && <FieldError>{errors.slug}</FieldError>}
           </Field>
         </FieldGroup>
       </FieldSet>
@@ -163,6 +206,9 @@ export function ContentEntryForm({
                   type="text"
                   value={String(values[field.key] ?? '')}
                 />
+                {errors[field.key] && (
+                  <FieldError>{errors[field.key]}</FieldError>
+                )}
               )}
               {field.type === 'number' && (
                 <Input
@@ -173,6 +219,9 @@ export function ContentEntryForm({
                   type="number"
                   value={String(values[field.key] ?? '')}
                 />
+                {errors[field.key] && (
+                  <FieldError>{errors[field.key]}</FieldError>
+                )}
               )}
               {field.type === 'date' && (
                 <Input
@@ -182,6 +231,9 @@ export function ContentEntryForm({
                   type="date"
                   value={String(values[field.key] ?? '')}
                 />
+                {errors[field.key] && (
+                  <FieldError>{errors[field.key]}</FieldError>
+                )}
               )}
               {field.type === 'boolean' && (
                 <div className="flex items-center gap-2">
@@ -193,6 +245,9 @@ export function ContentEntryForm({
                   />
                   <span className="text-sm">Ativar</span>
                 </div>
+                {errors[field.key] && (
+                  <FieldError>{errors[field.key]}</FieldError>
+                )}
               )}
               {field.type === 'select' && (
                 <Select
@@ -222,6 +277,9 @@ export function ContentEntryForm({
                     ))}
                   </SelectContent>
                 </Select>
+                {errors[field.key] && (
+                  <FieldError>{errors[field.key]}</FieldError>
+                )}
               )}
             </Field>
           ))}
