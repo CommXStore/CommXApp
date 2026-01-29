@@ -34,7 +34,7 @@ Disponibilizar uma funcionalidade de Tipos de Conteúdo (similar a Custom Post T
   - `options?: string[]` (apenas para `select`)
   - `required: boolean`
   - `helpText?: string`
-  - `attachedTo: string | null` (`contentType.id` ou null para não associado)
+  - `attachedTo: string[]` (lista de `contentType.id` vinculados)
   - `createdAt: string`
   - `updatedAt: string`
 - `contentEntries: Record<ContentType['id'], Array<ContentEntry>>`

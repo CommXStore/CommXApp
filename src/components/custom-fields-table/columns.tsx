@@ -64,11 +64,13 @@ export const createCustomFieldColumns = ({
     accessorKey: 'attachedTo',
     header: 'Tipo de conteúdo',
     cell: ({ row }) => {
-      const attachedId = row.original.attachedTo
-      if (!attachedId) {
+      const attachedIds = row.original.attachedTo ?? []
+      if (!attachedIds.length) {
         return 'Sem vínculo'
       }
-      return contentTypeMap[attachedId]?.name ?? 'Tipo removido'
+      return attachedIds
+        .map(typeId => contentTypeMap[typeId]?.name ?? 'Tipo removido')
+        .join(', ')
     },
   },
   {

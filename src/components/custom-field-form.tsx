@@ -54,8 +54,8 @@ export function CustomFieldForm({
     initialData?.type ?? 'text'
   )
   const [required, setRequired] = useState(initialData?.required ?? false)
-  const [attachedTo, setAttachedTo] = useState<string>(
-    initialData?.attachedTo ?? 'none'
+  const [attachedTo, setAttachedTo] = useState<string[]>(
+    initialData?.attachedTo ?? []
   )
   const [optionsInput, setOptionsInput] = useState(
     initialData?.options?.join(', ') ?? ''
@@ -63,13 +63,15 @@ export function CustomFieldForm({
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const attachedOptions = useMemo(
-    () =>
-      [
-        { id: 'none', name: 'Sem vínculo' },
-        ...contentTypes.map(item => ({ id: item.id, name: item.name })),
-      ] as const,
+    () => contentTypes.map(item => ({ id: item.id, name: item.name })),
     [contentTypes]
   )
+
+  function toggleAttached(typeId: string, nextValue: boolean) {
+    setAttachedTo(prev =>
+      nextValue ? [...prev, typeId] : prev.filter(id => id !== typeId)
+    )
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -113,7 +115,7 @@ export function CustomFieldForm({
       required,
       helpText: helpTextRaw || undefined,
       options,
-      attachedTo: attachedTo === 'none' ? null : attachedTo,
+      attachedTo,
     }
 
     try {
@@ -215,21 +217,25 @@ export function CustomFieldForm({
           </Field>
           <Field>
             <FieldLabel>Vincular ao tipo de conteúdo</FieldLabel>
-            <Select
-              onValueChange={value => setAttachedTo(value)}
-              value={attachedTo}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione um tipo" />
-              </SelectTrigger>
-              <SelectContent>
-                {attachedOptions.map(option => (
-                  <SelectItem key={option.id} value={option.id}>
-                    {option.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex flex-col gap-2 rounded-md border p-4">
+              {attachedOptions.length ? (
+                attachedOptions.map(option => (
+                  <label className="flex items-center gap-2" key={option.id}>
+                    <Checkbox
+                      checked={attachedTo.includes(option.id)}
+                      onCheckedChange={value =>
+                        toggleAttached(option.id, Boolean(value))
+                      }
+                    />
+                    <span>{option.name}</span>
+                  </label>
+                ))
+              ) : (
+                <span className="text-muted-foreground text-sm">
+                  Nenhum tipo disponível.
+                </span>
+              )}
+            </div>
           </Field>
         </FieldGroup>
       </FieldSet>

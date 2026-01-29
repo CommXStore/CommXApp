@@ -52,8 +52,9 @@ export async function createCustomField(
   assertUniqueKey(customFields, key)
   assertSelectOptions(payload.type, payload.options)
 
-  if (payload.attachedTo) {
-    const target = contentTypes.find(item => item.id === payload.attachedTo)
+  const attachedTo = payload.attachedTo ?? []
+  for (const typeId of attachedTo) {
+    const target = contentTypes.find(item => item.id === typeId)
     if (!target) {
       throw new Error('Tipo de conteúdo não encontrado.')
     }
@@ -68,20 +69,23 @@ export async function createCustomField(
     options: payload.options,
     required: payload.required,
     helpText: payload.helpText,
-    attachedTo: payload.attachedTo ?? null,
+    attachedTo,
     createdAt: timestamp,
     updatedAt: timestamp,
   }
 
-  const updatedContentTypes = contentTypes.map(item =>
-    item.id === newItem.attachedTo
-      ? {
-          ...item,
-          fields: Array.from(new Set([...item.fields, newItem.id])),
-          updatedAt: timestamp,
-        }
-      : item
-  )
+  const attachedSet = new Set(attachedTo)
+  const updatedContentTypes = contentTypes.map(item => {
+    const shouldAttach = attachedSet.has(item.id)
+    if (!shouldAttach) {
+      return item
+    }
+    return {
+      ...item,
+      fields: Array.from(new Set([...item.fields, newItem.id])),
+      updatedAt: timestamp,
+    }
+  })
 
   await saveContentStore(
     organizationId,
@@ -114,9 +118,9 @@ export async function updateCustomField(
   assertUniqueKey(customFields, key, id)
   assertSelectOptions(payload.type, payload.options)
 
-  const nextAttachedTo = payload.attachedTo ?? null
-  if (nextAttachedTo) {
-    const target = contentTypes.find(item => item.id === nextAttachedTo)
+  const nextAttachedTo = payload.attachedTo ?? existing.attachedTo ?? []
+  for (const typeId of nextAttachedTo) {
+    const target = contentTypes.find(item => item.id === typeId)
     if (!target) {
       throw new Error('Tipo de conteúdo não encontrado.')
     }
@@ -139,9 +143,10 @@ export async function updateCustomField(
       : item
   )
 
+  const attachedSet = new Set(nextAttachedTo)
   const updatedContentTypes = contentTypes.map(item => {
+    const shouldAttach = attachedSet.has(item.id)
     const wasAttached = item.fields.includes(id)
-    const shouldAttach = item.id === nextAttachedTo
 
     if (shouldAttach && !wasAttached) {
       return {

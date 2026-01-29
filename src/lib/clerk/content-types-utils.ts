@@ -61,15 +61,8 @@ export async function createContentType(
     throw new Error('Campo personalizado inválido.')
   }
 
-  const conflict = customFields.find(
-    field =>
-      fields.includes(field.id) && field.attachedTo && field.attachedTo !== null
-  )
-  if (conflict) {
-    throw new Error('Um ou mais campos já estão vinculados a outro tipo.')
-  }
-
   const timestamp = nowIso()
+
   const newItem: ContentType = {
     id: `ct_${nanoid()}`,
     name: payload.name,
@@ -82,11 +75,13 @@ export async function createContentType(
     updatedAt: timestamp,
   }
 
-  const updatedCustomFields = customFields.map(field =>
-    fields.includes(field.id)
-      ? { ...field, attachedTo: newItem.id, updatedAt: timestamp }
-      : field
-  )
+  const updatedCustomFields = customFields.map(field => {
+    if (!fields.includes(field.id)) {
+      return field
+    }
+    const attachedTo = Array.from(new Set([...(field.attachedTo ?? []), newItem.id]))
+    return { ...field, attachedTo, updatedAt: timestamp }
+  })
 
   await saveContentStore(
     organizationId,
@@ -126,16 +121,6 @@ export async function updateContentType(
     throw new Error('Campo personalizado inválido.')
   }
 
-  const conflict = customFields.find(
-    field =>
-      fields.includes(field.id) &&
-      field.attachedTo !== null &&
-      field.attachedTo !== id
-  )
-  if (conflict) {
-    throw new Error('Um ou mais campos já estão vinculados a outro tipo.')
-  }
-
   const timestamp = nowIso()
   const updatedContentTypes = contentTypes.map(item =>
     item.id === id
@@ -153,13 +138,17 @@ export async function updateContentType(
   )
 
   const updatedCustomFields = customFields.map(field => {
-    if (fields.includes(field.id)) {
-      return { ...field, attachedTo: id, updatedAt: timestamp }
+    const attachedTo = new Set(field.attachedTo ?? [])
+    const shouldAttach = fields.includes(field.id)
+    if (shouldAttach) {
+      attachedTo.add(id)
+    } else {
+      attachedTo.delete(id)
     }
-    if (field.attachedTo === id) {
-      return { ...field, attachedTo: null, updatedAt: timestamp }
+    if (attachedTo.size === (field.attachedTo ?? []).length) {
+      return field
     }
-    return field
+    return { ...field, attachedTo: Array.from(attachedTo), updatedAt: timestamp }
   })
 
   await saveContentStore(
@@ -183,9 +172,13 @@ export async function deleteContentType(organizationId: string, id: string) {
   }
 
   const updatedContentTypes = contentTypes.filter(item => item.id !== id)
-  const updatedCustomFields = customFields.map(field =>
-    field.attachedTo === id ? { ...field, attachedTo: null } : field
-  )
+  const updatedCustomFields = customFields.map(field => {
+    if (!field.attachedTo?.includes(id)) {
+      return field
+    }
+    const nextAttachedTo = field.attachedTo.filter(typeId => typeId !== id)
+    return { ...field, attachedTo: nextAttachedTo }
+  })
 
   const updatedContentEntries = { ...contentEntries }
   delete updatedContentEntries[id]

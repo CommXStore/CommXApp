@@ -50,13 +50,7 @@ export function ContentTypeForm({
   )
   const [errors, setErrors] = useState<Record<string, string>>({})
 
-  const availableFields = useMemo(
-    () =>
-      customFields.filter(
-        field => !field.attachedTo || field.attachedTo === initialData?.id
-      ),
-    [customFields, initialData?.id]
-  )
+  const availableFields = useMemo(() => customFields, [customFields])
 
   function toggleField(fieldId: string, nextValue: boolean) {
     setSelectedFields(prev =>

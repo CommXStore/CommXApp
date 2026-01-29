@@ -29,7 +29,18 @@ export const customFieldSchema = z.object({
   options: z.array(z.string()).optional(),
   required: z.boolean(),
   helpText: z.string().optional(),
-  attachedTo: z.string().nullable(),
+  attachedTo: z.preprocess(
+    value => {
+      if (Array.isArray(value)) {
+        return value
+      }
+      if (typeof value === 'string' && value.length > 0) {
+        return [value]
+      }
+      return []
+    },
+    z.array(z.string())
+  ),
   createdAt: z.string(),
   updatedAt: z.string(),
 })
@@ -66,7 +77,7 @@ export const customFieldInputSchema = customFieldSchema
     id: z.string().optional(),
     key: z.string().optional(),
     options: z.array(z.string()).optional(),
-    attachedTo: z.string().nullable().optional(),
+    attachedTo: z.array(z.string()).optional(),
   })
 
 export const contentEntryInputSchema = contentEntrySchema
