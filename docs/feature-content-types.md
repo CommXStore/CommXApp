@@ -3,6 +3,10 @@
 ## Objetivo
 Disponibilizar uma funcionalidade de Tipos de Conteúdo (similar a Custom Post Types do WordPress) permitindo criar, listar, editar e remover tipos de conteúdo em rotas próprias, além de gerenciar Campos Personalizados vinculados a cada tipo. A criação/edição deve ocorrer em página dedicada (não modal), e o tipo deve exibir os campos personalizados associados.
 
+## Status
+- Implementado no app atual.
+- Campos personalizados podem ser conectados a varios tipos de conteudo.
+
 ## Escopo
 - Criar novos endpoints e páginas para Tipos de Conteúdo e Campos Personalizados.
 - Listagem em tabela, criação e edição com formulários completos.
