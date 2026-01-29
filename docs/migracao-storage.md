@@ -5,7 +5,7 @@ O armazenamento atual usa `publicMetadata` no Clerk. Para migracao futura para u
 ## Fases sugeridas
 
 1) **Abstracao de repositorio**
-   - Use `content-repository` como ponto unico de acesso a dados.
+   - Use `content-repository` como ponto unico de acesso a dados (ja aplicado no app).
 
 2) **Mirror de escrita**
    - Enviar gravacoes para `publicMetadata` e para o banco (dual write) durante a fase de transicao.

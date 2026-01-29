@@ -10,6 +10,8 @@ Aplicacao web multi-tenant para criacao de tipos de conteudo, campos personaliza
 - Tabelas e formularios dedicados (sem modal) para os fluxos principais
 - Autenticacao por organizacao e escopo de dados por org
 - API com suporte a session token e organization API key
+- Rate limiting simples em rotas de mutacao
+- Snapshot automatico do metadata em updates
 
 ## Stack
 
@@ -105,12 +107,32 @@ Abra `http://localhost:3000`.
 - `npm run test:e2e` roda Playwright
 - `npm run generate:types` gera tipos a partir dos schemas Zod
 
+## Fluxos locais recomendados (sem CI)
+
+```bash
+npm run generate:types
+npm test
+npm run test:e2e
+```
+
+## E2E autenticado (local)
+
+```bash
+E2E_STORAGE_STATE=./tests/.auth/state.json npm run test:e2e
+```
+
 ## Backup e restore de metadata
 
 ```bash
 node scripts/export-content-metadata.mjs <orgId> ./backup.json
 node scripts/import-content-metadata.mjs <orgId> ./backup.json
 ```
+
+## Observabilidade e limites
+
+- Logs estruturados com Pino (nivel configuravel via `LOG_LEVEL`).
+- Logs silenciosos durante testes.
+- Rate limit simples por org + IP nas rotas de mutacao.
 
 ## Troubleshooting
 

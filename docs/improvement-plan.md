@@ -1,5 +1,8 @@
 # Plano de Melhoria - CommX App
 
+## Status
+- Concluido em 29 de janeiro de 2026.
+
 ## Fase 0 — Fundamentos (curto prazo)
 - **Documentar decisões**: criar ADR inicial explicando uso de `publicMetadata` como storage e limitações atuais.
 - **Husky/lefthook**: configurar pre-commit com `npm test` (modo rápido) + lint.

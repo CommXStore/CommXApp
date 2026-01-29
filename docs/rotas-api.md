@@ -28,3 +28,8 @@ As rotas aceitam session token (cookies) e organization API key (Bearer token). 
 - `POST /api/content/[contentTypeSlug]` cria entrada
 - `PATCH /api/content/[contentTypeSlug]/[entryId]` atualiza entrada
 - `DELETE /api/content/[contentTypeSlug]/[entryId]` remove entrada
+
+## Observacoes
+
+- Rotas de mutacao possuem rate limit simples por org + IP.
+- Respostas de erro retornam `{ error: string }` com status adequado.

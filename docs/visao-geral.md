@@ -12,6 +12,7 @@ O CommX App e uma aplicacao multi-tenant voltada para criacao de estruturas de c
 
 - Os dados sao persistidos no `publicMetadata` da organizacao (Clerk).
 - O escopo e sempre por organizacao ativa.
+- Antes de cada atualizacao, uma snapshot e salva para recuperacao rapida.
 
 ## Fluxos principais
 
@@ -24,3 +25,8 @@ O CommX App e uma aplicacao multi-tenant voltada para criacao de estruturas de c
 
 - A app exige autenticacao.
 - As rotas de API aceitam session token e organization API keys.
+
+## Observabilidade e limites
+
+- Logs estruturados com Pino (nivel via `LOG_LEVEL`).
+- Rate limit simples por org + IP em rotas de mutacao.

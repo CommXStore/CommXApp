@@ -32,6 +32,16 @@ Para testes autenticados, forneca um `storageState` valido:
 E2E_STORAGE_STATE=./tests/.auth/state.json npm run test:e2e
 ```
 
+## Sem CI
+
+Fluxo local sugerido:
+
+```bash
+npm run generate:types
+npm test
+npm run test:e2e
+```
+
 ## O que cobrimos
 
 - Utils de content types, custom fields e entries
