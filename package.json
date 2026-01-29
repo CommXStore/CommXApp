@@ -12,7 +12,7 @@
     "start": "next start",
     "lint": "bunx ultracite check",
     "format": "bunx ultracite fix .",
-    "test": "vitest",
+    "test": "vitest --run",
     "clean": "rm -rf .turbo node_modules .next"
   },
   "dependencies": {
