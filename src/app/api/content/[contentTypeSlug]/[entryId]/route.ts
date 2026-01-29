@@ -4,6 +4,8 @@ import {
   updateContentEntry,
   deleteContentEntry,
 } from '@/lib/clerk/content-entries-utils'
+import { logger } from '@/lib/logger'
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
 
 type RouteParams = {
   params: Promise<{ contentTypeSlug: string; entryId: string }>
@@ -12,7 +14,20 @@ type RouteParams = {
 export async function PATCH(req: NextRequest, { params }: RouteParams) {
   const { success, error, data } = await checkAuth()
   if (!success) {
+    logger.warn(
+      { error, route: 'PATCH /api/content/[contentTypeSlug]/[entryId]' },
+      'Unauthorized request'
+    )
     return NextResponse.json({ error: error.message }, { status: error.status })
+  }
+
+  const rate = checkRateLimit(
+    `${data.orgId}:${getClientIp(req)}:content-entries:write`,
+    60,
+    60_000
+  )
+  if (!rate.allowed) {
+    return NextResponse.json({ error: 'Too many requests.' }, { status: 429 })
   }
 
   try {
@@ -27,14 +42,31 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ success: true, data: entry }, { status: 200 })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Invalid request.'
+    logger.error(
+      { err, route: 'PATCH /api/content/[contentTypeSlug]/[entryId]' },
+      message
+    )
     return NextResponse.json({ error: message }, { status: 400 })
   }
 }
 
-export async function DELETE(_: NextRequest, { params }: RouteParams) {
+export async function DELETE(req: NextRequest, { params }: RouteParams) {
   const { success, error, data } = await checkAuth()
   if (!success) {
+    logger.warn(
+      { error, route: 'DELETE /api/content/[contentTypeSlug]/[entryId]' },
+      'Unauthorized request'
+    )
     return NextResponse.json({ error: error.message }, { status: error.status })
+  }
+
+  const rate = checkRateLimit(
+    `${data.orgId}:${getClientIp(req)}:content-entries:write`,
+    60,
+    60_000
+  )
+  if (!rate.allowed) {
+    return NextResponse.json({ error: 'Too many requests.' }, { status: 429 })
   }
 
   try {
@@ -47,6 +79,10 @@ export async function DELETE(_: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ success: true, data: result }, { status: 200 })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Invalid request.'
+    logger.error(
+      { err, route: 'DELETE /api/content/[contentTypeSlug]/[entryId]' },
+      message
+    )
     return NextResponse.json({ error: message }, { status: 400 })
   }
 }
