@@ -54,13 +54,14 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
-    "@playwright/test": "^1.55.0",
+    "@axe-core/playwright": "^4.11.0",
     "@biomejs/biome": "2.3.6",
+    "@playwright/test": "^1.55.0",
     "@tailwindcss/postcss": "^4.1.17",
-    "@tsconfig/next": "2.0.4",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "@testing-library/user-event": "^14.6.1",
+    "@tsconfig/next": "2.0.4",
     "@types/node": "24.10.1",
     "@types/react": "^19.2.6",
     "@types/react-dom": "^19.2.3",

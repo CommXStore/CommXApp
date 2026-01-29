@@ -26,6 +26,12 @@ Observacao: para Playwright, instale os browsers caso necessario:
 npx playwright install
 ```
 
+Para testes autenticados, forneca um `storageState` valido:
+
+```bash
+E2E_STORAGE_STATE=./tests/.auth/state.json npm run test:e2e
+```
+
 ## O que cobrimos
 
 - Utils de content types, custom fields e entries
