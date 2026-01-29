@@ -1,5 +1,7 @@
 'use server'
 
+import { unstable_cache, revalidateTag } from 'next/cache'
+import { cacheTags } from '@/lib/cache-tags'
 import { checkAuth } from './check-auth'
 import { getAgents, createAgent, deleteAgent } from './metadata-utils'
 import type { AgentInput } from './metadata-utils'
@@ -31,12 +33,25 @@ import type {
   CustomFieldInput,
 } from './content-schemas'
 
+async function withCache<T>(
+  keyParts: string[],
+  tags: string[],
+  fn: () => Promise<T>
+) {
+  const cached = unstable_cache(fn, keyParts, { tags })
+  return cached()
+}
+
 export async function getAgentsAction() {
   const { success, error, data } = await checkAuth()
   if (!success) {
     throw new Error(error.message)
   }
-  return getAgents(data.orgId)
+  return withCache(
+    ['agents', data.orgId],
+    [cacheTags.agents(data.orgId)],
+    () => getAgents(data.orgId)
+  )
 }
 
 export async function createAgentAction(payload: AgentInput) {
@@ -44,7 +59,9 @@ export async function createAgentAction(payload: AgentInput) {
   if (!success) {
     throw new Error(error.message)
   }
-  return await createAgent(data.orgId, payload)
+  const agent = await createAgent(data.orgId, payload)
+  revalidateTag(cacheTags.agents(data.orgId))
+  return agent
 }
 
 export async function deleteAgentAction(agentId: string) {
@@ -52,7 +69,9 @@ export async function deleteAgentAction(agentId: string) {
   if (!success) {
     throw new Error(error.message)
   }
-  return deleteAgent(data.orgId, agentId)
+  const result = await deleteAgent(data.orgId, agentId)
+  revalidateTag(cacheTags.agents(data.orgId))
+  return result
 }
 
 export async function getContentTypesAction() {
@@ -60,7 +79,11 @@ export async function getContentTypesAction() {
   if (!success) {
     throw new Error(error.message)
   }
-  return getContentTypes(data.orgId)
+  return withCache(
+    ['content-types', data.orgId],
+    [cacheTags.contentTypes(data.orgId)],
+    () => getContentTypes(data.orgId)
+  )
 }
 
 export async function getContentTypeAction(id: string) {
@@ -68,7 +91,11 @@ export async function getContentTypeAction(id: string) {
   if (!success) {
     throw new Error(error.message)
   }
-  return getContentType(data.orgId, id)
+  return withCache(
+    ['content-type', data.orgId, id],
+    [cacheTags.contentTypes(data.orgId)],
+    () => getContentType(data.orgId, id)
+  )
 }
 
 export async function getContentTypeBySlugAction(slug: string) {
@@ -76,7 +103,11 @@ export async function getContentTypeBySlugAction(slug: string) {
   if (!success) {
     throw new Error(error.message)
   }
-  return getContentTypeBySlug(data.orgId, slug)
+  return withCache(
+    ['content-type-slug', data.orgId, slug],
+    [cacheTags.contentTypes(data.orgId)],
+    () => getContentTypeBySlug(data.orgId, slug)
+  )
 }
 
 export async function createContentTypeAction(payload: ContentTypeInput) {
@@ -84,7 +115,10 @@ export async function createContentTypeAction(payload: ContentTypeInput) {
   if (!success) {
     throw new Error(error.message)
   }
-  return createContentType(data.orgId, payload)
+  const contentType = await createContentType(data.orgId, payload)
+  revalidateTag(cacheTags.contentTypes(data.orgId))
+  revalidateTag(cacheTags.customFields(data.orgId))
+  return contentType
 }
 
 export async function updateContentTypeAction(
@@ -95,7 +129,17 @@ export async function updateContentTypeAction(
   if (!success) {
     throw new Error(error.message)
   }
-  return updateContentType(data.orgId, id, payload)
+  const existing = await getContentType(data.orgId, id)
+  const contentType = await updateContentType(data.orgId, id, payload)
+  revalidateTag(cacheTags.contentTypes(data.orgId))
+  revalidateTag(cacheTags.customFields(data.orgId))
+  if (existing?.slug) {
+    revalidateTag(cacheTags.contentEntries(data.orgId, existing.slug))
+  }
+  if (contentType?.slug && contentType.slug !== existing?.slug) {
+    revalidateTag(cacheTags.contentEntries(data.orgId, contentType.slug))
+  }
+  return contentType
 }
 
 export async function deleteContentTypeAction(id: string) {
@@ -103,7 +147,14 @@ export async function deleteContentTypeAction(id: string) {
   if (!success) {
     throw new Error(error.message)
   }
-  return deleteContentType(data.orgId, id)
+  const existing = await getContentType(data.orgId, id)
+  const result = await deleteContentType(data.orgId, id)
+  revalidateTag(cacheTags.contentTypes(data.orgId))
+  revalidateTag(cacheTags.customFields(data.orgId))
+  if (existing?.slug) {
+    revalidateTag(cacheTags.contentEntries(data.orgId, existing.slug))
+  }
+  return result
 }
 
 export async function getCustomFieldsAction() {
@@ -111,7 +162,11 @@ export async function getCustomFieldsAction() {
   if (!success) {
     throw new Error(error.message)
   }
-  return getCustomFields(data.orgId)
+  return withCache(
+    ['custom-fields', data.orgId],
+    [cacheTags.customFields(data.orgId)],
+    () => getCustomFields(data.orgId)
+  )
 }
 
 export async function getCustomFieldAction(id: string) {
@@ -119,7 +174,11 @@ export async function getCustomFieldAction(id: string) {
   if (!success) {
     throw new Error(error.message)
   }
-  return getCustomField(data.orgId, id)
+  return withCache(
+    ['custom-field', data.orgId, id],
+    [cacheTags.customFields(data.orgId)],
+    () => getCustomField(data.orgId, id)
+  )
 }
 
 export async function getContentEntriesAction(contentTypeSlug: string) {
@@ -127,7 +186,15 @@ export async function getContentEntriesAction(contentTypeSlug: string) {
   if (!success) {
     throw new Error(error.message)
   }
-  return getContentEntries(data.orgId, contentTypeSlug)
+  return withCache(
+    ['content-entries', data.orgId, contentTypeSlug],
+    [
+      cacheTags.contentTypes(data.orgId),
+      cacheTags.customFields(data.orgId),
+      cacheTags.contentEntries(data.orgId, contentTypeSlug),
+    ],
+    () => getContentEntries(data.orgId, contentTypeSlug)
+  )
 }
 
 export async function getContentEntryAction(
@@ -138,7 +205,15 @@ export async function getContentEntryAction(
   if (!success) {
     throw new Error(error.message)
   }
-  return getContentEntry(data.orgId, contentTypeSlug, entryId)
+  return withCache(
+    ['content-entry', data.orgId, contentTypeSlug, entryId],
+    [
+      cacheTags.contentTypes(data.orgId),
+      cacheTags.customFields(data.orgId),
+      cacheTags.contentEntries(data.orgId, contentTypeSlug),
+    ],
+    () => getContentEntry(data.orgId, contentTypeSlug, entryId)
+  )
 }
 
 export async function createContentEntryAction(
@@ -149,7 +224,9 @@ export async function createContentEntryAction(
   if (!success) {
     throw new Error(error.message)
   }
-  return createContentEntry(data.orgId, contentTypeSlug, payload)
+  const entry = await createContentEntry(data.orgId, contentTypeSlug, payload)
+  revalidateTag(cacheTags.contentEntries(data.orgId, contentTypeSlug))
+  return entry
 }
 
 export async function updateContentEntryAction(
@@ -161,7 +238,14 @@ export async function updateContentEntryAction(
   if (!success) {
     throw new Error(error.message)
   }
-  return updateContentEntry(data.orgId, contentTypeSlug, entryId, payload)
+  const entry = await updateContentEntry(
+    data.orgId,
+    contentTypeSlug,
+    entryId,
+    payload
+  )
+  revalidateTag(cacheTags.contentEntries(data.orgId, contentTypeSlug))
+  return entry
 }
 
 export async function deleteContentEntryAction(
@@ -172,7 +256,9 @@ export async function deleteContentEntryAction(
   if (!success) {
     throw new Error(error.message)
   }
-  return deleteContentEntry(data.orgId, contentTypeSlug, entryId)
+  const result = await deleteContentEntry(data.orgId, contentTypeSlug, entryId)
+  revalidateTag(cacheTags.contentEntries(data.orgId, contentTypeSlug))
+  return result
 }
 
 export async function createCustomFieldAction(payload: CustomFieldInput) {
@@ -180,7 +266,10 @@ export async function createCustomFieldAction(payload: CustomFieldInput) {
   if (!success) {
     throw new Error(error.message)
   }
-  return createCustomField(data.orgId, payload)
+  const field = await createCustomField(data.orgId, payload)
+  revalidateTag(cacheTags.customFields(data.orgId))
+  revalidateTag(cacheTags.contentTypes(data.orgId))
+  return field
 }
 
 export async function updateCustomFieldAction(
@@ -191,7 +280,10 @@ export async function updateCustomFieldAction(
   if (!success) {
     throw new Error(error.message)
   }
-  return updateCustomField(data.orgId, id, payload)
+  const field = await updateCustomField(data.orgId, id, payload)
+  revalidateTag(cacheTags.customFields(data.orgId))
+  revalidateTag(cacheTags.contentTypes(data.orgId))
+  return field
 }
 
 export async function deleteCustomFieldAction(id: string) {
@@ -199,5 +291,8 @@ export async function deleteCustomFieldAction(id: string) {
   if (!success) {
     throw new Error(error.message)
   }
-  return deleteCustomField(data.orgId, id)
+  const result = await deleteCustomField(data.orgId, id)
+  revalidateTag(cacheTags.customFields(data.orgId))
+  revalidateTag(cacheTags.contentTypes(data.orgId))
+  return result
 }
