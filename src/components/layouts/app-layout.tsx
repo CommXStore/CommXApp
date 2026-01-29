@@ -7,6 +7,7 @@ import {
 } from '@/components/ui/sidebar'
 import { OrganizationSwitcher, UserButton } from '@clerk/nextjs'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { OrgRefresh } from '@/components/org-refresh'
 
 export function AppLayout({
   children,
@@ -32,6 +33,7 @@ export function AppLayout({
               <ThemeToggle />
               <UserButton />
             </div>
+            <OrgRefresh />
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</div>
