@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { checkAuth } from '@/lib/clerk/check-auth'
 import {
+  getContentEntry,
   updateContentEntry,
   deleteContentEntry,
 } from '@/lib/clerk/content-entries-utils'
@@ -9,6 +10,30 @@ import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
 
 type RouteParams = {
   params: Promise<{ contentTypeSlug: string; entryId: string }>
+}
+
+export async function GET(_: NextRequest, { params }: RouteParams) {
+  const { success, error, data } = await checkAuth()
+  if (!success) {
+    logger.warn(
+      { error, route: 'GET /api/content/[contentTypeSlug]/[entryId]' },
+      'Unauthorized request'
+    )
+    return NextResponse.json({ error: error.message }, { status: error.status })
+  }
+
+  try {
+    const { contentTypeSlug, entryId } = await params
+    const result = await getContentEntry(data.orgId, contentTypeSlug, entryId)
+    return NextResponse.json({ success: true, data: result }, { status: 200 })
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Invalid request.'
+    logger.error(
+      { err, route: 'GET /api/content/[contentTypeSlug]/[entryId]' },
+      message
+    )
+    return NextResponse.json({ error: message }, { status: 400 })
+  }
 }
 
 export async function PATCH(req: NextRequest, { params }: RouteParams) {

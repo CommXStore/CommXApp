@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { toast } from 'sonner'
+import { useAuth, useClerk } from '@clerk/nextjs'
 import {
   ChevronsLeft,
   ChevronsRight,
@@ -42,6 +43,13 @@ import {
 import { createContentEntryColumns } from './columns'
 import { deleteContentEntryAction } from '@/lib/clerk/actions'
 import type { ContentEntry, ContentType } from '@/lib/clerk/content-schemas'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 
 type ContentEntriesTableProps = {
   contentType: ContentType
@@ -54,6 +62,13 @@ export function ContentEntriesTable({
 }: ContentEntriesTableProps) {
   const [data, setData] = useState<ContentEntry[]>(initialEntries)
   const [, setLoading] = useState(false)
+  const [apiOpen, setApiOpen] = useState(false)
+  const [apiEntry, setApiEntry] = useState<ContentEntry | null>(null)
+  const [apiResponse, setApiResponse] = useState<unknown>(null)
+  const [apiError, setApiError] = useState<string | null>(null)
+  const [apiLoading, setApiLoading] = useState(false)
+  const { orgId, userId, getToken } = useAuth()
+  const { clerk } = useClerk()
 
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -78,7 +93,93 @@ export function ContentEntriesTable({
     }
   }
 
-  const columns = createContentEntryColumns(contentType.slug, deleteEntry)
+  const getFirstApiKeySecret = useCallback(async () => {
+    const apiKeysClient = (clerk as { apiKeys?: { getAll?: () => Promise<unknown> } })
+      ?.apiKeys
+    if (!apiKeysClient?.getAll) {
+      return null
+    }
+
+    try {
+      const result = await apiKeysClient.getAll()
+      const keys = Array.isArray(result) ? result : result?.data ?? []
+      const orgKey = orgId
+        ? keys.find(
+            (key: { subject?: string; organizationId?: string }) =>
+              key?.subject === orgId || key?.organizationId === orgId
+          )
+        : null
+      const userKey = userId
+        ? keys.find(
+            (key: { subject?: string; userId?: string }) =>
+              key?.subject === userId || key?.userId === userId
+          )
+        : null
+      const preferredKey = orgKey ?? userKey ?? keys[0]
+      return preferredKey && typeof preferredKey.secret === 'string'
+        ? preferredKey.secret
+        : null
+    } catch (error) {
+      console.warn('Failed to load API keys', error)
+      return null
+    }
+  }, [clerk, orgId, userId])
+
+  const fetchEntryApi = useCallback(
+    async (entry: ContentEntry) => {
+      setApiLoading(true)
+      setApiError(null)
+      setApiResponse(null)
+
+      try {
+        const apiKey = await getFirstApiKeySecret()
+        const token = apiKey ? null : await getToken()
+        const authHeader = apiKey ?? token
+
+        if (!authHeader) {
+          throw new Error(
+            'Nenhuma chave encontrada. Gere uma chave de API ou faça login novamente.'
+          )
+        }
+
+        const response = await fetch(
+          `/api/content/${contentType.slug}/${entry.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${authHeader}`,
+            },
+          }
+        )
+
+        const payload = await response.json()
+        if (!response.ok) {
+          throw new Error(payload?.error ?? 'Falha ao consultar API.')
+        }
+
+        setApiResponse(payload)
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Erro inesperado.'
+        setApiError(message)
+      } finally {
+        setApiLoading(false)
+      }
+    },
+    [contentType.slug, getFirstApiKeySecret, getToken]
+  )
+
+  const openApiPreview = useCallback(
+    (entry: ContentEntry) => {
+      setApiEntry(entry)
+      setApiOpen(true)
+      void fetchEntryApi(entry)
+    },
+    [fetchEntryApi]
+  )
+
+  const columns = useMemo(
+    () => createContentEntryColumns(contentType.slug, deleteEntry, openApiPreview),
+    [contentType.slug, deleteEntry, openApiPreview]
+  )
 
   const table = useReactTable({
     data,
@@ -107,6 +208,39 @@ export function ContentEntriesTable({
 
   return (
     <div className="flex flex-1 flex-col justify-between gap-4">
+      <Dialog
+        onOpenChange={open => {
+          setApiOpen(open)
+          if (!open) {
+            setApiEntry(null)
+            setApiResponse(null)
+            setApiError(null)
+          }
+        }}
+        open={apiOpen}
+      >
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Resposta da API</DialogTitle>
+            <DialogDescription>
+              {apiEntry
+                ? `Entrada: ${apiEntry.slug} (${apiEntry.id})`
+                : 'Consulta de entrada'}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="max-h-[60vh] overflow-y-auto rounded-md border bg-muted/40 p-3 font-mono text-xs">
+            {apiLoading && <span>Carregando...</span>}
+            {!apiLoading && apiError && (
+              <span className="text-destructive">{apiError}</span>
+            )}
+            {!apiLoading && !apiError && apiResponse && (
+              <pre className="whitespace-pre-wrap">
+                {JSON.stringify(apiResponse, null, 2)}
+              </pre>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
       <div className="flex h-full flex-col gap-4">
         <div className="flex items-center justify-between gap-2">
           <div>

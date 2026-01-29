@@ -13,6 +13,21 @@ vi.mock('@/lib/clerk/actions', () => ({
   deleteContentEntryAction: vi.fn(async () => ({})),
 }))
 
+vi.mock('@clerk/nextjs', () => ({
+  useAuth: () => ({
+    orgId: 'org_1',
+    userId: 'user_1',
+    getToken: vi.fn(async () => 'test-token'),
+  }),
+  useClerk: () => ({
+    clerk: {
+      apiKeys: {
+        getAll: vi.fn(async () => ({ data: [] })),
+      },
+    },
+  }),
+}))
+
 const contentType: ContentType = {
   id: 'ct_1',
   name: 'Blog',

@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Pencil, Trash } from 'lucide-react'
+import { Code, Pencil, Trash } from 'lucide-react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -10,7 +10,8 @@ import type { ContentEntry } from '@/lib/clerk/content-schemas'
 
 export const createContentEntryColumns = (
   contentTypeSlug: string,
-  deleteEntry: (entry: ContentEntry) => Promise<void>
+  deleteEntry: (entry: ContentEntry) => Promise<void>,
+  openApiPreview: (entry: ContentEntry) => void
 ): ColumnDef<ContentEntry>[] => [
   {
     id: 'select',
@@ -62,6 +63,14 @@ export const createContentEntryColumns = (
     id: 'actions',
     cell: ({ row }) => (
       <div className="flex items-center justify-end gap-1">
+        <Button
+          className="flex size-8"
+          onClick={() => openApiPreview(row.original)}
+          size="icon"
+          variant="ghost"
+        >
+          <Code />
+        </Button>
         <Button asChild size="icon" variant="ghost">
           <Link href={`/content/${contentTypeSlug}/${row.original.id}/edit`}>
             <Pencil />
