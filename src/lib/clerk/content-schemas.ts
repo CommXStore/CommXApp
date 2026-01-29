@@ -101,6 +101,8 @@ export function parseCustomFields(value: unknown): CustomField[] {
 }
 
 export function parseContentEntries(value: unknown): Record<string, ContentEntry[]> {
-  const parsed = z.record(z.array(contentEntrySchema)).safeParse(value)
+  const parsed = z
+    .record(z.string(), z.array(contentEntrySchema))
+    .safeParse(value)
   return parsed.success ? parsed.data : {}
 }
