@@ -17,6 +17,7 @@ export const metadata: Metadata = {
 const geistSans = localFont({
   variable: '--font-geist-sans',
   display: 'swap',
+  preload: false,
   src: [
     { path: '../assets/fonts/geist/geist-100.ttf', weight: '100' },
     { path: '../assets/fonts/geist/geist-200.ttf', weight: '200' },
@@ -33,6 +34,7 @@ const geistSans = localFont({
 const jetBrainsMono = localFont({
   variable: '--font-jetbrains-mono',
   display: 'swap',
+  preload: false,
   src: [
     {
       path: '../assets/fonts/jetbrains-mono/jetbrains-mono-100.ttf',
