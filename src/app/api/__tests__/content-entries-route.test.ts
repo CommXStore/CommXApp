@@ -35,6 +35,20 @@ describe('content entries api route', () => {
     expect(json.success).toBe(true)
   })
 
+  it('GET returns 401 when auth fails', async () => {
+    const { checkAuth } = await import('@/lib/clerk/check-auth')
+    vi.mocked(checkAuth).mockResolvedValueOnce({
+      success: false,
+      error: { message: 'Unauthorized', status: 401 },
+    })
+    const res = await GET(new NextRequest('http://localhost'), {
+      params: Promise.resolve({ contentTypeSlug: 'blog' }),
+    })
+    expect(res.status).toBe(401)
+    const json = await res.json()
+    expect(json.error).toBe('Unauthorized')
+  })
+
   it('POST returns 400 on error', async () => {
     const { createContentEntry } = await import('@/lib/clerk/content-entries-utils')
     vi.mocked(createContentEntry).mockRejectedValueOnce(new Error('invalid'))
@@ -57,6 +71,22 @@ describe('content entries api route', () => {
       { params: Promise.resolve({ contentTypeSlug: 'blog', entryId: 'ce_1' }) }
     )
     expect(res.status).toBe(200)
+  })
+
+  it('PATCH returns 401 when auth fails', async () => {
+    const { checkAuth } = await import('@/lib/clerk/check-auth')
+    vi.mocked(checkAuth).mockResolvedValueOnce({
+      success: false,
+      error: { message: 'Unauthorized', status: 401 },
+    })
+    const res = await PATCH(
+      new NextRequest('http://localhost', {
+        method: 'PATCH',
+        body: JSON.stringify({ fields: {} }),
+      }),
+      { params: Promise.resolve({ contentTypeSlug: 'blog', entryId: 'ce_1' }) }
+    )
+    expect(res.status).toBe(401)
   })
 
   it('DELETE returns 400 on error', async () => {

@@ -29,6 +29,18 @@ describe('custom fields api route', () => {
     expect(json.success).toBe(true)
   })
 
+  it('GET returns 401 when auth fails', async () => {
+    const { checkAuth } = await import('@/lib/clerk/check-auth')
+    vi.mocked(checkAuth).mockResolvedValueOnce({
+      success: false,
+      error: { message: 'Unauthorized', status: 401 },
+    })
+    const res = await GET()
+    expect(res.status).toBe(401)
+    const json = await res.json()
+    expect(json.error).toBe('Unauthorized')
+  })
+
   it('POST returns 400 on error', async () => {
     const { createCustomField } = await import('@/lib/clerk/custom-fields-utils')
     vi.mocked(createCustomField).mockRejectedValueOnce(new Error('invalid'))
@@ -48,6 +60,20 @@ describe('custom fields api route', () => {
     })
     const res = await PATCH(req, { params: Promise.resolve({ id: 'cf_1' }) })
     expect(res.status).toBe(200)
+  })
+
+  it('PATCH returns 401 when auth fails', async () => {
+    const { checkAuth } = await import('@/lib/clerk/check-auth')
+    vi.mocked(checkAuth).mockResolvedValueOnce({
+      success: false,
+      error: { message: 'Unauthorized', status: 401 },
+    })
+    const req = new NextRequest('http://localhost/api/custom-fields/cf_1', {
+      method: 'PATCH',
+      body: JSON.stringify({ label: 'Title' }),
+    })
+    const res = await PATCH(req, { params: Promise.resolve({ id: 'cf_1' }) })
+    expect(res.status).toBe(401)
   })
 
   it('DELETE returns 400 on error', async () => {
