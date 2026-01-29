@@ -1,15 +1,16 @@
 'use client'
 
 import Link from 'next/link'
-import { List, Pencil, Trash } from 'lucide-react'
+import { Pencil, Trash } from 'lucide-react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import type { ContentType } from '@/lib/clerk/content-schemas'
+import type { ContentEntry } from '@/lib/clerk/content-schemas'
 
-export const createContentTypeColumns = (
-  deleteContentType: (contentType: ContentType) => Promise<void>
-): ColumnDef<ContentType>[] => [
+export const createContentEntryColumns = (
+  contentTypeSlug: string,
+  deleteEntry: (entry: ContentEntry) => Promise<void>
+): ColumnDef<ContentEntry>[] => [
   {
     id: 'select',
     header: ({ table }) => (
@@ -37,22 +38,18 @@ export const createContentTypeColumns = (
     enableHiding: false,
   },
   {
-    accessorKey: 'name',
-    header: 'Nome',
-    enableHiding: false,
-  },
-  {
     accessorKey: 'slug',
     header: 'Slug',
+    enableHiding: false,
   },
   {
     accessorKey: 'status',
     header: 'Status',
   },
   {
-    accessorKey: 'fields',
+    id: 'fields',
     header: 'Campos',
-    cell: ({ row }) => row.original.fields.length,
+    cell: ({ row }) => Object.keys(row.original.fields ?? {}).length,
   },
   {
     accessorKey: 'updatedAt',
@@ -64,19 +61,14 @@ export const createContentTypeColumns = (
     cell: ({ row }) => (
       <div className="flex items-center justify-end gap-1">
         <Button asChild size="icon" variant="ghost">
-          <Link href={`/content/${row.original.slug}`}>
-            <List />
-          </Link>
-        </Button>
-        <Button asChild size="icon" variant="ghost">
-          <Link href={`/content-types/${row.original.id}/edit`}>
+          <Link href={`/content/${contentTypeSlug}/${row.original.id}/edit`}>
             <Pencil />
           </Link>
         </Button>
         <Button
           className="flex size-8 text-destructive"
           onClick={async () => {
-            await deleteContentType(row.original)
+            await deleteEntry(row.original)
           }}
           size="icon"
           variant="ghost"
