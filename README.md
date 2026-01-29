@@ -1,181 +1,80 @@
-<p align="center">
-  <a href="https://go.clerk.com/e3UDpP4" target="_blank" rel="noopener noreferrer">
-   <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="./public/mark-light.png">
-      <img src="./public/mark-dark.png" height="64">
-    </picture>
-  </a>
-  <br />
-</p>
-<div align="center">
-  <h1>
-    # Clerk Organization API Keys — AI SaaS Dashboard Quickstart
-  </h1>
-  <a href="https://www.npmjs.com/package/@clerk/nextjs">
-    <img alt="" src="https://img.shields.io/npm/dm/@clerk/nextjs" />
-  </a>
-  <a href="https://discord.com/invite/b5rXHjAg7A">
-    <img alt="Discord" src="https://img.shields.io/discord/856971667393609759?color=7389D8&label&logo=discord&logoColor=ffffff" />
-  </a>
-  <a href="https://twitter.com/clerkdev">
-    <img alt="Twitter" src="https://img.shields.io/twitter/url.svg?label=%40clerkdev&style=social&url=https%3A%2F%2Ftwitter.com%2Fclerkdev" />
-  </a>
-  <br />
-  <br />
-  <img alt="Clerk Hero Image" src="public/hero.png">
-</div>
+# CommX App
 
-## Introduction
+Aplicacao web multi-tenant para criacao de tipos de conteudo, campos personalizados e entradas (conteudos), com autenticacao por organizacao via Clerk.
 
-This quickstart is a minimal **AI SaaS Dashboard** demonstrating how to use **Clerk’s new Organization-Scoped API Keys** together with **multi-tenant, org-aware UI & API routes**.
+## O que o app entrega
 
-This example consists of a simple dashboard page renders a table of “agents.”
-For demo purposes, agent data is stored inside the **organization’s `publicMetadata`**.
+- Tipos de conteudo com rotas proprias de criacao e edicao
+- Campos personalizados com associacao a varios tipos de conteudo
+- Entradas (conteudos) dinamicas geradas a partir dos campos do tipo
+- Tabelas e formularios dedicados (sem modal) para os fluxos principais
+- Autenticacao por organizacao e escopo de dados por org
+- API com suporte a session token e organization API key
 
-## Features 
+## Stack
 
-The example shows how to:
+- Next.js (App Router)
+- React 19
+- Clerk (orgs, sessao e API keys)
+- Tailwind CSS + Radix UI
+- Zod para validacao
+- Vitest + Testing Library + Playwright
 
-- Force users into **organization-only mode** by disabling personal accounts
-- Allow org members with the correct **system permissions** view, generate, and revoke organization API keys
-- Use both Clerk’s `<OrganizationProfile />` and `<APIKeys />` component to easily add API Keys as a feature in your application
-- Protect resources with API routes that accept both **session tokens** *and* **organization API keys** 
-- Scope resources to the **active organization**
-- Allow org users to switch between organizations via the Clerk Org Switcher and see different data per org
+## Estrutura rapida
 
----
+- `src/app` rotas e paginas (UI e API)
+- `src/components` tabelas e formularios
+- `src/lib/clerk` utils de metadata e schemas
+- `docs` documentacao funcional e tecnica
 
-## API Routes — Multi-Token Verification
+## Rotas principais (UI)
 
-This example exposes:
+- `/agents`
+- `/content-types`
+- `/content-types/new`
+- `/content-types/[id]/edit`
+- `/custom-fields`
+- `/custom-fields/new`
+- `/custom-fields/[id]/edit`
+- `/content/[contentTypeSlug]`
+- `/content/[contentTypeSlug]/new`
+- `/content/[contentTypeSlug]/[entryId]/edit`
 
-```
-/api/agents
-  GET     → list agents
-  POST    → create an agent
-  DELETE  → delete an agent
-```
+## Rotas principais (API)
 
-Each route uses:
+- `GET/POST /api/agents`
+- `GET/POST /api/content-types`
+- `PATCH/DELETE /api/content-types/[id]`
+- `GET/POST /api/custom-fields`
+- `PATCH/DELETE /api/custom-fields/[id]`
+- `GET/POST /api/content/[contentTypeSlug]`
+- `PATCH/DELETE /api/content/[contentTypeSlug]/[entryId]`
 
-```ts
-auth({ acceptsToken: ['api_key', 'session_token'] })
-```
+## Autenticacao
 
-### Session Token
+As rotas de API aceitam dois modos:
 
-- Sent automatically via cookies
-- Used by logged-in dashboard users
+- Session token (cookies, para usuarios logados)
+- Organization API key (Bearer token)
 
-### Organization API Key
-
-- Sent as a **Bearer token**
-- Used by external scripts or remote requests
-
-Example request:
+Exemplo:
 
 ```bash
-curl -X GET http://localhost:3000/api/agents \
+curl -X GET http://localhost:3000/api/content-types \
   -H "Authorization: Bearer org_api_key_..."
 ```
 
-Both authentication modes access the same org-scoped data.
+## Configuracao local
 
----
-
-### Agent Schema for POST Requests
-
-**Create an agent** by sending:
-
-```json
-{
-  "id": "string",
-  "name": "string",
-  "description": "string",
-  "model": "string"
-}
-```
-
-**Delete an agent** by sending:
-
-```json
-{
-  "agentId": "string"
-}
-```
-
----
-
-
-### API Keys UI
-
-Adding UI support for API Keys is as simple as using Clerk's drop in components:
-
-#### 1. <OrganizationProfile /> component 
-
-
-```tsx
-import { OrganizationProfile } from '@clerk/nextjs'
-
-<OrganizationProfile />
-```
-
-This component contains an **“API Keys”** tab that automatically appears for users with the required permissions.
-This tab will also appear in modals that show that the organization profile.
-
-#### 2. Dedicated API Keys component
-
-
-```tsx
-import { APIKeys } from '@clerk/nextjs'
-
-<APIKeys />
-```
-
-Based on permissions, both components show:
-
-- List of org API keys (`read`)
-- Generate button (`manage`)
-- Revoke button (`manage`)
-
-
----
-
-## Setup Instructions
-
-### 1. Clone the repo
+1) Instale dependencias
 
 ```bash
-git clone https://github.com/commx-app/commx-app.git
-cd <project>
-bun install
+npm install
 ```
 
----
+2) Configure o ambiente
 
-
-### 2. Enable Organization API Keys
-
-Navigate to:
-
-```
-Clerk Dashboard → Configure → Organization Management → Roles & Permissions
-```
-
-- Ensure **organizations** are enabled
-- Ensure **personal accounts are disabled**
-- Assign a role with:
-
-  - `org:sys_api_keys:read`
-  - `org:sys_api_keys:manage`
-
-to your test users.
-
----
-
-
-### 3. Configure your application
-add the following to `.env.local`:
+Crie `.env.local` a partir de `.env.example` e preencha:
 
 ```bash
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=...
@@ -186,23 +85,34 @@ NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL="/dashboard"
 NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL="/dashboard"
 ```
 
----
-
-### 4. Run the example
+3) Rode o app
 
 ```bash
-bun dev
+npm run dev
 ```
 
-Visit:
+Abra `http://localhost:3000`.
 
-```text
-http://localhost:3000
-```
+## Scripts
 
-You will be required to create or join an organization, then you can:
+- `npm run dev` inicia o servidor
+- `npm run build` build de producao
+- `npm run start` roda a build
+- `npm run lint` verifica o codigo (usa ultracite)
+- `npm run format` formata o codigo (usa ultracite)
+- `npm test` roda unit e component tests
+- `npm run test:watch` roda testes em modo watch
+- `npm run test:e2e` roda Playwright
 
-- View / generate / revoke org API keys
-- Create / list / delete AI agents
-- Switch orgs and see isolated data
-- Make http requests using org API keys
+## Documentacao
+
+- `docs/feature-content-types.md` plano e regras dos tipos de conteudo
+- `docs/visao-geral.md` resumo funcional
+- `docs/rotas-api.md` referencias de API
+- `docs/testes.md` estrategia e execucao de testes
+
+## Observacoes
+
+- Os dados ficam armazenados em `publicMetadata` da organizacao (Clerk).
+- Campos personalizados podem ser ligados a varios tipos de conteudo.
+- A criacao/edicao de tipos e entradas ocorre em paginas dedicadas.
