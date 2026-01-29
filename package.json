@@ -17,6 +17,7 @@
     "test": "vitest --run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "generate:types": "tsx scripts/generate-schema-types.ts",
     "clean": "rm -rf .turbo node_modules .next",
     "prepare": "lefthook install"
   },
@@ -70,9 +71,11 @@
     "jsdom": "^25.0.1",
     "lefthook": "^1.7.10",
     "tailwindcss": "^4.1.17",
+    "tsx": "^4.21.0",
     "typescript": "5.9.3",
     "ultracite": "6.3.4",
-    "vitest": "^2.1.4"
+    "vitest": "^2.1.4",
+    "zod-to-ts": "^2.0.0"
   },
   "trustedDependencies": [
     "@clerk/shared"
