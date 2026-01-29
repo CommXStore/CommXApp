@@ -192,13 +192,33 @@ export async function deleteCustomField(organizationId: string, id: string) {
     ...item,
     fields: item.fields.filter(fieldId => fieldId !== id),
   }))
+  const updatedContentEntries = { ...contentEntries }
+  const affectedTypeIds = contentTypes
+    .filter(item => item.fields.includes(id))
+    .map(item => item.id)
+
+  if (existing.key) {
+    for (const typeId of affectedTypeIds) {
+      const entries = updatedContentEntries[typeId]
+      if (!entries) {
+        continue
+      }
+      updatedContentEntries[typeId] = entries.map(entry => {
+        if (!(existing.key in entry.fields)) {
+          return entry
+        }
+        const { [existing.key]: _, ...rest } = entry.fields
+        return { ...entry, fields: rest }
+      })
+    }
+  }
 
   await saveContentStore(
     organizationId,
     publicMetadata,
     updatedContentTypes,
     updatedCustomFields,
-    contentEntries
+    updatedContentEntries
   )
 
   return { success: true }

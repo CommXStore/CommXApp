@@ -37,7 +37,7 @@ describe('custom fields utils', () => {
           description: undefined,
           status: 'published',
           icon: undefined,
-          fields: [],
+          fields: ['cf_title'],
           createdAt: '2024-01-01T00:00:00.000Z',
           updatedAt: '2024-01-01T00:00:00.000Z',
         },
@@ -67,7 +67,19 @@ describe('custom fields utils', () => {
           updatedAt: '2024-01-01T00:00:00.000Z',
         },
       ] satisfies CustomField[],
-      contentEntries: {},
+      contentEntries: {
+        ct_blog: [
+          {
+            id: 'ce_1',
+            contentTypeId: 'ct_blog',
+            slug: 'hello',
+            status: 'published',
+            fields: { title: 'Hello', body: 'Body' },
+            createdAt: '2024-01-01T00:00:00.000Z',
+            updatedAt: '2024-01-01T00:00:00.000Z',
+          },
+        ],
+      },
     }
   })
 
@@ -111,6 +123,11 @@ describe('custom fields utils', () => {
 
   it('deletes field and removes from types', async () => {
     await deleteCustomField('org_1', 'cf_title')
-    expect(saveSpy).toHaveBeenCalled()
+    const lastCall = saveSpy.mock.calls.at(-1)
+    expect(lastCall).toBeTruthy()
+    const savedContentTypes = lastCall?.[2] as ContentType[]
+    const savedEntries = lastCall?.[4] as typeof store.contentEntries
+    expect(savedContentTypes[0].fields).not.toContain('cf_title')
+    expect(savedEntries.ct_blog?.[0]?.fields.title).toBeUndefined()
   })
 })
