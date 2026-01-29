@@ -103,6 +103,18 @@ Abra `http://localhost:3000`.
 - `npm test` roda unit e component tests
 - `npm run test:watch` roda testes em modo watch
 - `npm run test:e2e` roda Playwright
+- `npm run generate:types` gera tipos a partir dos schemas Zod
+
+## Backup e restore de metadata
+
+```bash
+node scripts/export-content-metadata.mjs <orgId> ./backup.json
+node scripts/import-content-metadata.mjs <orgId> ./backup.json
+```
+
+## Troubleshooting
+
+Consulte `docs/troubleshooting.md` para erros comuns (auth, slug duplicado, campos orfaos).
 
 ## Documentacao
 
@@ -110,6 +122,8 @@ Abra `http://localhost:3000`.
 - `docs/visao-geral.md` resumo funcional
 - `docs/rotas-api.md` referencias de API
 - `docs/testes.md` estrategia e execucao de testes
+- `docs/migracao-storage.md` notas sobre migracao futura de storage
+- `docs/troubleshooting.md` problemas comuns e resolucoes
 
 ## Observacoes
 
