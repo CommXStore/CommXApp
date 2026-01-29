@@ -198,88 +198,104 @@ export function ContentEntryForm({
                 <FieldDescription>{field.helpText}</FieldDescription>
               )}
               {field.type === 'text' && (
-                <Input
-                  name={field.key}
-                  onChange={event => updateValue(field.key, event.target.value)}
-                  placeholder={field.key}
-                  required={field.required}
-                  type="text"
-                  value={String(values[field.key] ?? '')}
-                />
-                {errors[field.key] && (
-                  <FieldError>{errors[field.key]}</FieldError>
-                )}
+                <>
+                  <Input
+                    name={field.key}
+                    onChange={event =>
+                      updateValue(field.key, event.target.value)
+                    }
+                    placeholder={field.key}
+                    required={field.required}
+                    type="text"
+                    value={String(values[field.key] ?? '')}
+                  />
+                  {errors[field.key] && (
+                    <FieldError>{errors[field.key]}</FieldError>
+                  )}
+                </>
               )}
               {field.type === 'number' && (
-                <Input
-                  name={field.key}
-                  onChange={event => updateValue(field.key, event.target.value)}
-                  placeholder={field.key}
-                  required={field.required}
-                  type="number"
-                  value={String(values[field.key] ?? '')}
-                />
-                {errors[field.key] && (
-                  <FieldError>{errors[field.key]}</FieldError>
-                )}
+                <>
+                  <Input
+                    name={field.key}
+                    onChange={event =>
+                      updateValue(field.key, event.target.value)
+                    }
+                    placeholder={field.key}
+                    required={field.required}
+                    type="number"
+                    value={String(values[field.key] ?? '')}
+                  />
+                  {errors[field.key] && (
+                    <FieldError>{errors[field.key]}</FieldError>
+                  )}
+                </>
               )}
               {field.type === 'date' && (
-                <Input
-                  name={field.key}
-                  onChange={event => updateValue(field.key, event.target.value)}
-                  required={field.required}
-                  type="date"
-                  value={String(values[field.key] ?? '')}
-                />
-                {errors[field.key] && (
-                  <FieldError>{errors[field.key]}</FieldError>
-                )}
+                <>
+                  <Input
+                    name={field.key}
+                    onChange={event =>
+                      updateValue(field.key, event.target.value)
+                    }
+                    required={field.required}
+                    type="date"
+                    value={String(values[field.key] ?? '')}
+                  />
+                  {errors[field.key] && (
+                    <FieldError>{errors[field.key]}</FieldError>
+                  )}
+                </>
               )}
               {field.type === 'boolean' && (
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    checked={Boolean(values[field.key])}
-                    onCheckedChange={value =>
-                      updateValue(field.key, Boolean(value))
-                    }
-                  />
-                  <span className="text-sm">Ativar</span>
-                </div>
-                {errors[field.key] && (
-                  <FieldError>{errors[field.key]}</FieldError>
-                )}
+                <>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={Boolean(values[field.key])}
+                      onCheckedChange={value =>
+                        updateValue(field.key, Boolean(value))
+                      }
+                    />
+                    <span className="text-sm">Ativar</span>
+                  </div>
+                  {errors[field.key] && (
+                    <FieldError>{errors[field.key]}</FieldError>
+                  )}
+                </>
               )}
               {field.type === 'select' && (
-                <Select
-                  onValueChange={value =>
-                    updateValue(
-                      field.key,
-                      value === emptySelectValue ? '' : value
-                    )
-                  }
-                  value={
-                    String(values[field.key] ?? '') === ''
-                      ? emptySelectValue
-                      : String(values[field.key])
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione uma opção" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={emptySelectValue}>
-                      Selecione...
-                    </SelectItem>
-                    {(field.options ?? []).map(option => (
-                      <SelectItem key={option} value={option}>
-                        {option}
+                <>
+                  <Select
+                    onValueChange={value =>
+                      updateValue(
+                        field.key,
+                        value === emptySelectValue ? '' : value
+                      )
+                    }
+                    value={
+                      String(values[field.key] ?? '') === ''
+                        ? emptySelectValue
+                        : String(values[field.key])
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione uma opção" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={emptySelectValue}>
+                        Selecione...
                       </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {errors[field.key] && (
-                  <FieldError>{errors[field.key]}</FieldError>
-                )}
+                      {(field.options ?? []).map(option => (
+                        <SelectItem key={option} value={option}>
+                          {option}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors[field.key] && (
+                    <FieldError>{errors[field.key]}</FieldError>
+                  )}
+                </>
               )}
             </Field>
           ))}
