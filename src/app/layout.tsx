@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Geist, JetBrains_Mono } from 'next/font/google'
 import { Toaster } from '@/components/ui/sonner'
 import { ClerkProvider } from '@/providers/clerk-provider'
+import { ThemeProvider } from '@/providers/theme-provider'
 import { cn } from '@/lib/utils'
 import './globals.css'
 
@@ -38,8 +39,10 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <body className="antialiased">
-          <Toaster position="top-right" />
-          {children}
+          <ThemeProvider>
+            <Toaster position="top-right" />
+            {children}
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>
