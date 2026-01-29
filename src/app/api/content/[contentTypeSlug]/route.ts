@@ -6,7 +6,7 @@ import {
 } from '@/lib/clerk/content-entries-utils'
 
 type RouteParams = {
-  params: { contentTypeSlug: string }
+  params: Promise<{ contentTypeSlug: string }>
 }
 
 export async function GET(_: NextRequest, { params }: RouteParams) {
@@ -16,7 +16,8 @@ export async function GET(_: NextRequest, { params }: RouteParams) {
   }
 
   try {
-    const result = await getContentEntries(data.orgId, params.contentTypeSlug)
+    const { contentTypeSlug } = await params
+    const result = await getContentEntries(data.orgId, contentTypeSlug)
     return NextResponse.json({ success: true, data: result }, { status: 200 })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Invalid request.'
@@ -32,9 +33,10 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
 
   try {
     const payload = await req.json()
+    const { contentTypeSlug } = await params
     const entry = await createContentEntry(
       data.orgId,
-      params.contentTypeSlug,
+      contentTypeSlug,
       payload
     )
     return NextResponse.json({ success: true, data: entry }, { status: 201 })

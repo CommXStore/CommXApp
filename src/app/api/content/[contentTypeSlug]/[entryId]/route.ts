@@ -6,7 +6,7 @@ import {
 } from '@/lib/clerk/content-entries-utils'
 
 type RouteParams = {
-  params: { contentTypeSlug: string; entryId: string }
+  params: Promise<{ contentTypeSlug: string; entryId: string }>
 }
 
 export async function PATCH(req: NextRequest, { params }: RouteParams) {
@@ -17,10 +17,11 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
 
   try {
     const payload = await req.json()
+    const { contentTypeSlug, entryId } = await params
     const entry = await updateContentEntry(
       data.orgId,
-      params.contentTypeSlug,
-      params.entryId,
+      contentTypeSlug,
+      entryId,
       payload
     )
     return NextResponse.json({ success: true, data: entry }, { status: 200 })
@@ -37,10 +38,11 @@ export async function DELETE(_: NextRequest, { params }: RouteParams) {
   }
 
   try {
+    const { contentTypeSlug, entryId } = await params
     const result = await deleteContentEntry(
       data.orgId,
-      params.contentTypeSlug,
-      params.entryId
+      contentTypeSlug,
+      entryId
     )
     return NextResponse.json({ success: true, data: result }, { status: 200 })
   } catch (err) {

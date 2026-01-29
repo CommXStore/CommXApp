@@ -6,7 +6,7 @@ import {
 } from '@/lib/clerk/custom-fields-utils'
 
 type RouteParams = {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 export async function PATCH(req: NextRequest, { params }: RouteParams) {
@@ -15,7 +15,7 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ error: error.message }, { status: error.status })
   }
 
-  const { id } = params
+  const { id } = await params
 
   try {
     const payload = await req.json()
@@ -36,7 +36,7 @@ export async function DELETE(_: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ error: error.message }, { status: error.status })
   }
 
-  const { id } = params
+  const { id } = await params
 
   try {
     const result = await deleteCustomField(data.orgId, id)
