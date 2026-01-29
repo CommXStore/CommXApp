@@ -6,14 +6,15 @@ import {
 } from '@/lib/clerk/actions'
 
 type PageProps = {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 export const dynamic = 'force-dynamic'
 
 export default async function Page({ params }: PageProps) {
+  const { id } = await params
   const [customField, contentTypes] = await Promise.all([
-    getCustomFieldAction(params.id),
+    getCustomFieldAction(id),
     getContentTypesAction(),
   ])
 
