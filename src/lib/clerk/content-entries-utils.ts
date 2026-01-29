@@ -7,7 +7,7 @@ import {
   type ContentType,
   type CustomField,
 } from './content-schemas'
-import { getContentStore, saveContentStore } from './content-store'
+import { contentRepository } from './content-repository'
 
 function resolveTypeFields(
   contentType: ContentType,
@@ -153,7 +153,7 @@ export async function getContentEntries(
   contentTypeSlug: string
 ) {
   const { contentTypes, customFields, contentEntries } =
-    await getContentStore(organizationId)
+    await contentRepository.getStore(organizationId)
   const contentType = contentTypes.find(item => item.slug === contentTypeSlug)
   if (!contentType) {
     throw new Error('Tipo de conteúdo não encontrado.')
@@ -182,7 +182,7 @@ export async function createContentEntry(
   input: ContentEntryInput
 ) {
   const { publicMetadata, contentTypes, customFields, contentEntries } =
-    await getContentStore(organizationId)
+    await contentRepository.getStore(organizationId)
 
   const contentType = contentTypes.find(item => item.slug === contentTypeSlug)
   if (!contentType) {
@@ -214,7 +214,7 @@ export async function createContentEntry(
     [contentType.id]: [...entries, newEntry],
   }
 
-  await saveContentStore(
+  await contentRepository.saveStore(
     organizationId,
     publicMetadata,
     contentTypes,
@@ -232,7 +232,7 @@ export async function updateContentEntry(
   input: ContentEntryInput
 ) {
   const { publicMetadata, contentTypes, customFields, contentEntries } =
-    await getContentStore(organizationId)
+    await contentRepository.getStore(organizationId)
 
   const contentType = contentTypes.find(item => item.slug === contentTypeSlug)
   if (!contentType) {
@@ -269,7 +269,7 @@ export async function updateContentEntry(
     ),
   }
 
-  await saveContentStore(
+  await contentRepository.saveStore(
     organizationId,
     publicMetadata,
     contentTypes,
@@ -286,7 +286,7 @@ export async function deleteContentEntry(
   entryId: string
 ) {
   const { publicMetadata, contentTypes, customFields, contentEntries } =
-    await getContentStore(organizationId)
+    await contentRepository.getStore(organizationId)
 
   const contentType = contentTypes.find(item => item.slug === contentTypeSlug)
   if (!contentType) {
@@ -304,7 +304,7 @@ export async function deleteContentEntry(
     [contentType.id]: entries.filter(entry => entry.id !== entryId),
   }
 
-  await saveContentStore(
+  await contentRepository.saveStore(
     organizationId,
     publicMetadata,
     contentTypes,

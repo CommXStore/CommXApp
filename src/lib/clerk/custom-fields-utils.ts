@@ -5,7 +5,7 @@ import {
   type CustomField,
   type CustomFieldInput,
 } from './content-schemas'
-import { getContentStore, saveContentStore } from './content-store'
+import { contentRepository } from './content-repository'
 
 function assertKey(key: string) {
   if (!key || !isKebabCase(key)) {
@@ -29,12 +29,12 @@ function assertSelectOptions(type: CustomField['type'], options?: string[]) {
 }
 
 export async function getCustomFields(organizationId: string) {
-  const { customFields } = await getContentStore(organizationId)
+  const { customFields } = await contentRepository.getStore(organizationId)
   return customFields
 }
 
 export async function getCustomField(organizationId: string, id: string) {
-  const { customFields } = await getContentStore(organizationId)
+  const { customFields } = await contentRepository.getStore(organizationId)
   return customFields.find(item => item.id === id) || null
 }
 
@@ -43,7 +43,7 @@ export async function createCustomField(
   input: CustomFieldInput
 ) {
   const { publicMetadata, contentTypes, customFields, contentEntries } =
-    await getContentStore(organizationId)
+    await contentRepository.getStore(organizationId)
 
   const payload = customFieldInputSchema.parse(input)
   const keySource = payload.key ?? payload.label
@@ -87,7 +87,7 @@ export async function createCustomField(
     }
   })
 
-  await saveContentStore(
+  await contentRepository.saveStore(
     organizationId,
     publicMetadata,
     updatedContentTypes,
@@ -104,7 +104,7 @@ export async function updateCustomField(
   input: CustomFieldInput
 ) {
   const { publicMetadata, contentTypes, customFields, contentEntries } =
-    await getContentStore(organizationId)
+    await contentRepository.getStore(organizationId)
 
   const existing = customFields.find(item => item.id === id)
   if (!existing) {
@@ -167,7 +167,9 @@ export async function updateCustomField(
     return item
   })
 
-  await saveContentStore(
+  await contentRepository.saveStore(
+    organizationId,
+    publicMetadata,
     organizationId,
     publicMetadata,
     updatedContentTypes,
@@ -180,7 +182,7 @@ export async function updateCustomField(
 
 export async function deleteCustomField(organizationId: string, id: string) {
   const { publicMetadata, contentTypes, customFields, contentEntries } =
-    await getContentStore(organizationId)
+    await contentRepository.getStore(organizationId)
 
   const existing = customFields.find(item => item.id === id)
   if (!existing) {
@@ -213,7 +215,7 @@ export async function deleteCustomField(organizationId: string, id: string) {
     }
   }
 
-  await saveContentStore(
+  await contentRepository.saveStore(
     organizationId,
     publicMetadata,
     updatedContentTypes,

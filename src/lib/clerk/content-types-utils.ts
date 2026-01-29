@@ -5,7 +5,7 @@ import {
   type ContentType,
   type ContentTypeInput,
 } from './content-schemas'
-import { getContentStore, saveContentStore } from './content-store'
+import { contentRepository } from './content-repository'
 
 function assertSlug(slug: string) {
   if (!slug || !isKebabCase(slug)) {
@@ -23,12 +23,12 @@ function assertUniqueSlug(contentTypes: ContentType[], slug: string, id?: string
 }
 
 export async function getContentTypes(organizationId: string) {
-  const { contentTypes } = await getContentStore(organizationId)
+  const { contentTypes } = await contentRepository.getStore(organizationId)
   return contentTypes
 }
 
 export async function getContentType(organizationId: string, id: string) {
-  const { contentTypes } = await getContentStore(organizationId)
+  const { contentTypes } = await contentRepository.getStore(organizationId)
   return contentTypes.find(item => item.id === id) || null
 }
 
@@ -36,7 +36,7 @@ export async function getContentTypeBySlug(
   organizationId: string,
   slug: string
 ) {
-  const { contentTypes } = await getContentStore(organizationId)
+  const { contentTypes } = await contentRepository.getStore(organizationId)
   return contentTypes.find(item => item.slug === slug) || null
 }
 
@@ -45,7 +45,7 @@ export async function createContentType(
   input: ContentTypeInput
 ) {
   const { publicMetadata, contentTypes, customFields, contentEntries } =
-    await getContentStore(organizationId)
+    await contentRepository.getStore(organizationId)
 
   const payload = contentTypeInputSchema.parse(input)
   const slugSource = payload.slug ?? payload.name
@@ -83,7 +83,7 @@ export async function createContentType(
     return { ...field, attachedTo, updatedAt: timestamp }
   })
 
-  await saveContentStore(
+  await contentRepository.saveStore(
     organizationId,
     publicMetadata,
     [...contentTypes, newItem],
@@ -100,7 +100,7 @@ export async function updateContentType(
   input: ContentTypeInput
 ) {
   const { publicMetadata, contentTypes, customFields, contentEntries } =
-    await getContentStore(organizationId)
+    await contentRepository.getStore(organizationId)
 
   const existing = contentTypes.find(item => item.id === id)
   if (!existing) {
@@ -151,7 +151,7 @@ export async function updateContentType(
     return { ...field, attachedTo: Array.from(attachedTo), updatedAt: timestamp }
   })
 
-  await saveContentStore(
+  await contentRepository.saveStore(
     organizationId,
     publicMetadata,
     updatedContentTypes,
@@ -164,7 +164,7 @@ export async function updateContentType(
 
 export async function deleteContentType(organizationId: string, id: string) {
   const { publicMetadata, contentTypes, customFields, contentEntries } =
-    await getContentStore(organizationId)
+    await contentRepository.getStore(organizationId)
 
   const existing = contentTypes.find(item => item.id === id)
   if (!existing) {
@@ -183,7 +183,7 @@ export async function deleteContentType(organizationId: string, id: string) {
   const updatedContentEntries = { ...contentEntries }
   delete updatedContentEntries[id]
 
-  await saveContentStore(
+  await contentRepository.saveStore(
     organizationId,
     publicMetadata,
     updatedContentTypes,

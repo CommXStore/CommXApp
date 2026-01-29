@@ -5,15 +5,19 @@ import {
 } from '@/lib/clerk/content-entries-utils'
 import type { ContentEntry } from '@/lib/clerk/content-schemas'
 
-let store: Awaited<ReturnType<typeof import('@/lib/clerk/content-store').getContentStore>>
+let store: Awaited<
+  ReturnType<typeof import('@/lib/clerk/content-repository').contentRepository.getStore>
+>
 let saveSpy: ReturnType<typeof vi.fn>
 
-vi.mock('@/lib/clerk/content-store', () => {
+vi.mock('@/lib/clerk/content-repository', () => {
   return {
-    getContentStore: vi.fn(async () => store),
-    saveContentStore: vi.fn(async (...args) => {
-      saveSpy(...args)
-    }),
+    contentRepository: {
+      getStore: vi.fn(async () => store),
+      saveStore: vi.fn(async (...args) => {
+        saveSpy(...args)
+      }),
+    },
   }
 })
 
@@ -21,7 +25,6 @@ describe('content entries utils', () => {
   beforeEach(() => {
     saveSpy = vi.fn()
     store = {
-      clerk: {} as never,
       publicMetadata: {},
       contentTypes: [
         {
