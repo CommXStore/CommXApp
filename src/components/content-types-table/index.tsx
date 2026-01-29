@@ -143,7 +143,12 @@ export function ContentTypesTable({ data: initialData }: { data: ContentType[] }
               ) : (
                 <TableRow>
                   <TableCell className="h-24 text-center" colSpan={columns.length}>
-                    No results.
+                    <div className="flex flex-col items-center gap-2">
+                      <span>Nenhum tipo de conteúdo cadastrado.</span>
+                      <Button asChild size="sm" variant="outline">
+                        <Link href="/content-types/new">Criar primeiro tipo</Link>
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               )}

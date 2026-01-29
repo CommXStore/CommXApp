@@ -157,7 +157,14 @@ export function ContentEntriesTable({
               ) : (
                 <TableRow>
                   <TableCell className="h-24 text-center" colSpan={columns.length}>
-                    No results.
+                    <div className="flex flex-col items-center gap-2">
+                      <span>Nenhuma entrada cadastrada.</span>
+                      <Button asChild size="sm" variant="outline">
+                        <Link href={`/content/${contentType.slug}/new`}>
+                          Criar primeira entrada
+                        </Link>
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               )}

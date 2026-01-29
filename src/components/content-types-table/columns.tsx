@@ -5,6 +5,7 @@ import { List, Pencil, Trash } from 'lucide-react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import { StatusBadge } from '@/components/status-badge'
 import type { ContentType } from '@/lib/clerk/content-schemas'
 
 export const createContentTypeColumns = (
@@ -48,6 +49,7 @@ export const createContentTypeColumns = (
   {
     accessorKey: 'status',
     header: 'Status',
+    cell: ({ row }) => <StatusBadge status={row.original.status} />,
   },
   {
     accessorKey: 'fields',

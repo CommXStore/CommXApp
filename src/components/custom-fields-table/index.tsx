@@ -157,7 +157,12 @@ export function CustomFieldsTable({ data: initialData, contentTypes }: CustomFie
               ) : (
                 <TableRow>
                   <TableCell className="h-24 text-center" colSpan={columns.length}>
-                    No results.
+                    <div className="flex flex-col items-center gap-2">
+                      <span>Nenhum campo personalizado cadastrado.</span>
+                      <Button asChild size="sm" variant="outline">
+                        <Link href="/custom-fields/new">Criar primeiro campo</Link>
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               )}
