@@ -14,14 +14,8 @@ import {
   FieldSet,
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { Checkbox } from '@/components/ui/checkbox'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { CustomFieldInput } from '@/components/custom-field-input'
 import {
   createContentEntryAction,
   updateContentEntryAction,
@@ -77,8 +71,6 @@ export function ContentEntryForm({
   }, [fields, initialData?.fields])
 
   const [values, setValues] = useState<FieldValues>(initialValues)
-
-  const emptySelectValue = '__empty__'
 
   function updateValue(key: string, value: unknown) {
     setValues(prev => ({ ...prev, [key]: value }))
@@ -192,112 +184,13 @@ export function ContentEntryForm({
       <FieldSet>
         <FieldGroup>
           {fields.map(field => (
-            <Field key={field.id}>
-              <FieldLabel>{field.label}</FieldLabel>
-              {field.helpText && (
-                <FieldDescription>{field.helpText}</FieldDescription>
-              )}
-              {field.type === 'text' && (
-                <>
-                  <Input
-                    name={field.key}
-                    onChange={event =>
-                      updateValue(field.key, event.target.value)
-                    }
-                    placeholder={field.key}
-                    required={field.required}
-                    type="text"
-                    value={String(values[field.key] ?? '')}
-                  />
-                  {errors[field.key] && (
-                    <FieldError>{errors[field.key]}</FieldError>
-                  )}
-                </>
-              )}
-              {field.type === 'number' && (
-                <>
-                  <Input
-                    name={field.key}
-                    onChange={event =>
-                      updateValue(field.key, event.target.value)
-                    }
-                    placeholder={field.key}
-                    required={field.required}
-                    type="number"
-                    value={String(values[field.key] ?? '')}
-                  />
-                  {errors[field.key] && (
-                    <FieldError>{errors[field.key]}</FieldError>
-                  )}
-                </>
-              )}
-              {field.type === 'date' && (
-                <>
-                  <Input
-                    name={field.key}
-                    onChange={event =>
-                      updateValue(field.key, event.target.value)
-                    }
-                    required={field.required}
-                    type="date"
-                    value={String(values[field.key] ?? '')}
-                  />
-                  {errors[field.key] && (
-                    <FieldError>{errors[field.key]}</FieldError>
-                  )}
-                </>
-              )}
-              {field.type === 'boolean' && (
-                <>
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      checked={Boolean(values[field.key])}
-                      onCheckedChange={value =>
-                        updateValue(field.key, Boolean(value))
-                      }
-                    />
-                    <span className="text-sm">Ativar</span>
-                  </div>
-                  {errors[field.key] && (
-                    <FieldError>{errors[field.key]}</FieldError>
-                  )}
-                </>
-              )}
-              {field.type === 'select' && (
-                <>
-                  <Select
-                    onValueChange={value =>
-                      updateValue(
-                        field.key,
-                        value === emptySelectValue ? '' : value
-                      )
-                    }
-                    value={
-                      String(values[field.key] ?? '') === ''
-                        ? emptySelectValue
-                        : String(values[field.key])
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione uma opção" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value={emptySelectValue}>
-                        Selecione...
-                      </SelectItem>
-                      {(field.options ?? []).map(option => (
-                        <SelectItem key={option} value={option}>
-                          {option}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {errors[field.key] && (
-                    <FieldError>{errors[field.key]}</FieldError>
-                  )}
-                </>
-              )}
-            </Field>
+            <CustomFieldInput
+              error={errors[field.key]}
+              field={field}
+              key={field.id}
+              onChange={value => updateValue(field.key, value)}
+              value={values[field.key]}
+            />
           ))}
         </FieldGroup>
       </FieldSet>
