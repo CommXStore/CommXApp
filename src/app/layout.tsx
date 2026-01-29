@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Geist, JetBrains_Mono } from 'next/font/google'
+import localFont from 'next/font/local'
 import { Toaster } from '@/components/ui/sonner'
 import { ClerkProvider } from '@/providers/clerk-provider'
 import { ThemeProvider } from '@/providers/theme-provider'
@@ -14,16 +14,59 @@ export const metadata: Metadata = {
   description: 'A quickstart for using Clerk API Keys',
 }
 
-const geistSans = Geist({
+const geistSans = localFont({
   variable: '--font-geist-sans',
-  subsets: ['latin'],
-  preload: true,
+  display: 'swap',
+  src: [
+    { path: '../assets/fonts/geist/geist-100.ttf', weight: '100' },
+    { path: '../assets/fonts/geist/geist-200.ttf', weight: '200' },
+    { path: '../assets/fonts/geist/geist-300.ttf', weight: '300' },
+    { path: '../assets/fonts/geist/geist-400.ttf', weight: '400' },
+    { path: '../assets/fonts/geist/geist-500.ttf', weight: '500' },
+    { path: '../assets/fonts/geist/geist-600.ttf', weight: '600' },
+    { path: '../assets/fonts/geist/geist-700.ttf', weight: '700' },
+    { path: '../assets/fonts/geist/geist-800.ttf', weight: '800' },
+    { path: '../assets/fonts/geist/geist-900.ttf', weight: '900' },
+  ],
 })
 
-const jetBrainsMono = JetBrains_Mono({
+const jetBrainsMono = localFont({
   variable: '--font-jetbrains-mono',
-  subsets: ['latin'],
-  preload: true,
+  display: 'swap',
+  src: [
+    {
+      path: '../assets/fonts/jetbrains-mono/jetbrains-mono-100.ttf',
+      weight: '100',
+    },
+    {
+      path: '../assets/fonts/jetbrains-mono/jetbrains-mono-200.ttf',
+      weight: '200',
+    },
+    {
+      path: '../assets/fonts/jetbrains-mono/jetbrains-mono-300.ttf',
+      weight: '300',
+    },
+    {
+      path: '../assets/fonts/jetbrains-mono/jetbrains-mono-400.ttf',
+      weight: '400',
+    },
+    {
+      path: '../assets/fonts/jetbrains-mono/jetbrains-mono-500.ttf',
+      weight: '500',
+    },
+    {
+      path: '../assets/fonts/jetbrains-mono/jetbrains-mono-600.ttf',
+      weight: '600',
+    },
+    {
+      path: '../assets/fonts/jetbrains-mono/jetbrains-mono-700.ttf',
+      weight: '700',
+    },
+    {
+      path: '../assets/fonts/jetbrains-mono/jetbrains-mono-800.ttf',
+      weight: '800',
+    },
+  ],
 })
 
 export default function RootLayout({
