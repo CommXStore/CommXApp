@@ -146,7 +146,7 @@ Based on permissions, both components show:
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/clerk/demo-api-keys.git
+git clone https://github.com/commx-app/commx-app.git
 cd <project>
 bun install
 ```
@@ -206,4 +206,3 @@ You will be required to create or join an organization, then you can:
 - Create / list / delete AI agents
 - Switch orgs and see isolated data
 - Make http requests using org API keys
-

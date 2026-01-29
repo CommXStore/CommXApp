@@ -8,10 +8,10 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: {
-    default: 'Clerk API Keys Quickstart',
-    template: '%s | Clerk API Keys Quickstart',
+    default: 'CommX App',
+    template: '%s | CommX App',
   },
-  description: 'A quickstart for using Clerk API Keys',
+  description: 'CommX App',
 }
 
 const geistSans = localFont({

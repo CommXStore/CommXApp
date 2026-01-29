@@ -62,7 +62,7 @@ const navSecondary = [
   },
   {
     title: 'Github',
-    url: 'https://github.com/clerk/demo-api-keys',
+    url: 'https://github.com/commx-app/commx-app',
   },
 ]
 
