@@ -72,6 +72,7 @@ export const customFieldInputSchema = customFieldSchema
 export const contentEntryInputSchema = contentEntrySchema
   .omit({
     id: true,
+    contentTypeId: true,
     createdAt: true,
     updatedAt: true,
   })
