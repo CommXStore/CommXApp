@@ -8,7 +8,7 @@ function CTAButton() {
     <>
       <SignedIn>
         <Button asChild>
-          <Link href="/dashboard">Continue to Dashboard →</Link>
+          <Link href="/agents">Continue to Agents →</Link>
         </Button>
       </SignedIn>
       <SignedOut>
