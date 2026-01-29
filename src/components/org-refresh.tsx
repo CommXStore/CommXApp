@@ -11,7 +11,7 @@ export function OrgRefresh() {
 
   useEffect(() => {
     if (previousOrgId.current && orgId && previousOrgId.current !== orgId) {
-      router.refresh()
+      window.location.reload()
     }
     previousOrgId.current = orgId ?? null
   }, [orgId, router])
