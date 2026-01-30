@@ -4,11 +4,12 @@ import { POST } from '@/app/api/organizations/memberships/route'
 
 const createUser = vi.fn(async () => ({ id: 'user_1' }))
 const createOrganizationMembership = vi.fn(async () => ({ id: 'mem_1' }))
+const getOrganization = vi.fn(async () => ({ slug: 'app-1' }))
 
 vi.mock('@clerk/nextjs/server', () => ({
   clerkClient: vi.fn(async () => ({
     users: { createUser },
-    organizations: { createOrganizationMembership },
+    organizations: { createOrganizationMembership, getOrganization },
   })),
 }))
 
@@ -22,6 +23,12 @@ vi.mock('@/lib/clerk/check-auth', () => ({
 vi.mock('@/lib/rate-limit', () => ({
   checkRateLimit: vi.fn(() => ({ allowed: true })),
   getClientIp: vi.fn(() => '127.0.0.1'),
+}))
+
+vi.mock('@/lib/entitlements', () => ({
+  entitlements: {
+    canJoinOrg: vi.fn(async () => ({ allowed: true })),
+  },
 }))
 
 describe('organization memberships api route', () => {

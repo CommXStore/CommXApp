@@ -4,6 +4,7 @@ import { checkAuth } from '@/lib/clerk/check-auth'
 import { logger } from '@/lib/logger'
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
 import { buildLogContext } from '@/lib/logger-context'
+import { entitlements } from '@/lib/entitlements'
 
 type CreateOrganizationMemberPayload = {
   email: string
@@ -58,6 +59,22 @@ export async function POST(req: NextRequest) {
     }
 
     const client = await clerkClient()
+    const org = await client.organizations.getOrganization({
+      organizationId: data.orgId,
+    })
+    const orgSlug = org.slug ?? ''
+    if (!orgSlug) {
+      return NextResponse.json(
+        { error: 'Organization slug is missing.' },
+        { status: 400 }
+      )
+    }
+
+    const decision = await entitlements.canJoinOrg(data.userId ?? '', orgSlug)
+    if (!decision.allowed) {
+      return NextResponse.json({ error: decision.reason }, { status: 403 })
+    }
+
     const user = await client.users.createUser({
       emailAddress: [email],
       firstName: payload.firstName,
