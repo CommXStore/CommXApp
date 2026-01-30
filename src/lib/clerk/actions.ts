@@ -84,6 +84,18 @@ export async function getContentTypesAction() {
   )
 }
 
+export async function getContentTypesViewerAction() {
+  const { success, error, data } = await checkAuth()
+  if (!success) {
+    throw new Error(error.message)
+  }
+  return withCache(
+    ['content-types-viewer', data.orgId],
+    [cacheTags.contentTypes(data.orgId)],
+    () => getContentTypes(data.orgId)
+  )
+}
+
 export async function getContentTypeAction(id: string) {
   const { success, error, data } = await checkAdmin()
   if (!success) {

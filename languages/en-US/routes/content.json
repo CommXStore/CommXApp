@@ -48,5 +48,10 @@
   },
   "errors": {
     "contentTypeNotFound": "Content type not found"
+  },
+  "types": {
+    "title": "Content types",
+    "description": "Choose a type to view entries.",
+    "empty": "No content types available."
   }
 }

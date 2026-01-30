@@ -3,6 +3,7 @@
 import type * as React from 'react'
 import {
   Home,
+  FileText,
   Layers,
   Settings2,
   SlidersHorizontal,
@@ -37,6 +38,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       title: t('common.nav.agents'),
       url: '/agents',
       icon: SquareTerminal,
+      items: [],
+    },
+    {
+      title: t('common.nav.content'),
+      url: '/content',
+      icon: FileText,
       items: [],
     },
     ...(isAdmin
