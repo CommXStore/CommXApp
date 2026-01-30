@@ -8,6 +8,7 @@ import {
 import { OrganizationSwitcher, UserButton } from '@clerk/nextjs'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { OrgRefresh } from '@/components/org-refresh'
+import { LanguageSwitcher } from '@/components/language-switcher'
 
 export function AppLayout({
   children,
@@ -30,6 +31,7 @@ export function AppLayout({
               <OrganizationSwitcher />
             </div>
             <div className="flex items-center gap-2">
+              <LanguageSwitcher />
               <ThemeToggle />
               <UserButton />
             </div>
