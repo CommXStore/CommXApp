@@ -6,13 +6,15 @@ import {
   type Locale,
 } from './config'
 
-export function getLocale(): Locale {
-  const cookieLocale = cookies().get(localeCookieName)?.value
+export async function getLocale(): Promise<Locale> {
+  const cookieStore = await cookies()
+  const headerStore = await headers()
+  const cookieLocale = cookieStore.get(localeCookieName)?.value
   if (isLocale(cookieLocale)) {
     return cookieLocale
   }
 
-  const acceptLanguage = headers().get('accept-language')
+  const acceptLanguage = headerStore.get('accept-language')
   if (acceptLanguage) {
     const languages = acceptLanguage
       .split(',')

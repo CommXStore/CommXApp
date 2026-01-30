@@ -78,7 +78,7 @@ export const getMessages = cache(async (locale?: Locale): Promise<Messages> => {
 })
 
 export async function getTranslations(locale?: Locale) {
-  const resolvedLocale = locale ?? getLocale()
+  const resolvedLocale = locale ?? (await getLocale())
   const messages = await getMessages(resolvedLocale)
 
   return (key: string, params?: TranslationParams) => {
