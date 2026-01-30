@@ -5,7 +5,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
-import { OrganizationSwitcher, UserButton } from '@clerk/nextjs'
+import { UserButton } from '@clerk/nextjs'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { OrgRefresh } from '@/components/org-refresh'
 import { LanguageSwitcher } from '@/components/language-switcher'
@@ -27,8 +27,6 @@ export function AppLayout({
                 className="mr-2 data-[orientation=vertical]:h-4"
                 orientation="vertical"
               />
-              {/* api keys tab will be visible when you click 'manage' on an organization in the list */}
-              <OrganizationSwitcher />
             </div>
             <div className="flex items-center gap-2">
               <LanguageSwitcher />
