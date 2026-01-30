@@ -31,3 +31,7 @@ Este arquivo define como o Codex deve atuar neste repositorio.
 ## Documentacao
 
 * Atualize `docs/` quando alterar regras de negocio ou fluxos.
+
+## Follow-ups
+
+* E2E (Playwright) falha ao iniciar o webServer: `npm run dev -- --hostname 127.0.0.1 --port 3000` retorna `listen EPERM` no sandbox e o runner mostra `socket hang up`. Ajustar estrategia de webServer (porta/config) ou tornar o server inicializavel no ambiente de CI.
