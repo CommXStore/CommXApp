@@ -123,8 +123,12 @@ describe('custom fields utils', () => {
     await deleteCustomField('org_1', 'cf_title')
     const lastCall = saveSpy.mock.calls.at(-1)
     expect(lastCall).toBeTruthy()
-    const savedContentTypes = lastCall?.[2] as ContentType[]
-    const savedEntries = lastCall?.[4] as typeof store.contentEntries
+    const payload = lastCall?.[0] as {
+      contentTypes: ContentType[]
+      contentEntries: typeof store.contentEntries
+    }
+    const savedContentTypes = payload.contentTypes
+    const savedEntries = payload.contentEntries
     expect(savedContentTypes[0].fields).not.toContain('cf_title')
     expect(savedEntries.ct_blog?.[0]?.fields.title).toBeUndefined()
   })
