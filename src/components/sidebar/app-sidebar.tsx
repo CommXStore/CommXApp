@@ -1,6 +1,6 @@
 'use client'
 
-import type * as React from 'react'
+import { useEffect, useState, type ComponentProps } from 'react'
 import {
   Home,
   FileText,
@@ -22,11 +22,64 @@ import {
 } from '@/components/ui/sidebar'
 import { useAuth } from '@clerk/nextjs'
 import { useTranslations } from '@/i18n/provider'
+import type { ContentType } from '@/lib/clerk/content-schemas'
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+type SidebarProps = ComponentProps<typeof Sidebar>
+
+type ContentTypeLink = {
+  title: string
+  url: string
+}
+
+export function AppSidebar({ ...props }: SidebarProps) {
   const t = useTranslations()
-  const { orgRole } = useAuth()
+  const { orgRole, isSignedIn } = useAuth()
   const isAdmin = orgRole === 'org:admin'
+  const [contentTypeLinks, setContentTypeLinks] = useState<ContentTypeLink[]>(
+    []
+  )
+
+  useEffect(() => {
+    if (!isSignedIn) {
+      return
+    }
+    const controller = new AbortController()
+
+    async function loadContentTypes() {
+      try {
+        const response = await fetch('/api/content-types/viewer', {
+          signal: controller.signal,
+        })
+        if (!response.ok) {
+          return
+        }
+        const payload = (await response.json()) as {
+          success?: boolean
+          data?: ContentType[]
+        }
+        if (!(payload.success && payload.data)) {
+          return
+        }
+        setContentTypeLinks(
+          payload.data.map(item => ({
+            title: item.name,
+            url: `/content/${item.slug}`,
+          }))
+        )
+      } catch (error) {
+        if ((error as Error).name === 'AbortError') {
+          return
+        }
+        console.error(error)
+      }
+    }
+
+    loadContentTypes()
+
+    return () => {
+      controller.abort()
+    }
+  }, [isSignedIn])
   const navMain = [
     {
       title: t('common.nav.dashboard'),
@@ -44,7 +97,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       title: t('common.nav.content'),
       url: '/content',
       icon: FileText,
-      items: [],
+      items: contentTypeLinks,
     },
     ...(isAdmin
       ? [
