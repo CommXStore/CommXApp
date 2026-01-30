@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { getIconByName } from '@/lib/icon-map'
 import {
   createContentTypeAction,
   updateContentTypeAction,
@@ -90,6 +91,7 @@ export function ContentTypeForm({
   const [selectedFields, setSelectedFields] = useState<string[]>(
     initialData?.fields ?? []
   )
+  const [icon, setIcon] = useState<string>(initialData?.icon ?? 'none')
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const availableFields = useMemo(() => customFields, [customFields])
@@ -127,7 +129,7 @@ export function ContentTypeForm({
     const name = String(formData.get('name') ?? '').trim()
     const slug = String(formData.get('slug') ?? '').trim()
     const descriptionRaw = String(formData.get('description') ?? '').trim()
-    const iconRaw = String(formData.get('icon') ?? '').trim()
+    const iconRaw = icon === 'none' ? '' : icon
 
     const nextErrors = validateContentType(name, slug, t)
     if (Object.keys(nextErrors).length > 0) {
@@ -222,15 +224,181 @@ export function ContentTypeForm({
             <FieldDescription>
               {t('routes.content-types.form.fields.icon.description')}
             </FieldDescription>
-            <Input
-              defaultValue={initialData?.icon ?? ''}
-              id="icon"
-              name="icon"
-              placeholder={t(
-                'routes.content-types.form.fields.icon.placeholder'
-              )}
-              type="text"
-            />
+            <Select onValueChange={setIcon} value={icon || 'none'}>
+              <SelectTrigger id="icon">
+                <SelectValue
+                  placeholder={t(
+                    'routes.content-types.form.fields.icon.placeholder'
+                  )}
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {[
+                  {
+                    value: 'none',
+                    label: t(
+                      'routes.content-types.form.fields.icon.options.none'
+                    ),
+                  },
+                  {
+                    value: 'book',
+                    label: t(
+                      'routes.content-types.form.fields.icon.options.book'
+                    ),
+                  },
+                  {
+                    value: 'book-open',
+                    label: t(
+                      'routes.content-types.form.fields.icon.options.bookOpen'
+                    ),
+                  },
+                  {
+                    value: 'box',
+                    label: t(
+                      'routes.content-types.form.fields.icon.options.box'
+                    ),
+                  },
+                  {
+                    value: 'calendar',
+                    label: t(
+                      'routes.content-types.form.fields.icon.options.calendar'
+                    ),
+                  },
+                  {
+                    value: 'clipboard-list',
+                    label: t(
+                      'routes.content-types.form.fields.icon.options.clipboardList'
+                    ),
+                  },
+                  {
+                    value: 'database',
+                    label: t(
+                      'routes.content-types.form.fields.icon.options.database'
+                    ),
+                  },
+                  {
+                    value: 'file-text',
+                    label: t(
+                      'routes.content-types.form.fields.icon.options.fileText'
+                    ),
+                  },
+                  {
+                    value: 'folder',
+                    label: t(
+                      'routes.content-types.form.fields.icon.options.folder'
+                    ),
+                  },
+                  {
+                    value: 'globe',
+                    label: t(
+                      'routes.content-types.form.fields.icon.options.globe'
+                    ),
+                  },
+                  {
+                    value: 'grid-3x3',
+                    label: t(
+                      'routes.content-types.form.fields.icon.options.grid'
+                    ),
+                  },
+                  {
+                    value: 'image',
+                    label: t(
+                      'routes.content-types.form.fields.icon.options.image'
+                    ),
+                  },
+                  {
+                    value: 'layout-grid',
+                    label: t(
+                      'routes.content-types.form.fields.icon.options.layoutGrid'
+                    ),
+                  },
+                  {
+                    value: 'list',
+                    label: t(
+                      'routes.content-types.form.fields.icon.options.list'
+                    ),
+                  },
+                  {
+                    value: 'message-square',
+                    label: t(
+                      'routes.content-types.form.fields.icon.options.message'
+                    ),
+                  },
+                  {
+                    value: 'notebook',
+                    label: t(
+                      'routes.content-types.form.fields.icon.options.notebook'
+                    ),
+                  },
+                  {
+                    value: 'package',
+                    label: t(
+                      'routes.content-types.form.fields.icon.options.package'
+                    ),
+                  },
+                  {
+                    value: 'sparkles',
+                    label: t(
+                      'routes.content-types.form.fields.icon.options.sparkles'
+                    ),
+                  },
+                  {
+                    value: 'square',
+                    label: t(
+                      'routes.content-types.form.fields.icon.options.square'
+                    ),
+                  },
+                  {
+                    value: 'star',
+                    label: t(
+                      'routes.content-types.form.fields.icon.options.star'
+                    ),
+                  },
+                  {
+                    value: 'tag',
+                    label: t(
+                      'routes.content-types.form.fields.icon.options.tag'
+                    ),
+                  },
+                  {
+                    value: 'ticket-check',
+                    label: t(
+                      'routes.content-types.form.fields.icon.options.ticket'
+                    ),
+                  },
+                  {
+                    value: 'user',
+                    label: t(
+                      'routes.content-types.form.fields.icon.options.user'
+                    ),
+                  },
+                  {
+                    value: 'users',
+                    label: t(
+                      'routes.content-types.form.fields.icon.options.users'
+                    ),
+                  },
+                  {
+                    value: 'zap',
+                    label: t(
+                      'routes.content-types.form.fields.icon.options.zap'
+                    ),
+                  },
+                ].map(option => {
+                  const Icon = getIconByName(
+                    option.value === 'none' ? undefined : option.value
+                  )
+                  return (
+                    <SelectItem key={option.value} value={option.value}>
+                      <span className="flex items-center gap-2">
+                        <Icon className="size-4" />
+                        {option.label}
+                      </span>
+                    </SelectItem>
+                  )
+                })}
+              </SelectContent>
+            </Select>
           </Field>
           <Field>
             <FieldLabel>

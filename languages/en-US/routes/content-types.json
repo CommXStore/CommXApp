@@ -42,8 +42,35 @@
       },
       "icon": {
         "label": "Icon",
-        "description": "Optional, use the icon name.",
-        "placeholder": "layers"
+        "description": "Optional, select an icon for the type.",
+        "placeholder": "Select an icon",
+        "options": {
+          "none": "No icon",
+          "book": "Book",
+          "bookOpen": "Open book",
+          "box": "Box",
+          "calendar": "Calendar",
+          "clipboardList": "List",
+          "database": "Database",
+          "fileText": "Document",
+          "folder": "Folder",
+          "globe": "Globe",
+          "grid": "Grid",
+          "image": "Image",
+          "layoutGrid": "Layout",
+          "list": "Simple list",
+          "message": "Message",
+          "notebook": "Notebook",
+          "package": "Package",
+          "sparkles": "Sparkles",
+          "square": "Square",
+          "star": "Star",
+          "tag": "Tag",
+          "ticket": "Ticket",
+          "user": "User",
+          "users": "Users",
+          "zap": "Bolt"
+        }
       },
       "status": {
         "label": "Status"

@@ -42,8 +42,35 @@
       },
       "icon": {
         "label": "Ícono",
-        "description": "Opcional, usa el nombre del ícono.",
-        "placeholder": "layers"
+        "description": "Opcional, selecciona un ícono para el tipo.",
+        "placeholder": "Selecciona un ícono",
+        "options": {
+          "none": "Sin ícono",
+          "book": "Libro",
+          "bookOpen": "Libro abierto",
+          "box": "Caja",
+          "calendar": "Calendario",
+          "clipboardList": "Lista",
+          "database": "Base de datos",
+          "fileText": "Documento",
+          "folder": "Carpeta",
+          "globe": "Globo",
+          "grid": "Cuadrícula",
+          "image": "Imagen",
+          "layoutGrid": "Diseño",
+          "list": "Lista simple",
+          "message": "Mensaje",
+          "notebook": "Cuaderno",
+          "package": "Paquete",
+          "sparkles": "Destellos",
+          "square": "Cuadrado",
+          "star": "Estrella",
+          "tag": "Etiqueta",
+          "ticket": "Boleto",
+          "user": "Usuario",
+          "users": "Usuarios",
+          "zap": "Rayo"
+        }
       },
       "status": {
         "label": "Estado"
