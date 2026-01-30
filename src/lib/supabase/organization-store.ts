@@ -181,9 +181,66 @@ function mapSnapshots(rows: ContentSnapshotRow[]) {
   )
 }
 
-async function deleteByOrg(
+async function syncRowsById(
   table: string,
   organizationId: string,
+  rows: Record<string, unknown>[],
+  token?: string | null
+) {
+  const supabase = await getSupabaseServerClient(token)
+  const ids = rows
+    .map(row => row.id)
+    .filter((value): value is string => typeof value === 'string')
+  const idSet = new Set(ids)
+
+  if (rows.length > 0) {
+    const { error: upsertError } = await supabase.from(table).upsert(rows)
+    if (upsertError) {
+      throw new Error(`Supabase upsert failed: ${upsertError.message}`)
+    }
+  } else {
+    const { error: clearError } = await supabase
+      .from(table)
+      .delete()
+      .eq('organization_id', organizationId)
+    if (clearError) {
+      throw new Error(`Supabase delete failed: ${clearError.message}`)
+    }
+    return
+  }
+
+  const { data, error: readError } = await supabase
+    .from(table)
+    .select('id')
+    .eq('organization_id', organizationId)
+
+  if (readError) {
+    throw new Error(`Supabase read failed: ${readError.message}`)
+  }
+
+  const toDelete = (data ?? [])
+    .map(item => item.id as string)
+    .filter(id => !idSet.has(id))
+
+  if (toDelete.length === 0) {
+    return
+  }
+
+  const { error: deleteError } = await supabase
+    .from(table)
+    .delete()
+    .eq('organization_id', organizationId)
+    .in('id', toDelete)
+
+  if (deleteError) {
+    throw new Error(`Supabase delete failed: ${deleteError.message}`)
+  }
+}
+
+async function replaceRowsByOrg(
+  table: string,
+  organizationId: string,
+  rows: Record<string, unknown>[],
   token?: string | null
 ) {
   const supabase = await getSupabaseServerClient(token)
@@ -194,35 +251,14 @@ async function deleteByOrg(
   if (error) {
     throw new Error(`Supabase delete failed: ${error.message}`)
   }
-}
 
-async function upsertRows(
-  table: string,
-  rows: Record<string, unknown>[],
-  token?: string | null
-) {
   if (rows.length === 0) {
     return
   }
-  const supabase = await getSupabaseServerClient(token)
-  const { error } = await supabase.from(table).upsert(rows)
-  if (error) {
-    throw new Error(`Supabase upsert failed: ${error.message}`)
-  }
-}
 
-async function insertRows(
-  table: string,
-  rows: Record<string, unknown>[],
-  token?: string | null
-) {
-  if (rows.length === 0) {
-    return
-  }
-  const supabase = await getSupabaseServerClient(token)
-  const { error } = await supabase.from(table).insert(rows)
-  if (error) {
-    throw new Error(`Supabase insert failed: ${error.message}`)
+  const { error: insertError } = await supabase.from(table).insert(rows)
+  if (insertError) {
+    throw new Error(`Supabase insert failed: ${insertError.message}`)
   }
 }
 
@@ -363,16 +399,32 @@ async function upsertStoreData(
     updated_at: now,
   }))
 
-  await upsertRows(CONTENT_TYPES_TABLE, contentTypeRows, token)
-  await upsertRows(CUSTOM_FIELDS_TABLE, customFieldRows, token)
-  await deleteByOrg(CONTENT_TYPE_FIELDS_TABLE, organizationId, token)
-  await insertRows(CONTENT_TYPE_FIELDS_TABLE, relationRows, token)
-  await deleteByOrg(CONTENT_ENTRIES_TABLE, organizationId, token)
-  await insertRows(CONTENT_ENTRIES_TABLE, entryRows, token)
-  await deleteByOrg(CONTENT_SNAPSHOTS_TABLE, organizationId, token)
-  await insertRows(CONTENT_SNAPSHOTS_TABLE, snapshotRows, token)
-  await deleteByOrg(AGENTS_TABLE, organizationId, token)
-  await insertRows(AGENTS_TABLE, agentRows, token)
+  await syncRowsById(
+    CONTENT_TYPES_TABLE,
+    organizationId,
+    contentTypeRows,
+    token
+  )
+  await syncRowsById(
+    CUSTOM_FIELDS_TABLE,
+    organizationId,
+    customFieldRows,
+    token
+  )
+  await replaceRowsByOrg(
+    CONTENT_TYPE_FIELDS_TABLE,
+    organizationId,
+    relationRows,
+    token
+  )
+  await syncRowsById(CONTENT_ENTRIES_TABLE, organizationId, entryRows, token)
+  await replaceRowsByOrg(
+    CONTENT_SNAPSHOTS_TABLE,
+    organizationId,
+    snapshotRows,
+    token
+  )
+  await syncRowsById(AGENTS_TABLE, organizationId, agentRows, token)
 }
 
 export async function getOrganizationStore(
@@ -436,26 +488,22 @@ export async function updateOrganizationStore(
   }
 
   if (update.agents) {
-    await deleteByOrg(AGENTS_TABLE, organizationId, token)
-    await insertRows(
-      AGENTS_TABLE,
-      update.agents.map(agent => ({
-        id: agent.id,
-        organization_id: organizationId,
-        name: agent.name,
-        description: agent.description,
-        model: agent.model,
-        created_at: nowIso(),
-        updated_at: nowIso(),
-      })),
-      token
-    )
+    const agentRows: AgentRow[] = update.agents.map(agent => ({
+      id: agent.id,
+      organization_id: organizationId,
+      name: agent.name,
+      description: agent.description,
+      model: agent.model,
+      created_at: nowIso(),
+      updated_at: nowIso(),
+    }))
+    await syncRowsById(AGENTS_TABLE, organizationId, agentRows, token)
   }
 
   if (update.contentSnapshots) {
-    await deleteByOrg(CONTENT_SNAPSHOTS_TABLE, organizationId, token)
-    await insertRows(
+    await replaceRowsByOrg(
       CONTENT_SNAPSHOTS_TABLE,
+      organizationId,
       update.contentSnapshots.map(snapshot => ({
         organization_id: organizationId,
         at: snapshot.at,
