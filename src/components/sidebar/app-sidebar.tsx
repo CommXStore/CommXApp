@@ -93,12 +93,12 @@ export function AppSidebar({ ...props }: SidebarProps) {
       icon: SquareTerminal,
       items: [],
     },
-    {
-      title: t('common.nav.content'),
-      url: '/content',
+    ...contentTypeLinks.map(item => ({
+      title: item.title,
+      url: item.url,
       icon: FileText,
-      items: contentTypeLinks,
-    },
+      items: [],
+    })),
     ...(isAdmin
       ? [
           {
