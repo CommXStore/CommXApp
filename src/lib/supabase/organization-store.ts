@@ -1,13 +1,9 @@
-import { clerkClient } from '@clerk/nextjs/server'
 import { nowIso } from '@/lib/content-utils'
-import { agentSchema, type Agent } from '@/lib/agents/schema'
-import {
-  parseContentEntries,
-  parseContentTypes,
-  parseCustomFields,
-  type ContentEntry,
-  type ContentType,
-  type CustomField,
+import type { Agent } from '@/lib/agents/schema'
+import type {
+  ContentEntry,
+  ContentType,
+  CustomField,
 } from '@/lib/clerk/content-schemas'
 import { MAX_SNAPSHOTS, parseSnapshots } from '@/lib/content-snapshots'
 import { getSupabaseServerClient } from './server'
@@ -96,18 +92,6 @@ export type OrganizationStoreUpdate = Partial<{
   contentEntries: Record<string, ContentEntry[]>
   contentSnapshots: ReturnType<typeof parseSnapshots>
 }>
-
-function parseAgents(value: unknown): Agent[] {
-  if (!Array.isArray(value)) {
-    return []
-  }
-  return value
-    .map(item => {
-      const parsed = agentSchema.safeParse(item)
-      return parsed.success ? parsed.data : null
-    })
-    .filter((item): item is Agent => Boolean(item))
-}
 
 function sanitizeForSupabase<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T
@@ -391,25 +375,6 @@ async function upsertStoreData(
   await insertRows(AGENTS_TABLE, agentRows, token)
 }
 
-async function migrateFromClerk(organizationId: string, token?: string | null) {
-  const clerk = await clerkClient()
-  const org = await clerk.organizations.getOrganization({ organizationId })
-  const publicMetadata = org.publicMetadata ?? {}
-
-  const store: OrganizationStore = {
-    organizationId,
-    agents: parseAgents(publicMetadata.agents),
-    contentTypes: parseContentTypes(publicMetadata.contentTypes),
-    customFields: parseCustomFields(publicMetadata.customFields),
-    contentEntries: parseContentEntries(publicMetadata.contentEntries),
-    contentSnapshots: parseSnapshots(publicMetadata.contentSnapshots),
-  }
-
-  await upsertStoreData(organizationId, store, token)
-
-  return store
-}
-
 export async function getOrganizationStore(
   organizationId: string,
   token?: string | null
@@ -423,7 +388,14 @@ export async function getOrganizationStore(
     normalized.snapshots.length > 0
 
   if (!hasData) {
-    return migrateFromClerk(organizationId, token)
+    return {
+      organizationId,
+      agents: [],
+      contentTypes: [],
+      customFields: [],
+      contentEntries: {},
+      contentSnapshots: [],
+    }
   }
 
   return {
