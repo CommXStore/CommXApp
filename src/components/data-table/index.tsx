@@ -42,10 +42,12 @@ import { CreateAgentButton } from '@/components/create-agent'
 import { createColumns } from './columns'
 import { createAgentAction, deleteAgentAction } from '@/lib/clerk/actions'
 import type { Agent } from '@/lib/clerk/metadata-utils'
+import { useTranslations } from '@/i18n/provider'
 
 export function DataTable({ data: initialData }: { data: Agent[] }) {
   const [data, setData] = useState<Agent[]>(initialData)
   const [loading, setLoading] = useState(false)
+  const t = useTranslations()
 
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -62,11 +64,11 @@ export function DataTable({ data: initialData }: { data: Agent[] }) {
     setData(prevData => [...prevData, payload])
     try {
       await createAgentAction(payload)
-      toast.success(`Successfully created agent ${payload.name}`)
+      toast.success(t('routes.agents.toasts.createSuccess', { name: payload.name }))
     } catch (error) {
       // Roll back in case of an error
       setData(prevData => prevData.filter(item => item.id !== payload.id))
-      console.error('Failed to add agent:', error)
+      console.error(error)
     } finally {
       setLoading(false)
     }
@@ -77,17 +79,17 @@ export function DataTable({ data: initialData }: { data: Agent[] }) {
     setData(prevData => prevData.filter(item => item.id !== agent.id))
     try {
       await deleteAgentAction(agent.id)
-      toast.success(`Successfully deleted agent ${agent.name}`)
+      toast.success(t('routes.agents.toasts.deleteSuccess', { name: agent.name }))
     } catch (error) {
       // Roll back in case of an error
       setData(prevData => [...prevData, agent])
-      console.error('Failed to delete agent:', error)
+      console.error(error)
     } finally {
       setLoading(false)
     }
   }
 
-  const columns = createColumns(deleteAgent)
+  const columns = createColumns(t, deleteAgent)
 
   const table = useReactTable({
     data,
@@ -161,7 +163,7 @@ export function DataTable({ data: initialData }: { data: Agent[] }) {
                     className="h-24 text-center"
                     colSpan={columns.length}
                   >
-                    No results.
+                    {t('common.table.noResults')}
                   </TableCell>
                 </TableRow>
               )}
@@ -171,13 +173,15 @@ export function DataTable({ data: initialData }: { data: Agent[] }) {
       </div>
       <div className="flex items-center justify-between px-4">
         <div className="hidden flex-1 text-muted-foreground text-sm lg:flex">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          {t('common.table.selectedRows', {
+            selected: table.getFilteredSelectedRowModel().rows.length,
+            total: table.getFilteredRowModel().rows.length,
+          })}
         </div>
         <div className="flex w-full items-center gap-8 lg:w-fit">
           <div className="hidden items-center gap-2 lg:flex">
             <Label className="font-medium text-sm" htmlFor="rows-per-page">
-              Rows per page
+              {t('common.table.rowsPerPage')}
             </Label>
             <Select
               onValueChange={value => {
@@ -200,8 +204,10 @@ export function DataTable({ data: initialData }: { data: Agent[] }) {
             </Select>
           </div>
           <div className="flex w-fit items-center justify-center font-medium text-sm">
-            Page {table.getState().pagination.pageIndex + 1} of{' '}
-            {table.getPageCount()}
+            {t('common.table.pageOf', {
+              page: table.getState().pagination.pageIndex + 1,
+              total: table.getPageCount(),
+            })}
           </div>
           <div className="ml-auto flex items-center gap-2 lg:ml-0">
             <Button
@@ -210,7 +216,7 @@ export function DataTable({ data: initialData }: { data: Agent[] }) {
               onClick={() => table.setPageIndex(0)}
               variant="outline"
             >
-              <span className="sr-only">Go to first page</span>
+              <span className="sr-only">{t('common.aria.goToFirstPage')}</span>
               <ChevronsLeft />
             </Button>
             <Button
@@ -220,7 +226,7 @@ export function DataTable({ data: initialData }: { data: Agent[] }) {
               size="icon"
               variant="outline"
             >
-              <span className="sr-only">Go to previous page</span>
+              <span className="sr-only">{t('common.aria.goToPreviousPage')}</span>
               <ChevronLeft />
             </Button>
             <Button
@@ -230,7 +236,7 @@ export function DataTable({ data: initialData }: { data: Agent[] }) {
               size="icon"
               variant="outline"
             >
-              <span className="sr-only">Go to next page</span>
+              <span className="sr-only">{t('common.aria.goToNextPage')}</span>
               <ChevronRight />
             </Button>
             <Button
@@ -240,7 +246,7 @@ export function DataTable({ data: initialData }: { data: Agent[] }) {
               size="icon"
               variant="outline"
             >
-              <span className="sr-only">Go to last page</span>
+              <span className="sr-only">{t('common.aria.goToLastPage')}</span>
               <ChevronsRight />
             </Button>
           </div>

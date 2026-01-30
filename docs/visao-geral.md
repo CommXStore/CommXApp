@@ -1,6 +1,6 @@
-# CommX App - Visao Geral
+# CommX Shop - Visao Geral
 
-O CommX App e uma aplicacao multi-tenant voltada para criacao de estruturas de conteudo dinamicas, inspiradas em Custom Post Types do WordPress. Cada organizacao pode definir seus tipos de conteudo, cadastrar campos personalizados e gerar entradas (conteudos) a partir dessas definicoes.
+O CommX Shop e uma aplicacao multi-tenant voltada para criacao de estruturas de conteudo dinamicas, inspiradas em Custom Post Types do WordPress. Cada organizacao pode definir seus tipos de conteudo, cadastrar campos personalizados e gerar entradas (conteudos) a partir dessas definicoes.
 
 ## Componentes principais
 

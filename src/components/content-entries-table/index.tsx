@@ -50,6 +50,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { useTranslations } from '@/i18n/provider'
 
 type ContentEntriesTableProps = {
   contentType: ContentType
@@ -62,6 +63,7 @@ export function ContentEntriesTable({
 }: ContentEntriesTableProps) {
   const [data, setData] = useState<ContentEntry[]>(initialEntries)
   const [, setLoading] = useState(false)
+  const t = useTranslations()
   const [apiOpen, setApiOpen] = useState(false)
   const [apiEntry, setApiEntry] = useState<ContentEntry | null>(null)
   const [apiResponse, setApiResponse] = useState<unknown>(null)
@@ -84,10 +86,10 @@ export function ContentEntriesTable({
     setData(prevData => prevData.filter(item => item.id !== entry.id))
     try {
       await deleteContentEntryAction(contentType.slug, entry.id)
-      toast.success(`Entrada removida: ${entry.slug}`)
+      toast.success(t('routes.content.table.toasts.deleted', { slug: entry.slug }))
     } catch (error) {
       setData(prevData => [...prevData, entry])
-      console.error('Failed to delete content entry:', error)
+      console.error(error)
     } finally {
       setLoading(false)
     }
@@ -120,7 +122,7 @@ export function ContentEntriesTable({
         ? preferredKey.secret
         : null
     } catch (error) {
-      console.warn('Failed to load API keys', error)
+      console.warn(error)
       return null
     }
   }, [clerk, orgId, userId])
@@ -137,9 +139,7 @@ export function ContentEntriesTable({
         const authHeader = apiKey ?? token
 
         if (!authHeader) {
-          throw new Error(
-            'Nenhuma chave encontrada. Gere uma chave de API ou faça login novamente.'
-          )
+          throw new Error(t('routes.content.api.keyMissing'))
         }
 
         const response = await fetch(
@@ -153,12 +153,13 @@ export function ContentEntriesTable({
 
         const payload = await response.json()
         if (!response.ok) {
-          throw new Error(payload?.error ?? 'Falha ao consultar API.')
+          throw new Error(payload?.error ?? t('routes.content.api.requestFailed'))
         }
 
         setApiResponse(payload)
       } catch (error) {
-        const message = error instanceof Error ? error.message : 'Erro inesperado.'
+        const message =
+          error instanceof Error ? error.message : t('common.errors.unexpected')
         setApiError(message)
       } finally {
         setApiLoading(false)
@@ -177,8 +178,8 @@ export function ContentEntriesTable({
   )
 
   const columns = useMemo(
-    () => createContentEntryColumns(contentType.slug, deleteEntry, openApiPreview),
-    [contentType.slug, deleteEntry, openApiPreview]
+    () => createContentEntryColumns(t, contentType.slug, deleteEntry, openApiPreview),
+    [contentType.slug, deleteEntry, openApiPreview, t]
   )
 
   const table = useReactTable({
@@ -221,15 +222,18 @@ export function ContentEntriesTable({
       >
         <DialogContent className="max-w-3xl">
           <DialogHeader>
-            <DialogTitle>Resposta da API</DialogTitle>
+            <DialogTitle>{t('routes.content.table.dialog.title')}</DialogTitle>
             <DialogDescription>
               {apiEntry
-                ? `Entrada: ${apiEntry.slug} (${apiEntry.id})`
-                : 'Consulta de entrada'}
+                ? t('routes.content.table.dialog.description', {
+                    slug: apiEntry.slug,
+                    id: apiEntry.id,
+                  })
+                : t('routes.content.table.dialog.fallback')}
             </DialogDescription>
           </DialogHeader>
           <div className="max-h-[60vh] overflow-y-auto rounded-md border bg-muted/40 p-3 font-mono text-xs">
-            {apiLoading && <span>Carregando...</span>}
+            {apiLoading && <span>{t('common.messages.loading')}</span>}
             {!apiLoading && apiError && (
               <span className="text-destructive">{apiError}</span>
             )}
@@ -246,11 +250,13 @@ export function ContentEntriesTable({
           <div>
             <h1 className="font-semibold text-2xl">{contentType.name}</h1>
             <p className="text-muted-foreground">
-              Gerencie as entradas do tipo {contentType.slug}.
+              {t('routes.content.table.description', { slug: contentType.slug })}
             </p>
           </div>
           <Button asChild>
-            <Link href={`/content/${contentType.slug}/new`}>Nova entrada</Link>
+            <Link href={`/content/${contentType.slug}/new`}>
+              {t('routes.content.table.add')}
+            </Link>
           </Button>
         </div>
         <div className="overflow-hidden rounded-lg border">
@@ -292,10 +298,10 @@ export function ContentEntriesTable({
                 <TableRow>
                   <TableCell className="h-24 text-center" colSpan={columns.length}>
                     <div className="flex flex-col items-center gap-2">
-                      <span>Nenhuma entrada cadastrada.</span>
+                      <span>{t('routes.content.table.empty.title')}</span>
                       <Button asChild size="sm" variant="outline">
                         <Link href={`/content/${contentType.slug}/new`}>
-                          Criar primeira entrada
+                          {t('routes.content.table.empty.cta')}
                         </Link>
                       </Button>
                     </div>
@@ -308,13 +314,15 @@ export function ContentEntriesTable({
       </div>
       <div className="flex items-center justify-between px-4">
         <div className="hidden flex-1 text-muted-foreground text-sm lg:flex">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          {t('common.table.selectedRows', {
+            selected: table.getFilteredSelectedRowModel().rows.length,
+            total: table.getFilteredRowModel().rows.length,
+          })}
         </div>
         <div className="flex w-full items-center gap-8 lg:w-fit">
           <div className="hidden items-center gap-2 lg:flex">
             <Label className="font-medium text-sm" htmlFor="rows-per-page">
-              Rows per page
+              {t('common.table.rowsPerPage')}
             </Label>
             <Select
               onValueChange={value => {
@@ -335,8 +343,10 @@ export function ContentEntriesTable({
             </Select>
           </div>
           <div className="flex w-fit items-center justify-center font-medium text-sm">
-            Page {table.getState().pagination.pageIndex + 1} of{' '}
-            {table.getPageCount()}
+            {t('common.table.pageOf', {
+              page: table.getState().pagination.pageIndex + 1,
+              total: table.getPageCount(),
+            })}
           </div>
           <div className="ml-auto flex items-center gap-2 lg:ml-0">
             <Button
@@ -345,7 +355,7 @@ export function ContentEntriesTable({
               onClick={() => table.setPageIndex(0)}
               variant="outline"
             >
-              <span className="sr-only">Go to first page</span>
+              <span className="sr-only">{t('common.aria.goToFirstPage')}</span>
               <ChevronsLeft />
             </Button>
             <Button
@@ -355,7 +365,7 @@ export function ContentEntriesTable({
               size="icon"
               variant="outline"
             >
-              <span className="sr-only">Go to previous page</span>
+              <span className="sr-only">{t('common.aria.goToPreviousPage')}</span>
               <ChevronLeft />
             </Button>
             <Button
@@ -365,7 +375,7 @@ export function ContentEntriesTable({
               size="icon"
               variant="outline"
             >
-              <span className="sr-only">Go to next page</span>
+              <span className="sr-only">{t('common.aria.goToNextPage')}</span>
               <ChevronRight />
             </Button>
             <Button
@@ -375,7 +385,7 @@ export function ContentEntriesTable({
               size="icon"
               variant="outline"
             >
-              <span className="sr-only">Go to last page</span>
+              <span className="sr-only">{t('common.aria.goToLastPage')}</span>
               <ChevronsRight />
             </Button>
           </div>

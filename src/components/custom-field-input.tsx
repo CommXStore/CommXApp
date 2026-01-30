@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import type { CustomField } from '@/lib/clerk/content-schemas'
+import { useTranslations } from '@/i18n/provider'
 
 type CustomFieldInputProps = {
   field: CustomField
@@ -32,6 +33,8 @@ export function CustomFieldInput({
   error,
   onChange,
 }: CustomFieldInputProps) {
+  const t = useTranslations()
+
   return (
     <Field>
       <FieldLabel>{field.label}</FieldLabel>
@@ -81,7 +84,7 @@ export function CustomFieldInput({
               checked={Boolean(value)}
               onCheckedChange={nextValue => onChange(Boolean(nextValue))}
             />
-            <span className="text-sm">Ativar</span>
+            <span className="text-sm">{t('common.actions.enable')}</span>
           </div>
           {error && <FieldError>{error}</FieldError>}
         </>
@@ -95,10 +98,12 @@ export function CustomFieldInput({
             value={String(value ?? '') === '' ? emptySelectValue : String(value)}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Selecione uma opcao" />
+              <SelectValue placeholder={t('common.placeholders.selectOption')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={emptySelectValue}>Selecione...</SelectItem>
+              <SelectItem value={emptySelectValue}>
+                {t('common.placeholders.selectOptionShort')}
+              </SelectItem>
               {(field.options ?? []).map(option => (
                 <SelectItem key={option} value={option}>
                   {option}

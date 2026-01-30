@@ -42,6 +42,7 @@ import {
 import { createCustomFieldColumns } from './columns'
 import { deleteCustomFieldAction } from '@/lib/clerk/actions'
 import type { ContentType, CustomField } from '@/lib/clerk/content-schemas'
+import { useTranslations } from '@/i18n/provider'
 
 type CustomFieldsTableProps = {
   data: CustomField[]
@@ -51,6 +52,7 @@ type CustomFieldsTableProps = {
 export function CustomFieldsTable({ data: initialData, contentTypes }: CustomFieldsTableProps) {
   const [data, setData] = useState<CustomField[]>(initialData)
   const [, setLoading] = useState(false)
+  const t = useTranslations()
 
   const contentTypeMap = useMemo(
     () =>
@@ -75,16 +77,18 @@ export function CustomFieldsTable({ data: initialData, contentTypes }: CustomFie
     setData(prevData => prevData.filter(item => item.id !== customField.id))
     try {
       await deleteCustomFieldAction(customField.id)
-      toast.success(`Campo removido: ${customField.label}`)
+      toast.success(
+        t('routes.custom-fields.form.toasts.deleted', { name: customField.label })
+      )
     } catch (error) {
       setData(prevData => [...prevData, customField])
-      console.error('Failed to delete custom field:', error)
+      console.error(error)
     } finally {
       setLoading(false)
     }
   }
 
-  const columns = createCustomFieldColumns({ deleteCustomField, contentTypeMap })
+  const columns = createCustomFieldColumns({ t, deleteCustomField, contentTypeMap })
 
   const table = useReactTable({
     data,
@@ -116,7 +120,9 @@ export function CustomFieldsTable({ data: initialData, contentTypes }: CustomFie
       <div className="flex h-full flex-col gap-4">
         <div className="flex items-center justify-end">
           <Button asChild>
-            <Link href="/custom-fields/new">Adicionar campo</Link>
+            <Link href="/custom-fields/new">
+              {t('routes.custom-fields.table.add')}
+            </Link>
           </Button>
         </div>
         <div className="overflow-hidden rounded-lg border">
@@ -158,9 +164,11 @@ export function CustomFieldsTable({ data: initialData, contentTypes }: CustomFie
                 <TableRow>
                   <TableCell className="h-24 text-center" colSpan={columns.length}>
                     <div className="flex flex-col items-center gap-2">
-                      <span>Nenhum campo personalizado cadastrado.</span>
+                      <span>{t('routes.custom-fields.table.empty.title')}</span>
                       <Button asChild size="sm" variant="outline">
-                        <Link href="/custom-fields/new">Criar primeiro campo</Link>
+                        <Link href="/custom-fields/new">
+                          {t('routes.custom-fields.table.empty.cta')}
+                        </Link>
                       </Button>
                     </div>
                   </TableCell>
@@ -172,13 +180,15 @@ export function CustomFieldsTable({ data: initialData, contentTypes }: CustomFie
       </div>
       <div className="flex items-center justify-between px-4">
         <div className="hidden flex-1 text-muted-foreground text-sm lg:flex">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          {t('common.table.selectedRows', {
+            selected: table.getFilteredSelectedRowModel().rows.length,
+            total: table.getFilteredRowModel().rows.length,
+          })}
         </div>
         <div className="flex w-full items-center gap-8 lg:w-fit">
           <div className="hidden items-center gap-2 lg:flex">
             <Label className="font-medium text-sm" htmlFor="rows-per-page">
-              Rows per page
+              {t('common.table.rowsPerPage')}
             </Label>
             <Select
               onValueChange={value => {
@@ -199,8 +209,10 @@ export function CustomFieldsTable({ data: initialData, contentTypes }: CustomFie
             </Select>
           </div>
           <div className="flex w-fit items-center justify-center font-medium text-sm">
-            Page {table.getState().pagination.pageIndex + 1} of{' '}
-            {table.getPageCount()}
+            {t('common.table.pageOf', {
+              page: table.getState().pagination.pageIndex + 1,
+              total: table.getPageCount(),
+            })}
           </div>
           <div className="ml-auto flex items-center gap-2 lg:ml-0">
             <Button
@@ -209,7 +221,7 @@ export function CustomFieldsTable({ data: initialData, contentTypes }: CustomFie
               onClick={() => table.setPageIndex(0)}
               variant="outline"
             >
-              <span className="sr-only">Go to first page</span>
+              <span className="sr-only">{t('common.aria.goToFirstPage')}</span>
               <ChevronsLeft />
             </Button>
             <Button
@@ -219,7 +231,7 @@ export function CustomFieldsTable({ data: initialData, contentTypes }: CustomFie
               size="icon"
               variant="outline"
             >
-              <span className="sr-only">Go to previous page</span>
+              <span className="sr-only">{t('common.aria.goToPreviousPage')}</span>
               <ChevronLeft />
             </Button>
             <Button
@@ -229,7 +241,7 @@ export function CustomFieldsTable({ data: initialData, contentTypes }: CustomFie
               size="icon"
               variant="outline"
             >
-              <span className="sr-only">Go to next page</span>
+              <span className="sr-only">{t('common.aria.goToNextPage')}</span>
               <ChevronRight />
             </Button>
             <Button
@@ -239,7 +251,7 @@ export function CustomFieldsTable({ data: initialData, contentTypes }: CustomFie
               size="icon"
               variant="outline"
             >
-              <span className="sr-only">Go to last page</span>
+              <span className="sr-only">{t('common.aria.goToLastPage')}</span>
               <ChevronsRight />
             </Button>
           </div>

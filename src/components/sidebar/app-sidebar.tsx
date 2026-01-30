@@ -12,61 +12,63 @@ import {
   SidebarMenu,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
-
-const navMain = [
-  {
-    title: 'Dashboard',
-    url: '/dashboard',
-    icon: Home,
-    items: [],
-  },
-  {
-    title: 'Agents',
-    url: '/agents',
-    icon: SquareTerminal,
-    items: [],
-  },
-  {
-    title: 'Tipos de conteúdo',
-    url: '/content-types',
-    icon: Layers,
-    items: [],
-  },
-  {
-    title: 'Campos personalizados',
-    url: '/custom-fields',
-    icon: SlidersHorizontal,
-    items: [],
-  },
-  {
-    title: 'Settings',
-    url: '/dashboard/settings',
-    icon: Settings2,
-    items: [
-      {
-        title: 'Members',
-        url: '/dashboard/settings/organization-members',
-      },
-      {
-        title: 'API Keys',
-        url: '/dashboard/settings/api-keys',
-      },
-    ],
-  },
-]
-
-const navSecondary = [
-  {
-    title: 'Docs',
-    url: 'https://clerk.com/docs/guides/development/machine-auth/overview#api-keys',
-  },
-  {
-    title: 'Github',
-    url: 'https://github.com/commx-app/commx-app',
-  },
-]
+import { useTranslations } from '@/i18n/provider'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const t = useTranslations()
+  const navMain = [
+    {
+      title: t('common.nav.dashboard'),
+      url: '/dashboard',
+      icon: Home,
+      items: [],
+    },
+    {
+      title: t('common.nav.agents'),
+      url: '/agents',
+      icon: SquareTerminal,
+      items: [],
+    },
+    {
+      title: t('common.nav.contentTypes'),
+      url: '/content-types',
+      icon: Layers,
+      items: [],
+    },
+    {
+      title: t('common.nav.customFields'),
+      url: '/custom-fields',
+      icon: SlidersHorizontal,
+      items: [],
+    },
+    {
+      title: t('common.nav.settings'),
+      url: '/dashboard/settings',
+      icon: Settings2,
+      items: [
+        {
+          title: t('common.nav.members'),
+          url: '/dashboard/settings/organization-members',
+        },
+        {
+          title: t('common.nav.apiKeys'),
+          url: '/dashboard/settings/api-keys',
+        },
+      ],
+    },
+  ]
+
+  const navSecondary = [
+    {
+      title: t('common.nav.docs'),
+      url: 'https://clerk.com/docs/guides/development/machine-auth/overview#api-keys',
+    },
+    {
+      title: t('common.nav.github'),
+      url: 'https://github.com/commx-app/commx-app',
+    },
+  ]
+
   return (
     <Sidebar collapsible="icon" variant="inset" {...props}>
       <SidebarHeader>

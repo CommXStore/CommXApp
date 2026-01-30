@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import type { Agent } from '@/lib/clerk/metadata-utils'
+import { useTranslations } from '@/i18n/provider'
 
 type CreateAgentProps = {
   createAgent: (payload: Agent) => Promise<void>
@@ -39,6 +40,7 @@ export function CreateAgentButton({
   createAgent,
   isPending,
 }: CreateAgentProps) {
+  const t = useTranslations()
   const formRef = useRef<HTMLFormElement>(null)
   const [open, setOpen] = useState(false)
 
@@ -57,35 +59,41 @@ export function CreateAgentButton({
   return (
     <Dialog onOpenChange={setOpen} open={open}>
       <DialogTrigger asChild>
-        <Button>Add Agent</Button>
+        <Button>{t('routes.agents.create.button')}</Button>
       </DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Add Agent</DialogTitle>
+          <DialogTitle>{t('routes.agents.create.title')}</DialogTitle>
         </DialogHeader>
-        <DialogDescription>
-          Add a new agent to your organization.
-        </DialogDescription>
+        <DialogDescription>{t('routes.agents.create.description')}</DialogDescription>
         <form action={formAction} className="space-y-4" ref={formRef}>
           <FieldSet>
             <FieldGroup>
               <Field>
-                <FieldLabel htmlFor="name">Name</FieldLabel>
-                <FieldDescription>The name of the agent.</FieldDescription>
+                <FieldLabel htmlFor="name">
+                  {t('routes.agents.create.fields.name.label')}
+                </FieldLabel>
+                <FieldDescription>
+                  {t('routes.agents.create.fields.name.description')}
+                </FieldDescription>
                 <Input
                   id="name"
                   name="name"
-                  placeholder="Order Processing Agent"
+                  placeholder={t('routes.agents.create.fields.name.placeholder')}
                   type="text"
                 />
               </Field>
             </FieldGroup>
             <FieldGroup>
               <Field>
-                <FieldLabel htmlFor="model">Model</FieldLabel>
+                <FieldLabel htmlFor="model">
+                  {t('routes.agents.create.fields.model.label')}
+                </FieldLabel>
                 <Select defaultValue="gpt-5-nano" name="model">
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a model" />
+                    <SelectValue
+                      placeholder={t('routes.agents.create.fields.model.placeholder')}
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="gpt-5-nano">GPT-5 nano</SelectItem>
@@ -96,14 +104,16 @@ export function CreateAgentButton({
             </FieldGroup>
             <FieldGroup>
               <Field>
-                <FieldLabel htmlFor="description">Description</FieldLabel>
+                <FieldLabel htmlFor="description">
+                  {t('routes.agents.create.fields.description.label')}
+                </FieldLabel>
                 <FieldDescription>
-                  The description of the agent.
+                  {t('routes.agents.create.fields.description.description')}
                 </FieldDescription>
                 <Input
                   id="description"
                   name="description"
-                  placeholder="Description"
+                  placeholder={t('routes.agents.create.fields.description.placeholder')}
                   type="text"
                 />
               </Field>
@@ -111,10 +121,10 @@ export function CreateAgentButton({
           </FieldSet>
           <DialogFooter>
             <Button disabled={isPending} type="submit">
-              Add Agent
+              {t('routes.agents.create.submit')}
             </Button>
             <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button variant="outline">{t('common.actions.cancel')}</Button>
             </DialogClose>
           </DialogFooter>
         </form>

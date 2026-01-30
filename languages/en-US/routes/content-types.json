@@ -1,0 +1,70 @@
+{
+  "new": {
+    "title": "New content type",
+    "description": "Create a custom content type."
+  },
+  "edit": {
+    "title": "Edit content type",
+    "description": "Update the content type details."
+  },
+  "table": {
+    "add": "Add type",
+    "empty": {
+      "title": "No content types found.",
+      "cta": "Create your first type"
+    },
+    "headers": {
+      "name": "Name",
+      "slug": "Slug",
+      "status": "Status",
+      "fields": "Fields",
+      "updatedAt": "Updated at"
+    },
+    "toasts": {
+      "deleted": "Content type removed: {name}"
+    }
+  },
+  "form": {
+    "fields": {
+      "name": {
+        "label": "Name",
+        "description": "Example: Article, Event, Product",
+        "placeholder": "Type name"
+      },
+      "slug": {
+        "label": "Slug",
+        "description": "If empty, we'll generate it from the name.",
+        "placeholder": "articles"
+      },
+      "description": {
+        "label": "Description",
+        "placeholder": "Short description"
+      },
+      "icon": {
+        "label": "Icon",
+        "description": "Optional, use the icon name.",
+        "placeholder": "layers"
+      },
+      "status": {
+        "label": "Status"
+      },
+      "customFields": {
+        "label": "Custom fields",
+        "description": "Select fields for this type or create new ones.",
+        "empty": "No fields available.",
+        "add": "Add field"
+      }
+    },
+    "actions": {
+      "create": "Create type"
+    },
+    "toasts": {
+      "created": "Content type created.",
+      "updated": "Content type updated."
+    },
+    "errors": {
+      "nameRequired": "Name is required.",
+      "invalidSlug": "Invalid slug. Use only lowercase letters, numbers, and hyphens."
+    }
+  }
+}

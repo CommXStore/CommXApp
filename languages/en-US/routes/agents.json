@@ -1,0 +1,44 @@
+{
+  "create": {
+    "button": "Add agent",
+    "title": "Add agent",
+    "description": "Add a new agent to your organization.",
+    "fields": {
+      "name": {
+        "label": "Name",
+        "description": "The agent name.",
+        "placeholder": "Order Processing Agent"
+      },
+      "model": {
+        "label": "Model",
+        "placeholder": "Select a model"
+      },
+      "description": {
+        "label": "Description",
+        "description": "The agent description.",
+        "placeholder": "Description"
+      }
+    },
+    "submit": "Add agent"
+  },
+  "table": {
+    "headers": {
+      "id": "Id",
+      "name": "Name",
+      "model": "Model",
+      "description": "Description"
+    }
+  },
+  "toasts": {
+    "createSuccess": "Successfully created agent {name}",
+    "deleteSuccess": "Successfully deleted agent {name}"
+  },
+  "requestTester": {
+    "inputPlaceholder": "Enter API key to prefill the sample requests",
+    "codes": {
+      "getAgents": "curl -X GET {siteUrl}/api/agents \\\n  -H \"Authorization: Bearer {apiKey}\"",
+      "createAgent": "curl -X POST {siteUrl}/api/agents \\\n  -H \"Authorization: Bearer {apiKey}\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"name\": \"My Agent\", \"description\": \"My Agent Description\", \"model\": \"gpt-4o\"}'",
+      "deleteAgent": "curl -X DELETE {siteUrl}/api/agents \\\n  -H \"Authorization: Bearer {apiKey}\" \\\n  -d '{\"agentId\": \"1\"}'"
+    }
+  }
+}

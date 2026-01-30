@@ -1,10 +1,11 @@
 import React from 'react'
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ContentTypeForm } from '@/components/content-type-form'
 import { CustomFieldForm } from '@/components/custom-field-form'
 import { ContentEntryForm } from '@/components/content-entry-form'
 import type { ContentType, CustomField } from '@/lib/clerk/content-schemas'
+import { renderWithI18n } from '@/test/render'
 
 const createContentTypeAction = vi.fn(async () => ({}))
 const createCustomFieldAction = vi.fn(async () => ({}))
@@ -61,7 +62,7 @@ const customField: CustomField = {
 describe('Forms flow', () => {
   it('creates content type', async () => {
     const user = userEvent.setup()
-    render(<ContentTypeForm customFields={[]} mode="create" />)
+    renderWithI18n(<ContentTypeForm customFields={[]} mode="create" />)
 
     await user.type(screen.getByLabelText('Nome'), 'Articles')
     const submitButton = screen.getByRole('button', { name: /criar tipo/i })
@@ -78,7 +79,9 @@ describe('Forms flow', () => {
 
   it('creates custom field', async () => {
     const user = userEvent.setup()
-    render(<CustomFieldForm contentTypes={[contentType]} mode="create" />)
+    renderWithI18n(
+      <CustomFieldForm contentTypes={[contentType]} mode="create" />
+    )
 
     await user.type(screen.getByLabelText('Nome'), 'Title')
     const submitButton = screen.getByRole('button', { name: /criar campo/i })
@@ -95,7 +98,7 @@ describe('Forms flow', () => {
 
   it('creates content entry', async () => {
     const user = userEvent.setup()
-    render(
+    renderWithI18n(
       <ContentEntryForm
         contentType={contentType}
         fields={[customField]}

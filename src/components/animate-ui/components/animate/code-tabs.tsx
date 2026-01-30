@@ -70,7 +70,7 @@ function CodeTabs({
 
         setHighlightedCodes(newHighlightedCodes)
       } catch (error) {
-        console.error('Error highlighting codes', error)
+        console.error(error)
         setHighlightedCodes(codes)
       }
     }

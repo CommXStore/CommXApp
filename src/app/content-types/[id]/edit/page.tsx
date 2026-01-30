@@ -4,6 +4,7 @@ import {
   getContentTypeAction,
   getCustomFieldsAction,
 } from '@/lib/clerk/actions'
+import { getTranslations } from '@/i18n/server'
 
 type PageProps = {
   params: Promise<{ id: string }>
@@ -12,6 +13,7 @@ type PageProps = {
 export const dynamic = 'force-dynamic'
 
 export default async function Page({ params }: PageProps) {
+  const t = await getTranslations()
   const { id } = await params
   const [contentType, customFields] = await Promise.all([
     getContentTypeAction(id),
@@ -25,9 +27,11 @@ export default async function Page({ params }: PageProps) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-semibold text-2xl">Editar tipo de conteúdo</h1>
+        <h1 className="font-semibold text-2xl">
+          {t('routes.content-types.edit.title')}
+        </h1>
         <p className="text-muted-foreground">
-          Atualize as informações do tipo de conteúdo.
+          {t('routes.content-types.edit.description')}
         </p>
       </div>
       <ContentTypeForm

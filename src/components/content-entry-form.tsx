@@ -26,6 +26,7 @@ import type {
   ContentType,
   CustomField,
 } from '@/lib/clerk/content-schemas'
+import { useTranslations } from '@/i18n/provider'
 
 type ContentEntryFormProps = {
   mode: 'create' | 'edit'
@@ -43,6 +44,7 @@ export function ContentEntryForm({
   initialData,
 }: ContentEntryFormProps) {
   const router = useRouter()
+  const t = useTranslations()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [status, setStatus] = useState<ContentEntry['status']>(
     initialData?.status ?? 'draft'
@@ -83,7 +85,7 @@ export function ContentEntryForm({
     const nextErrors: Record<string, string> = {}
     const trimmedSlug = slug.trim()
     if (trimmedSlug && !isKebabCase(trimmedSlug)) {
-      nextErrors.slug = 'Slug inválido. Use apenas letras minúsculas, números e hífens.'
+      nextErrors.slug = t('common.errors.invalidSlug')
     }
 
     for (const field of fields) {
@@ -94,19 +96,19 @@ export function ContentEntryForm({
         (typeof value === 'string' && value.trim() === '')
 
       if (field.required && field.type !== 'boolean' && isEmpty) {
-        nextErrors[field.key] = 'Campo obrigatório.'
+        nextErrors[field.key] = t('common.errors.requiredField')
       }
 
       if (field.type === 'number' && !isEmpty) {
         const numericValue = Number(value)
         if (Number.isNaN(numericValue)) {
-          nextErrors[field.key] = 'Informe um número válido.'
+          nextErrors[field.key] = t('common.errors.invalidNumber')
         }
       }
 
       if (field.type === 'select' && !isEmpty) {
         if (!field.options?.includes(String(value))) {
-          nextErrors[field.key] = 'Selecione uma opção válida.'
+          nextErrors[field.key] = t('common.errors.invalidOption')
         }
       }
     }
@@ -128,16 +130,16 @@ export function ContentEntryForm({
     try {
       if (mode === 'create') {
         await createContentEntryAction(contentType.slug, payload)
-        toast.success('Entrada criada.')
+        toast.success(t('routes.content.form.toasts.created'))
       } else if (initialData) {
         await updateContentEntryAction(contentType.slug, initialData.id, payload)
-        toast.success('Entrada atualizada.')
+        toast.success(t('routes.content.form.toasts.updated'))
       }
       router.push(`/content/${contentType.slug}`)
       router.refresh()
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : 'Falha ao salvar.'
+        error instanceof Error ? error.message : t('common.errors.saveFailed')
       toast.error(message)
     } finally {
       setIsSubmitting(false)
@@ -149,30 +151,30 @@ export function ContentEntryForm({
       <FieldSet>
         <FieldGroup>
           <Field>
-            <FieldLabel>Status</FieldLabel>
+            <FieldLabel>{t('common.labels.status')}</FieldLabel>
             <Select
               onValueChange={value => setStatus(value as ContentEntry['status'])}
               value={status}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Selecione um status" />
+                <SelectValue placeholder={t('common.placeholders.selectStatus')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="draft">Rascunho</SelectItem>
-                <SelectItem value="published">Publicado</SelectItem>
+                <SelectItem value="draft">{t('common.status.draft')}</SelectItem>
+                <SelectItem value="published">{t('common.status.published')}</SelectItem>
               </SelectContent>
             </Select>
           </Field>
           <Field>
-            <FieldLabel htmlFor="slug">Slug</FieldLabel>
+            <FieldLabel htmlFor="slug">{t('common.labels.slug')}</FieldLabel>
             <FieldDescription>
-              Opcional. Se vazio, tentamos gerar a partir do título/nome.
+              {t('routes.content.form.slug.description')}
             </FieldDescription>
             <Input
               id="slug"
               name="slug"
               onChange={event => setSlug(event.target.value)}
-              placeholder="minha-entrada"
+              placeholder={t('routes.content.form.slug.placeholder')}
               type="text"
               value={slug}
             />
@@ -197,10 +199,12 @@ export function ContentEntryForm({
 
       <div className="flex items-center gap-2">
         <Button disabled={isSubmitting} type="submit">
-          {mode === 'create' ? 'Criar entrada' : 'Salvar alterações'}
+          {mode === 'create'
+            ? t('routes.content.form.actions.create')
+            : t('common.actions.saveChanges')}
         </Button>
         <Button asChild variant="outline">
-          <Link href={`/content/${contentType.slug}`}>Cancelar</Link>
+          <Link href={`/content/${contentType.slug}`}>{t('common.actions.cancel')}</Link>
         </Button>
       </div>
     </form>

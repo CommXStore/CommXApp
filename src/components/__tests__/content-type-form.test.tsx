@@ -1,9 +1,10 @@
 import React from 'react'
 import { describe, expect, it, vi } from 'vitest'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ContentTypeForm } from '@/components/content-type-form'
 import type { CustomField } from '@/lib/clerk/content-schemas'
+import { renderWithI18n } from '@/test/render'
 
 vi.mock('next/navigation', () => {
   return {
@@ -39,7 +40,7 @@ const fields: CustomField[] = [
 describe('ContentTypeForm', () => {
   it('shows error when name is empty', async () => {
     const user = userEvent.setup()
-    render(<ContentTypeForm customFields={fields} mode="create" />)
+    renderWithI18n(<ContentTypeForm customFields={fields} mode="create" />)
 
     const submitButton = screen.getByRole('button', { name: /criar tipo/i })
     const form = submitButton.closest('form')
@@ -56,7 +57,7 @@ describe('ContentTypeForm', () => {
 
   it('shows error when slug is invalid', async () => {
     const user = userEvent.setup()
-    render(<ContentTypeForm customFields={fields} mode="create" />)
+    renderWithI18n(<ContentTypeForm customFields={fields} mode="create" />)
 
     await user.type(screen.getByLabelText('Slug'), 'Slug Inválido')
     const submitButton = screen.getByRole('button', { name: /criar tipo/i })

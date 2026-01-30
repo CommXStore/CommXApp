@@ -1,0 +1,86 @@
+{
+  "new": {
+    "title": "New custom field",
+    "description": "Create a field and link it to a content type."
+  },
+  "edit": {
+    "title": "Edit custom field",
+    "description": "Update the custom field details."
+  },
+  "table": {
+    "add": "Add field",
+    "empty": {
+      "title": "No custom fields found.",
+      "cta": "Create your first field"
+    },
+    "headers": {
+      "label": "Name",
+      "key": "Key",
+      "type": "Type",
+      "required": "Required",
+      "contentType": "Content type",
+      "updatedAt": "Updated at"
+    },
+    "values": {
+      "yes": "Yes",
+      "no": "No",
+      "unlinked": "Unlinked",
+      "removedType": "Removed type"
+    }
+  },
+  "form": {
+    "fields": {
+      "label": {
+        "label": "Name",
+        "description": "Example: Author, Publish date",
+        "placeholder": "Field name"
+      },
+      "key": {
+        "label": "Key",
+        "description": "If empty, we'll use the name.",
+        "placeholder": "author"
+      },
+      "type": {
+        "label": "Type",
+        "placeholder": "Select a type",
+        "options": {
+          "text": "Text",
+          "number": "Number",
+          "boolean": "Boolean",
+          "date": "Date",
+          "select": "Select"
+        }
+      },
+      "required": {
+        "label": "Required",
+        "text": "Required field"
+      },
+      "helpText": {
+        "label": "Help text",
+        "placeholder": "Example: Enter the main author."
+      },
+      "options": {
+        "label": "Options",
+        "description": "Comma-separated (select only).",
+        "placeholder": "Option A, Option B"
+      },
+      "attach": {
+        "label": "Link to content type",
+        "empty": "No types available."
+      }
+    },
+    "actions": {
+      "create": "Create field"
+    },
+    "toasts": {
+      "created": "Custom field created.",
+      "updated": "Custom field updated.",
+      "deleted": "Field removed: {name}"
+    },
+    "errors": {
+      "labelRequired": "Name is required.",
+      "invalidKey": "Invalid key. Use only lowercase letters, numbers, and hyphens.",
+      "optionsRequired": "Enter at least one option."
+    }
+  }
+}

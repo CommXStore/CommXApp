@@ -1,17 +1,23 @@
-import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import { Toaster } from '@/components/ui/sonner'
 import { ClerkProvider } from '@/providers/clerk-provider'
 import { ThemeProvider } from '@/providers/theme-provider'
 import { cn } from '@/lib/utils'
+import { I18nProvider } from '@/i18n/provider'
+import { getLocale } from '@/i18n/get-locale'
+import { getMessages, getTranslations } from '@/i18n/server'
 import './globals.css'
 
-export const metadata: Metadata = {
-  title: {
-    default: 'CommX App',
-    template: '%s | CommX App',
-  },
-  description: 'CommX App',
+export async function generateMetadata() {
+  const t = await getTranslations()
+  const appName = t('common.app.name')
+  return {
+    title: {
+      default: appName,
+      template: `%s | ${appName}`,
+    },
+    description: t('common.app.description'),
+  }
 }
 
 const geistSans = localFont({
@@ -71,23 +77,28 @@ const jetBrainsMono = localFont({
   ],
 })
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const locale = getLocale()
+  const messages = await getMessages(locale)
+
   return (
     <ClerkProvider>
       <html
         className={cn(geistSans.variable, jetBrainsMono.variable)}
-        lang="en"
+        lang={locale}
         suppressHydrationWarning
       >
         <body className="antialiased">
-          <ThemeProvider>
-            <Toaster position="top-right" />
-            {children}
-          </ThemeProvider>
+          <I18nProvider locale={locale} messages={messages}>
+            <ThemeProvider>
+              <Toaster position="top-right" />
+              {children}
+            </ThemeProvider>
+          </I18nProvider>
         </body>
       </html>
     </ClerkProvider>

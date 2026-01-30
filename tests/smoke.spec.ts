@@ -2,5 +2,5 @@ import { test, expect } from '@playwright/test'
 
 test('home page loads', async ({ page }) => {
   await page.goto('/')
-  await expect(page).toHaveTitle(/CommX App/i)
+  await expect(page).toHaveTitle(/CommX Shop/i)
 })

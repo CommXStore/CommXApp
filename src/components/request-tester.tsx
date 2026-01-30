@@ -3,30 +3,36 @@
 import { useState, useMemo } from 'react'
 import { CodeTabs } from '@/components/animate-ui/components/animate/code-tabs'
 import { Input } from '@/components/ui/input'
+import { useTranslations } from '@/i18n/provider'
 
 const SITE_URL =
   process.env.NODE_ENV === 'development'
     ? 'http://localhost:3000'
     : `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
 
-const createCodes = (apiKey = '<API_KEY>') => ({
-  'get-agents': `curl -X GET ${SITE_URL}/api/agents \
-  -H "Authorization: Bearer ${apiKey}"`,
-  'create-agent': `curl -X POST ${SITE_URL}/api/agents \
-  -H "Authorization: Bearer ${apiKey}" \
-  -H "Content-Type: application/json" \
-  -d '{"name": "My Agent", "description": "My Agent Description", "model": "gpt-4o"}'`,
-  'delete-agent': `curl -X DELETE ${SITE_URL}/api/agents \
-  -H "Authorization: Bearer ${apiKey}" \
-  -d '{"agentId": "1"}'`,
-})
-
 export function RequestTester() {
   const [apiKey, setApiKey] = useState('')
+  const t = useTranslations()
 
   const codes = useMemo(
-    () => createCodes(apiKey.trim() || '<API_KEY>'),
-    [apiKey]
+    () => {
+      const safeApiKey = apiKey.trim() || '<API_KEY>'
+      return {
+        'get-agents': t('routes.agents.requestTester.codes.getAgents', {
+          siteUrl: SITE_URL,
+          apiKey: safeApiKey,
+        }),
+        'create-agent': t('routes.agents.requestTester.codes.createAgent', {
+          siteUrl: SITE_URL,
+          apiKey: safeApiKey,
+        }),
+        'delete-agent': t('routes.agents.requestTester.codes.deleteAgent', {
+          siteUrl: SITE_URL,
+          apiKey: safeApiKey,
+        }),
+      }
+    },
+    [apiKey, t]
   )
 
   return (
@@ -34,7 +40,7 @@ export function RequestTester() {
       <div className="max-w-md">
         <Input
           onChange={e => setApiKey(e.target.value)}
-          placeholder="Enter API key to prefill the sample requests"
+          placeholder={t('routes.agents.requestTester.inputPlaceholder')}
           type="text"
           value={apiKey}
         />

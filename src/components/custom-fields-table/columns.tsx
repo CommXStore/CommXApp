@@ -8,11 +8,13 @@ import { Checkbox } from '@/components/ui/checkbox'
 import type { ContentType, CustomField } from '@/lib/clerk/content-schemas'
 
 type ColumnsOptions = {
+  t: (key: string, params?: Record<string, string | number>) => string
   deleteCustomField: (customField: CustomField) => Promise<void>
   contentTypeMap: Record<string, ContentType>
 }
 
 export const createCustomFieldColumns = ({
+  t,
   deleteCustomField,
   contentTypeMap,
 }: ColumnsOptions): ColumnDef<CustomField>[] => [
@@ -21,7 +23,7 @@ export const createCustomFieldColumns = ({
     header: ({ table }) => (
       <div className="flex items-center justify-center">
         <Checkbox
-          aria-label="Select all"
+          aria-label={t('common.aria.selectAll')}
           checked={
             table.getIsAllPageRowsSelected() ||
             (table.getIsSomePageRowsSelected() && 'indeterminate')
@@ -33,7 +35,7 @@ export const createCustomFieldColumns = ({
     cell: ({ row }) => (
       <div className="flex items-center justify-center">
         <Checkbox
-          aria-label="Select row"
+          aria-label={t('common.aria.selectRow')}
           checked={row.getIsSelected()}
           onCheckedChange={value => row.toggleSelected(!!value)}
         />
@@ -44,38 +46,41 @@ export const createCustomFieldColumns = ({
   },
   {
     accessorKey: 'label',
-    header: 'Nome',
+    header: t('routes.custom-fields.table.headers.label'),
     enableHiding: false,
   },
   {
     accessorKey: 'key',
-    header: 'Chave',
+    header: t('routes.custom-fields.table.headers.key'),
   },
   {
     accessorKey: 'type',
-    header: 'Tipo',
+    header: t('routes.custom-fields.table.headers.type'),
   },
   {
     accessorKey: 'required',
-    header: 'Obrigatório',
-    cell: ({ row }) => (row.original.required ? 'Sim' : 'Não'),
+    header: t('routes.custom-fields.table.headers.required'),
+    cell: ({ row }) =>
+      row.original.required
+        ? t('routes.custom-fields.table.values.yes')
+        : t('routes.custom-fields.table.values.no'),
   },
   {
     accessorKey: 'attachedTo',
-    header: 'Tipo de conteúdo',
+    header: t('routes.custom-fields.table.headers.contentType'),
     cell: ({ row }) => {
       const attachedIds = row.original.attachedTo ?? []
       if (!attachedIds.length) {
-        return 'Sem vínculo'
+        return t('routes.custom-fields.table.values.unlinked')
       }
       return attachedIds
-        .map(typeId => contentTypeMap[typeId]?.name ?? 'Tipo removido')
+        .map(typeId => contentTypeMap[typeId]?.name ?? t('routes.custom-fields.table.values.removedType'))
         .join(', ')
     },
   },
   {
     accessorKey: 'updatedAt',
-    header: 'Atualizado em',
+    header: t('routes.custom-fields.table.headers.updatedAt'),
     cell: ({ row }) => new Date(row.original.updatedAt).toLocaleString(),
   },
   {

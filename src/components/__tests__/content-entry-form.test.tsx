@@ -1,9 +1,10 @@
 import React from 'react'
 import { describe, expect, it, vi } from 'vitest'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ContentEntryForm } from '@/components/content-entry-form'
 import type { ContentType, CustomField } from '@/lib/clerk/content-schemas'
+import { renderWithI18n } from '@/test/render'
 
 vi.mock('next/navigation', () => {
   return {
@@ -63,7 +64,7 @@ const fields: CustomField[] = [
 describe('ContentEntryForm', () => {
   it('shows required error when title is empty', async () => {
     const user = userEvent.setup()
-    render(
+    renderWithI18n(
       <ContentEntryForm contentType={contentType} fields={fields} mode="create" />
     )
 
@@ -82,7 +83,7 @@ describe('ContentEntryForm', () => {
 
   it('shows slug error when invalid', async () => {
     const user = userEvent.setup()
-    render(
+    renderWithI18n(
       <ContentEntryForm contentType={contentType} fields={fields} mode="create" />
     )
 

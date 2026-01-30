@@ -1,9 +1,10 @@
 import React from 'react'
 import { describe, expect, it, vi } from 'vitest'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { CustomFieldForm } from '@/components/custom-field-form'
 import type { ContentType } from '@/lib/clerk/content-schemas'
+import { renderWithI18n } from '@/test/render'
 
 vi.mock('next/navigation', () => {
   return {
@@ -38,7 +39,7 @@ const contentTypes: ContentType[] = [
 describe('CustomFieldForm', () => {
   it('shows error when label is empty', async () => {
     const user = userEvent.setup()
-    render(<CustomFieldForm contentTypes={contentTypes} mode="create" />)
+    renderWithI18n(<CustomFieldForm contentTypes={contentTypes} mode="create" />)
 
     const submitButton = screen.getByRole('button', { name: /criar campo/i })
     const form = submitButton.closest('form')

@@ -1,0 +1,74 @@
+{
+  "app": {
+    "name": "CommX Shop",
+    "description": "CommX Shop"
+  },
+  "aria": {
+    "more": "More",
+    "toggleSidebar": "Toggle sidebar",
+    "goToFirstPage": "Go to first page",
+    "goToPreviousPage": "Go to previous page",
+    "goToNextPage": "Go to next page",
+    "goToLastPage": "Go to last page",
+    "selectAll": "Select all",
+    "selectRow": "Select row",
+    "breadcrumb": "Breadcrumb"
+  },
+  "actions": {
+    "close": "Close",
+    "cancel": "Cancel",
+    "saveChanges": "Save changes",
+    "toggle": "Toggle",
+    "toggleSidebar": "Toggle sidebar",
+    "enable": "Enable"
+  },
+  "table": {
+    "noResults": "No results.",
+    "rowsPerPage": "Rows per page",
+    "pageOf": "Page {page} of {total}",
+    "selectedRows": "{selected} of {total} row(s) selected."
+  },
+  "labels": {
+    "status": "Status",
+    "slug": "Slug"
+  },
+  "placeholders": {
+    "selectStatus": "Select a status",
+    "selectOption": "Select an option",
+    "selectOptionShort": "Select..."
+  },
+  "status": {
+    "draft": "Draft",
+    "published": "Published"
+  },
+  "messages": {
+    "loading": "Loading..."
+  },
+  "theme": {
+    "toggleLight": "Switch to light mode",
+    "toggleDark": "Switch to dark mode"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "agents": "Agents",
+    "contentTypes": "Content types",
+    "customFields": "Custom fields",
+    "settings": "Settings",
+    "members": "Members",
+    "apiKeys": "API keys",
+    "docs": "Docs",
+    "github": "GitHub"
+  },
+  "errors": {
+    "saveFailed": "Failed to save.",
+    "invalidSlug": "Invalid slug. Use only lowercase letters, numbers, and hyphens.",
+    "requiredField": "Required field.",
+    "invalidNumber": "Enter a valid number.",
+    "invalidOption": "Select a valid option.",
+    "unexpected": "Unexpected error."
+  },
+  "sidebar": {
+    "title": "Sidebar",
+    "mobileDescription": "Displays the mobile sidebar."
+  }
+}

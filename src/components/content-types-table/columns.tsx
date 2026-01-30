@@ -9,6 +9,7 @@ import { StatusBadge } from '@/components/status-badge'
 import type { ContentType } from '@/lib/clerk/content-schemas'
 
 export const createContentTypeColumns = (
+  t: (key: string, params?: Record<string, string | number>) => string,
   deleteContentType: (contentType: ContentType) => Promise<void>
 ): ColumnDef<ContentType>[] => [
   {
@@ -16,7 +17,7 @@ export const createContentTypeColumns = (
     header: ({ table }) => (
       <div className="flex items-center justify-center">
         <Checkbox
-          aria-label="Select all"
+          aria-label={t('common.aria.selectAll')}
           checked={
             table.getIsAllPageRowsSelected() ||
             (table.getIsSomePageRowsSelected() && 'indeterminate')
@@ -28,7 +29,7 @@ export const createContentTypeColumns = (
     cell: ({ row }) => (
       <div className="flex items-center justify-center">
         <Checkbox
-          aria-label="Select row"
+          aria-label={t('common.aria.selectRow')}
           checked={row.getIsSelected()}
           onCheckedChange={value => row.toggleSelected(!!value)}
         />
@@ -39,26 +40,26 @@ export const createContentTypeColumns = (
   },
   {
     accessorKey: 'name',
-    header: 'Nome',
+    header: t('routes.content-types.table.headers.name'),
     enableHiding: false,
   },
   {
     accessorKey: 'slug',
-    header: 'Slug',
+    header: t('routes.content-types.table.headers.slug'),
   },
   {
     accessorKey: 'status',
-    header: 'Status',
+    header: t('routes.content-types.table.headers.status'),
     cell: ({ row }) => <StatusBadge status={row.original.status} />,
   },
   {
     accessorKey: 'fields',
-    header: 'Campos',
+    header: t('routes.content-types.table.headers.fields'),
     cell: ({ row }) => row.original.fields.length,
   },
   {
     accessorKey: 'updatedAt',
-    header: 'Atualizado em',
+    header: t('routes.content-types.table.headers.updatedAt'),
     cell: ({ row }) => new Date(row.original.updatedAt).toLocaleString(),
   },
   {

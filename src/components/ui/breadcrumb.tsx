@@ -1,11 +1,17 @@
+'use client'
+
 import type * as React from 'react'
 import { Slot } from '@radix-ui/react-slot'
 import { ChevronRight, MoreHorizontal } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
+import { useTranslations } from '@/i18n/provider'
 
 function Breadcrumb({ ...props }: React.ComponentProps<'nav'>) {
-  return <nav aria-label="breadcrumb" data-slot="breadcrumb" {...props} />
+  const t = useTranslations()
+  return (
+    <nav aria-label={t('common.aria.breadcrumb')} data-slot="breadcrumb" {...props} />
+  )
 }
 
 function BreadcrumbList({ className, ...props }: React.ComponentProps<'ol'>) {
@@ -84,6 +90,7 @@ function BreadcrumbEllipsis({
   className,
   ...props
 }: React.ComponentProps<'span'>) {
+  const t = useTranslations()
   return (
     <span
       aria-hidden="true"
@@ -93,7 +100,7 @@ function BreadcrumbEllipsis({
       {...props}
     >
       <MoreHorizontal className="size-4" />
-      <span className="sr-only">More</span>
+      <span className="sr-only">{t('common.aria.more')}</span>
     </span>
   )
 }

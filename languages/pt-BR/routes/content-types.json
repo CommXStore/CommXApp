@@ -1,0 +1,70 @@
+{
+  "new": {
+    "title": "Novo tipo de conteúdo",
+    "description": "Crie um tipo de conteúdo personalizado."
+  },
+  "edit": {
+    "title": "Editar tipo de conteúdo",
+    "description": "Atualize as informações do tipo de conteúdo."
+  },
+  "table": {
+    "add": "Adicionar tipo",
+    "empty": {
+      "title": "Nenhum tipo de conteúdo cadastrado.",
+      "cta": "Criar primeiro tipo"
+    },
+    "headers": {
+      "name": "Nome",
+      "slug": "Slug",
+      "status": "Status",
+      "fields": "Campos",
+      "updatedAt": "Atualizado em"
+    },
+    "toasts": {
+      "deleted": "Tipo removido: {name}"
+    }
+  },
+  "form": {
+    "fields": {
+      "name": {
+        "label": "Nome",
+        "description": "Ex: Artigo, Evento, Produto",
+        "placeholder": "Nome do tipo"
+      },
+      "slug": {
+        "label": "Slug",
+        "description": "Se vazio, usamos o nome para gerar.",
+        "placeholder": "artigos"
+      },
+      "description": {
+        "label": "Descrição",
+        "placeholder": "Descrição curta"
+      },
+      "icon": {
+        "label": "Ícone",
+        "description": "Opcional, use o nome do ícone.",
+        "placeholder": "layers"
+      },
+      "status": {
+        "label": "Status"
+      },
+      "customFields": {
+        "label": "Campos personalizados",
+        "description": "Selecione os campos para este tipo ou crie novos campos.",
+        "empty": "Nenhum campo disponível.",
+        "add": "Adicionar campo"
+      }
+    },
+    "actions": {
+      "create": "Criar tipo"
+    },
+    "toasts": {
+      "created": "Tipo de conteúdo criado.",
+      "updated": "Tipo de conteúdo atualizado."
+    },
+    "errors": {
+      "nameRequired": "Nome é obrigatório.",
+      "invalidSlug": "Slug inválido. Use apenas letras minúsculas, números e hífens."
+    }
+  }
+}

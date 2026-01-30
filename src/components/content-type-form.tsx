@@ -28,6 +28,7 @@ import {
 } from '@/lib/clerk/actions'
 import { isKebabCase } from '@/lib/content-utils'
 import type { ContentType, CustomField } from '@/lib/clerk/content-schemas'
+import { useTranslations } from '@/i18n/provider'
 
 type ContentTypeFormProps = {
   mode: 'create' | 'edit'
@@ -41,6 +42,7 @@ export function ContentTypeForm({
   initialData,
 }: ContentTypeFormProps) {
   const router = useRouter()
+  const t = useTranslations()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [status, setStatus] = useState<ContentType['status']>(
     initialData?.status ?? 'draft'
@@ -70,10 +72,10 @@ export function ContentTypeForm({
 
     const nextErrors: Record<string, string> = {}
     if (!name) {
-      nextErrors.name = 'Nome é obrigatório.'
+      nextErrors.name = t('routes.content-types.form.errors.nameRequired')
     }
     if (slug && !isKebabCase(slug)) {
-      nextErrors.slug = 'Slug inválido. Use apenas letras minúsculas, números e hífens.'
+      nextErrors.slug = t('routes.content-types.form.errors.invalidSlug')
     }
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors)
@@ -95,16 +97,16 @@ export function ContentTypeForm({
     try {
       if (mode === 'create') {
         await createContentTypeAction(payload)
-        toast.success('Tipo de conteúdo criado.')
+        toast.success(t('routes.content-types.form.toasts.created'))
       } else if (initialData) {
         await updateContentTypeAction(initialData.id, payload)
-        toast.success('Tipo de conteúdo atualizado.')
+        toast.success(t('routes.content-types.form.toasts.updated'))
       }
       router.push('/content-types')
       router.refresh()
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : 'Falha ao salvar.'
+        error instanceof Error ? error.message : t('common.errors.saveFailed')
       toast.error(message)
     } finally {
       setIsSubmitting(false)
@@ -116,63 +118,77 @@ export function ContentTypeForm({
       <FieldSet>
         <FieldGroup>
           <Field>
-            <FieldLabel htmlFor="name">Nome</FieldLabel>
-            <FieldDescription>Ex: Artigo, Evento, Produto</FieldDescription>
+            <FieldLabel htmlFor="name">
+              {t('routes.content-types.form.fields.name.label')}
+            </FieldLabel>
+            <FieldDescription>
+              {t('routes.content-types.form.fields.name.description')}
+            </FieldDescription>
             <Input
               defaultValue={initialData?.name ?? ''}
               id="name"
               name="name"
-              placeholder="Nome do tipo"
+              placeholder={t('routes.content-types.form.fields.name.placeholder')}
               required
               type="text"
             />
             {errors.name && <FieldError>{errors.name}</FieldError>}
           </Field>
           <Field>
-            <FieldLabel htmlFor="slug">Slug</FieldLabel>
-            <FieldDescription>Se vazio, usamos o nome para gerar.</FieldDescription>
+            <FieldLabel htmlFor="slug">
+              {t('routes.content-types.form.fields.slug.label')}
+            </FieldLabel>
+            <FieldDescription>
+              {t('routes.content-types.form.fields.slug.description')}
+            </FieldDescription>
             <Input
               defaultValue={initialData?.slug ?? ''}
               id="slug"
               name="slug"
-              placeholder="artigos"
+              placeholder={t('routes.content-types.form.fields.slug.placeholder')}
               type="text"
             />
             {errors.slug && <FieldError>{errors.slug}</FieldError>}
           </Field>
           <Field>
-            <FieldLabel htmlFor="description">Descrição</FieldLabel>
+            <FieldLabel htmlFor="description">
+              {t('routes.content-types.form.fields.description.label')}
+            </FieldLabel>
             <Input
               defaultValue={initialData?.description ?? ''}
               id="description"
               name="description"
-              placeholder="Descrição curta"
+              placeholder={t('routes.content-types.form.fields.description.placeholder')}
               type="text"
             />
           </Field>
           <Field>
-            <FieldLabel htmlFor="icon">Ícone</FieldLabel>
-            <FieldDescription>Opcional, use o nome do ícone.</FieldDescription>
+            <FieldLabel htmlFor="icon">
+              {t('routes.content-types.form.fields.icon.label')}
+            </FieldLabel>
+            <FieldDescription>
+              {t('routes.content-types.form.fields.icon.description')}
+            </FieldDescription>
             <Input
               defaultValue={initialData?.icon ?? ''}
               id="icon"
               name="icon"
-              placeholder="layers"
+              placeholder={t('routes.content-types.form.fields.icon.placeholder')}
               type="text"
             />
           </Field>
           <Field>
-            <FieldLabel>Status</FieldLabel>
+            <FieldLabel>{t('routes.content-types.form.fields.status.label')}</FieldLabel>
             <Select
               onValueChange={value => setStatus(value as ContentType['status'])}
               value={status}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Selecione um status" />
+                <SelectValue placeholder={t('common.placeholders.selectStatus')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="draft">Rascunho</SelectItem>
-                <SelectItem value="published">Publicado</SelectItem>
+                <SelectItem value="draft">{t('common.status.draft')}</SelectItem>
+                <SelectItem value="published">{t('common.status.published')}</SelectItem>
               </SelectContent>
             </Select>
           </Field>
@@ -182,9 +198,9 @@ export function ContentTypeForm({
       <FieldSet>
         <FieldGroup>
           <Field>
-            <FieldLabel>Campos personalizados</FieldLabel>
+            <FieldLabel>{t('routes.content-types.form.fields.customFields.label')}</FieldLabel>
             <FieldDescription>
-              Selecione os campos para este tipo ou crie novos campos.
+              {t('routes.content-types.form.fields.customFields.description')}
             </FieldDescription>
             <div className="flex flex-col gap-3 rounded-md border p-4">
               {availableFields.length ? (
@@ -203,11 +219,13 @@ export function ContentTypeForm({
                 ))
               ) : (
                 <span className="text-muted-foreground text-sm">
-                  Nenhum campo disponível.
+                  {t('routes.content-types.form.fields.customFields.empty')}
                 </span>
               )}
               <Button asChild size="sm" variant="outline">
-                <Link href="/custom-fields/new">Adicionar campo</Link>
+                <Link href="/custom-fields/new">
+                  {t('routes.content-types.form.fields.customFields.add')}
+                </Link>
               </Button>
             </div>
           </Field>
@@ -216,10 +234,12 @@ export function ContentTypeForm({
 
       <div className="flex items-center gap-2">
         <Button disabled={isSubmitting} type="submit">
-          {mode === 'create' ? 'Criar tipo' : 'Salvar alterações'}
+          {mode === 'create'
+            ? t('routes.content-types.form.actions.create')
+            : t('common.actions.saveChanges')}
         </Button>
         <Button asChild variant="outline">
-          <Link href="/content-types">Cancelar</Link>
+          <Link href="/content-types">{t('common.actions.cancel')}</Link>
         </Button>
       </div>
     </form>

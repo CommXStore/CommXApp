@@ -1,7 +1,8 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { ContentTypesTable } from '@/components/content-types-table'
 import type { ContentType } from '@/lib/clerk/content-schemas'
+import { renderWithI18n } from '@/test/render'
 
 vi.mock('next/link', () => ({
   default: ({ href, children }: { href: string; children: React.ReactNode }) => (
@@ -29,7 +30,7 @@ const items: ContentType[] = [
 
 describe('ContentTypesTable', () => {
   it('renders rows and add button', () => {
-    render(<ContentTypesTable data={items} />)
+    renderWithI18n(<ContentTypesTable data={items} />)
     expect(screen.getByText('Blog')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /adicionar tipo/i })).toBeInTheDocument()
   })

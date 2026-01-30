@@ -1,0 +1,52 @@
+{
+  "new": {
+    "title": "New entry",
+    "description": "Creating entry for {contentType}."
+  },
+  "edit": {
+    "title": "Edit entry",
+    "description": "Update the entry for {contentType}."
+  },
+  "table": {
+    "description": "Manage entries for {slug}.",
+    "add": "New entry",
+    "empty": {
+      "title": "No entries found.",
+      "cta": "Create your first entry"
+    },
+    "headers": {
+      "slug": "Slug",
+      "status": "Status",
+      "fields": "Fields",
+      "updatedAt": "Updated at"
+    },
+    "dialog": {
+      "title": "API response",
+      "description": "Entry: {slug} ({id})",
+      "fallback": "Entry lookup"
+    },
+    "toasts": {
+      "deleted": "Entry removed: {slug}"
+    }
+  },
+  "form": {
+    "slug": {
+      "description": "Optional. If empty, we try to generate it from the title/name.",
+      "placeholder": "my-entry"
+    },
+    "actions": {
+      "create": "Create entry"
+    },
+    "toasts": {
+      "created": "Entry created.",
+      "updated": "Entry updated."
+    }
+  },
+  "api": {
+    "keyMissing": "No key found. Generate an API key or sign in again.",
+    "requestFailed": "Failed to fetch API."
+  },
+  "errors": {
+    "contentTypeNotFound": "Content type not found"
+  }
+}

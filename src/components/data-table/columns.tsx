@@ -7,6 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import type { Agent } from '@/lib/clerk/metadata-utils'
 
 export const createColumns = (
+  t: (key: string, params?: Record<string, string | number>) => string,
   deleteAgent: (agent: Agent) => Promise<void>
 ): ColumnDef<Agent>[] => [
   {
@@ -14,7 +15,7 @@ export const createColumns = (
     header: ({ table }) => (
       <div className="flex items-center justify-center">
         <Checkbox
-          aria-label="Select all"
+          aria-label={t('common.aria.selectAll')}
           checked={
             table.getIsAllPageRowsSelected() ||
             (table.getIsSomePageRowsSelected() && 'indeterminate')
@@ -26,7 +27,7 @@ export const createColumns = (
     cell: ({ row }) => (
       <div className="flex items-center justify-center">
         <Checkbox
-          aria-label="Select row"
+          aria-label={t('common.aria.selectRow')}
           checked={row.getIsSelected()}
           onCheckedChange={value => row.toggleSelected(!!value)}
         />
@@ -37,20 +38,20 @@ export const createColumns = (
   },
   {
     accessorKey: 'id',
-    header: 'Id',
+    header: t('routes.agents.table.headers.id'),
   },
   {
     accessorKey: 'name',
-    header: 'Name',
+    header: t('routes.agents.table.headers.name'),
     enableHiding: false,
   },
   {
     accessorKey: 'model',
-    header: 'Model',
+    header: t('routes.agents.table.headers.model'),
   },
   {
     accessorKey: 'description',
-    header: 'Description',
+    header: t('routes.agents.table.headers.description'),
   },
   {
     id: 'actions',

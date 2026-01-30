@@ -1,4 +1,4 @@
-# CommX App
+# CommX Shop
 
 Aplicacao web multi-tenant para criacao de tipos de conteudo, campos personalizados e entradas (conteudos), com autenticacao por organizacao via Clerk.
 

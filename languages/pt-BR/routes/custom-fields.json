@@ -1,0 +1,86 @@
+{
+  "new": {
+    "title": "Novo campo personalizado",
+    "description": "Crie um campo e vincule a um tipo de conteúdo."
+  },
+  "edit": {
+    "title": "Editar campo personalizado",
+    "description": "Atualize os dados do campo personalizado."
+  },
+  "table": {
+    "add": "Adicionar campo",
+    "empty": {
+      "title": "Nenhum campo personalizado cadastrado.",
+      "cta": "Criar primeiro campo"
+    },
+    "headers": {
+      "label": "Nome",
+      "key": "Chave",
+      "type": "Tipo",
+      "required": "Obrigatório",
+      "contentType": "Tipo de conteúdo",
+      "updatedAt": "Atualizado em"
+    },
+    "values": {
+      "yes": "Sim",
+      "no": "Não",
+      "unlinked": "Sem vínculo",
+      "removedType": "Tipo removido"
+    }
+  },
+  "form": {
+    "fields": {
+      "label": {
+        "label": "Nome",
+        "description": "Ex: Autor, Data de publicação",
+        "placeholder": "Nome do campo"
+      },
+      "key": {
+        "label": "Chave",
+        "description": "Se vazio, usamos o nome.",
+        "placeholder": "autor"
+      },
+      "type": {
+        "label": "Tipo",
+        "placeholder": "Selecione um tipo",
+        "options": {
+          "text": "Texto",
+          "number": "Número",
+          "boolean": "Booleano",
+          "date": "Data",
+          "select": "Seleção"
+        }
+      },
+      "required": {
+        "label": "Obrigatório",
+        "text": "Campo obrigatório"
+      },
+      "helpText": {
+        "label": "Texto de ajuda",
+        "placeholder": "Ex: Informe o autor principal."
+      },
+      "options": {
+        "label": "Opções",
+        "description": "Separadas por vírgula (apenas para seleção).",
+        "placeholder": "Opção A, Opção B"
+      },
+      "attach": {
+        "label": "Vincular ao tipo de conteúdo",
+        "empty": "Nenhum tipo disponível."
+      }
+    },
+    "actions": {
+      "create": "Criar campo"
+    },
+    "toasts": {
+      "created": "Campo personalizado criado.",
+      "updated": "Campo personalizado atualizado.",
+      "deleted": "Campo removido: {name}"
+    },
+    "errors": {
+      "labelRequired": "Nome é obrigatório.",
+      "invalidKey": "Chave inválida. Use apenas letras minúsculas, números e hífens.",
+      "optionsRequired": "Informe ao menos uma opção."
+    }
+  }
+}

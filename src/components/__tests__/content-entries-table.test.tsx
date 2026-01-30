@@ -1,7 +1,8 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { ContentEntriesTable } from '@/components/content-entries-table'
 import type { ContentEntry, ContentType } from '@/lib/clerk/content-schemas'
+import { renderWithI18n } from '@/test/render'
 
 vi.mock('next/link', () => ({
   default: ({ href, children }: { href: string; children: React.ReactNode }) => (
@@ -54,7 +55,9 @@ const entries: ContentEntry[] = [
 
 describe('ContentEntriesTable', () => {
   it('renders entries and new entry link', () => {
-    render(<ContentEntriesTable contentType={contentType} entries={entries} />)
+    renderWithI18n(
+      <ContentEntriesTable contentType={contentType} entries={entries} />
+    )
     expect(screen.getByText('hello')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /nova entrada/i })).toBeInTheDocument()
   })

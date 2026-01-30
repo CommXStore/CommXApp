@@ -1,7 +1,7 @@
 # ADR-0001: Armazenamento em publicMetadata (Clerk)
 
 ## Contexto
-O CommX App armazena tipos de conteudo, campos personalizados e entradas por organizacao. A necessidade inicial e ter persistencia simples, multi-tenant e com baixo overhead operacional.
+O CommX Shop armazena tipos de conteudo, campos personalizados e entradas por organizacao. A necessidade inicial e ter persistencia simples, multi-tenant e com baixo overhead operacional.
 
 ## Decisao
 Usar o `publicMetadata` da organizacao no Clerk como storage atual.

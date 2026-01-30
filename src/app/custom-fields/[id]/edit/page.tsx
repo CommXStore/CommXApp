@@ -4,6 +4,7 @@ import {
   getContentTypesAction,
   getCustomFieldAction,
 } from '@/lib/clerk/actions'
+import { getTranslations } from '@/i18n/server'
 
 type PageProps = {
   params: Promise<{ id: string }>
@@ -12,6 +13,7 @@ type PageProps = {
 export const dynamic = 'force-dynamic'
 
 export default async function Page({ params }: PageProps) {
+  const t = await getTranslations()
   const { id } = await params
   const [customField, contentTypes] = await Promise.all([
     getCustomFieldAction(id),
@@ -25,9 +27,11 @@ export default async function Page({ params }: PageProps) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-semibold text-2xl">Editar campo personalizado</h1>
+        <h1 className="font-semibold text-2xl">
+          {t('routes.custom-fields.edit.title')}
+        </h1>
         <p className="text-muted-foreground">
-          Atualize os dados do campo personalizado.
+          {t('routes.custom-fields.edit.description')}
         </p>
       </div>
       <CustomFieldForm

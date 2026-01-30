@@ -28,19 +28,12 @@ import {
 } from '@/lib/clerk/actions'
 import { isKebabCase } from '@/lib/content-utils'
 import type { ContentType, CustomField } from '@/lib/clerk/content-schemas'
+import { useTranslations } from '@/i18n/provider'
 
 type CustomFieldFormProps = {
   mode: 'create' | 'edit'
   contentTypes: ContentType[]
   initialData?: CustomField | null
-}
-
-const fieldTypeLabels: Record<CustomField['type'], string> = {
-  text: 'Texto',
-  number: 'Número',
-  boolean: 'Booleano',
-  date: 'Data',
-  select: 'Seleção',
 }
 
 export function CustomFieldForm({
@@ -49,6 +42,7 @@ export function CustomFieldForm({
   initialData,
 }: CustomFieldFormProps) {
   const router = useRouter()
+  const t = useTranslations()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [type, setType] = useState<CustomField['type']>(
     initialData?.type ?? 'text'
@@ -92,13 +86,13 @@ export function CustomFieldForm({
 
     const nextErrors: Record<string, string> = {}
     if (!label) {
-      nextErrors.label = 'Nome é obrigatório.'
+      nextErrors.label = t('routes.custom-fields.form.errors.labelRequired')
     }
     if (key && !isKebabCase(key)) {
-      nextErrors.key = 'Chave inválida. Use apenas letras minúsculas, números e hífens.'
+      nextErrors.key = t('routes.custom-fields.form.errors.invalidKey')
     }
     if (type === 'select' && (!options || options.length === 0)) {
-      nextErrors.options = 'Informe ao menos uma opção.'
+      nextErrors.options = t('routes.custom-fields.form.errors.optionsRequired')
     }
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors)
@@ -121,20 +115,28 @@ export function CustomFieldForm({
     try {
       if (mode === 'create') {
         await createCustomFieldAction(payload)
-        toast.success('Campo personalizado criado.')
+        toast.success(t('routes.custom-fields.form.toasts.created'))
       } else if (initialData) {
         await updateCustomFieldAction(initialData.id, payload)
-        toast.success('Campo personalizado atualizado.')
+        toast.success(t('routes.custom-fields.form.toasts.updated'))
       }
       router.push('/custom-fields')
       router.refresh()
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : 'Falha ao salvar.'
+        error instanceof Error ? error.message : t('common.errors.saveFailed')
       toast.error(message)
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  const fieldTypeLabels: Record<CustomField['type'], string> = {
+    text: t('routes.custom-fields.form.fields.type.options.text'),
+    number: t('routes.custom-fields.form.fields.type.options.number'),
+    boolean: t('routes.custom-fields.form.fields.type.options.boolean'),
+    date: t('routes.custom-fields.form.fields.type.options.date'),
+    select: t('routes.custom-fields.form.fields.type.options.select'),
   }
 
   return (
@@ -142,35 +144,43 @@ export function CustomFieldForm({
       <FieldSet>
         <FieldGroup>
           <Field>
-            <FieldLabel htmlFor="label">Nome</FieldLabel>
-            <FieldDescription>Ex: Autor, Data de publicação</FieldDescription>
+            <FieldLabel htmlFor="label">
+              {t('routes.custom-fields.form.fields.label.label')}
+            </FieldLabel>
+            <FieldDescription>
+              {t('routes.custom-fields.form.fields.label.description')}
+            </FieldDescription>
             <Input
               defaultValue={initialData?.label ?? ''}
               id="label"
               name="label"
-              placeholder="Nome do campo"
+              placeholder={t('routes.custom-fields.form.fields.label.placeholder')}
               required
               type="text"
             />
             {errors.label && <FieldError>{errors.label}</FieldError>}
           </Field>
           <Field>
-            <FieldLabel htmlFor="key">Chave</FieldLabel>
-            <FieldDescription>Se vazio, usamos o nome.</FieldDescription>
+            <FieldLabel htmlFor="key">
+              {t('routes.custom-fields.form.fields.key.label')}
+            </FieldLabel>
+            <FieldDescription>
+              {t('routes.custom-fields.form.fields.key.description')}
+            </FieldDescription>
             <Input
               defaultValue={initialData?.key ?? ''}
               id="key"
               name="key"
-              placeholder="autor"
+              placeholder={t('routes.custom-fields.form.fields.key.placeholder')}
               type="text"
             />
             {errors.key && <FieldError>{errors.key}</FieldError>}
           </Field>
           <Field>
-            <FieldLabel>Tipo</FieldLabel>
+            <FieldLabel>{t('routes.custom-fields.form.fields.type.label')}</FieldLabel>
             <Select onValueChange={value => setType(value as CustomField['type'])} value={type}>
               <SelectTrigger>
-                <SelectValue placeholder="Selecione um tipo" />
+                <SelectValue placeholder={t('routes.custom-fields.form.fields.type.placeholder')} />
               </SelectTrigger>
               <SelectContent>
                 {Object.entries(fieldTypeLabels).map(([value, label]) => (
@@ -182,41 +192,49 @@ export function CustomFieldForm({
             </Select>
           </Field>
           <Field>
-            <FieldLabel>Obrigatório</FieldLabel>
+            <FieldLabel>{t('routes.custom-fields.form.fields.required.label')}</FieldLabel>
             <div className="flex items-center gap-2">
               <Checkbox
                 checked={required}
                 onCheckedChange={value => setRequired(Boolean(value))}
               />
-              <span className="text-sm">Campo obrigatório</span>
+              <span className="text-sm">
+                {t('routes.custom-fields.form.fields.required.text')}
+              </span>
             </div>
           </Field>
           <Field>
-            <FieldLabel htmlFor="helpText">Texto de ajuda</FieldLabel>
+            <FieldLabel htmlFor="helpText">
+              {t('routes.custom-fields.form.fields.helpText.label')}
+            </FieldLabel>
             <Input
               defaultValue={initialData?.helpText ?? ''}
               id="helpText"
               name="helpText"
-              placeholder="Ex: Informe o autor principal."
+              placeholder={t('routes.custom-fields.form.fields.helpText.placeholder')}
               type="text"
             />
           </Field>
           <Field>
-            <FieldLabel htmlFor="options">Opções</FieldLabel>
-            <FieldDescription>Separadas por vírgula (apenas para seleção).</FieldDescription>
+            <FieldLabel htmlFor="options">
+              {t('routes.custom-fields.form.fields.options.label')}
+            </FieldLabel>
+            <FieldDescription>
+              {t('routes.custom-fields.form.fields.options.description')}
+            </FieldDescription>
             <Input
               disabled={type !== 'select'}
               id="options"
               name="options"
               onChange={event => setOptionsInput(event.target.value)}
-              placeholder="Opção A, Opção B"
+              placeholder={t('routes.custom-fields.form.fields.options.placeholder')}
               type="text"
               value={optionsInput}
             />
             {errors.options && <FieldError>{errors.options}</FieldError>}
           </Field>
           <Field>
-            <FieldLabel>Vincular ao tipo de conteúdo</FieldLabel>
+            <FieldLabel>{t('routes.custom-fields.form.fields.attach.label')}</FieldLabel>
             <div className="flex flex-col gap-2 rounded-md border p-4">
               {attachedOptions.length ? (
                 attachedOptions.map(option => (
@@ -232,7 +250,7 @@ export function CustomFieldForm({
                 ))
               ) : (
                 <span className="text-muted-foreground text-sm">
-                  Nenhum tipo disponível.
+                  {t('routes.custom-fields.form.fields.attach.empty')}
                 </span>
               )}
             </div>
@@ -242,10 +260,12 @@ export function CustomFieldForm({
 
       <div className="flex items-center gap-2">
         <Button disabled={isSubmitting} type="submit">
-          {mode === 'create' ? 'Criar campo' : 'Salvar alterações'}
+          {mode === 'create'
+            ? t('routes.custom-fields.form.actions.create')
+            : t('common.actions.saveChanges')}
         </Button>
         <Button asChild variant="outline">
-          <Link href="/custom-fields">Cancelar</Link>
+          <Link href="/custom-fields">{t('common.actions.cancel')}</Link>
         </Button>
       </div>
     </form>

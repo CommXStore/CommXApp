@@ -1,0 +1,74 @@
+{
+  "app": {
+    "name": "CommX Shop",
+    "description": "CommX Shop"
+  },
+  "aria": {
+    "more": "Mais",
+    "toggleSidebar": "Alternar barra lateral",
+    "goToFirstPage": "Ir para a primeira página",
+    "goToPreviousPage": "Ir para a página anterior",
+    "goToNextPage": "Ir para a próxima página",
+    "goToLastPage": "Ir para a última página",
+    "selectAll": "Selecionar tudo",
+    "selectRow": "Selecionar linha",
+    "breadcrumb": "Trilha de navegação"
+  },
+  "actions": {
+    "close": "Fechar",
+    "cancel": "Cancelar",
+    "saveChanges": "Salvar alterações",
+    "toggle": "Alternar",
+    "toggleSidebar": "Alternar barra lateral",
+    "enable": "Ativar"
+  },
+  "table": {
+    "noResults": "Nenhum resultado.",
+    "rowsPerPage": "Linhas por página",
+    "pageOf": "Página {page} de {total}",
+    "selectedRows": "{selected} de {total} linha(s) selecionada(s)."
+  },
+  "labels": {
+    "status": "Status",
+    "slug": "Slug"
+  },
+  "placeholders": {
+    "selectStatus": "Selecione um status",
+    "selectOption": "Selecione uma opção",
+    "selectOptionShort": "Selecione..."
+  },
+  "status": {
+    "draft": "Rascunho",
+    "published": "Publicado"
+  },
+  "messages": {
+    "loading": "Carregando..."
+  },
+  "theme": {
+    "toggleLight": "Ativar modo claro",
+    "toggleDark": "Ativar modo escuro"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "agents": "Agentes",
+    "contentTypes": "Tipos de conteúdo",
+    "customFields": "Campos personalizados",
+    "settings": "Configurações",
+    "members": "Membros",
+    "apiKeys": "Chaves de API",
+    "docs": "Docs",
+    "github": "GitHub"
+  },
+  "errors": {
+    "saveFailed": "Falha ao salvar.",
+    "invalidSlug": "Slug inválido. Use apenas letras minúsculas, números e hífens.",
+    "requiredField": "Campo obrigatório.",
+    "invalidNumber": "Informe um número válido.",
+    "invalidOption": "Selecione uma opção válida.",
+    "unexpected": "Erro inesperado."
+  },
+  "sidebar": {
+    "title": "Barra lateral",
+    "mobileDescription": "Exibe a barra lateral no mobile."
+  }
+}

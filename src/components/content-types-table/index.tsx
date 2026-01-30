@@ -42,10 +42,12 @@ import {
 import { createContentTypeColumns } from './columns'
 import { deleteContentTypeAction } from '@/lib/clerk/actions'
 import type { ContentType } from '@/lib/clerk/content-schemas'
+import { useTranslations } from '@/i18n/provider'
 
 export function ContentTypesTable({ data: initialData }: { data: ContentType[] }) {
   const [data, setData] = useState<ContentType[]>(initialData)
   const [, setLoading] = useState(false)
+  const t = useTranslations()
 
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -61,16 +63,18 @@ export function ContentTypesTable({ data: initialData }: { data: ContentType[] }
     setData(prevData => prevData.filter(item => item.id !== contentType.id))
     try {
       await deleteContentTypeAction(contentType.id)
-      toast.success(`Tipo removido: ${contentType.name}`)
+      toast.success(
+        t('routes.content-types.table.toasts.deleted', { name: contentType.name })
+      )
     } catch (error) {
       setData(prevData => [...prevData, contentType])
-      console.error('Failed to delete content type:', error)
+      console.error(error)
     } finally {
       setLoading(false)
     }
   }
 
-  const columns = createContentTypeColumns(deleteContentType)
+  const columns = createContentTypeColumns(t, deleteContentType)
 
   const table = useReactTable({
     data,
@@ -102,7 +106,9 @@ export function ContentTypesTable({ data: initialData }: { data: ContentType[] }
       <div className="flex h-full flex-col gap-4">
         <div className="flex items-center justify-end">
           <Button asChild>
-            <Link href="/content-types/new">Adicionar tipo</Link>
+            <Link href="/content-types/new">
+              {t('routes.content-types.table.add')}
+            </Link>
           </Button>
         </div>
         <div className="overflow-hidden rounded-lg border">
@@ -144,9 +150,11 @@ export function ContentTypesTable({ data: initialData }: { data: ContentType[] }
                 <TableRow>
                   <TableCell className="h-24 text-center" colSpan={columns.length}>
                     <div className="flex flex-col items-center gap-2">
-                      <span>Nenhum tipo de conteúdo cadastrado.</span>
+                      <span>{t('routes.content-types.table.empty.title')}</span>
                       <Button asChild size="sm" variant="outline">
-                        <Link href="/content-types/new">Criar primeiro tipo</Link>
+                        <Link href="/content-types/new">
+                          {t('routes.content-types.table.empty.cta')}
+                        </Link>
                       </Button>
                     </div>
                   </TableCell>
@@ -158,13 +166,15 @@ export function ContentTypesTable({ data: initialData }: { data: ContentType[] }
       </div>
       <div className="flex items-center justify-between px-4">
         <div className="hidden flex-1 text-muted-foreground text-sm lg:flex">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          {t('common.table.selectedRows', {
+            selected: table.getFilteredSelectedRowModel().rows.length,
+            total: table.getFilteredRowModel().rows.length,
+          })}
         </div>
         <div className="flex w-full items-center gap-8 lg:w-fit">
           <div className="hidden items-center gap-2 lg:flex">
             <Label className="font-medium text-sm" htmlFor="rows-per-page">
-              Rows per page
+              {t('common.table.rowsPerPage')}
             </Label>
             <Select
               onValueChange={value => {
@@ -185,8 +195,10 @@ export function ContentTypesTable({ data: initialData }: { data: ContentType[] }
             </Select>
           </div>
           <div className="flex w-fit items-center justify-center font-medium text-sm">
-            Page {table.getState().pagination.pageIndex + 1} of{' '}
-            {table.getPageCount()}
+            {t('common.table.pageOf', {
+              page: table.getState().pagination.pageIndex + 1,
+              total: table.getPageCount(),
+            })}
           </div>
           <div className="ml-auto flex items-center gap-2 lg:ml-0">
             <Button
@@ -195,7 +207,7 @@ export function ContentTypesTable({ data: initialData }: { data: ContentType[] }
               onClick={() => table.setPageIndex(0)}
               variant="outline"
             >
-              <span className="sr-only">Go to first page</span>
+              <span className="sr-only">{t('common.aria.goToFirstPage')}</span>
               <ChevronsLeft />
             </Button>
             <Button
@@ -205,7 +217,7 @@ export function ContentTypesTable({ data: initialData }: { data: ContentType[] }
               size="icon"
               variant="outline"
             >
-              <span className="sr-only">Go to previous page</span>
+              <span className="sr-only">{t('common.aria.goToPreviousPage')}</span>
               <ChevronLeft />
             </Button>
             <Button
@@ -215,7 +227,7 @@ export function ContentTypesTable({ data: initialData }: { data: ContentType[] }
               size="icon"
               variant="outline"
             >
-              <span className="sr-only">Go to next page</span>
+              <span className="sr-only">{t('common.aria.goToNextPage')}</span>
               <ChevronRight />
             </Button>
             <Button
@@ -225,7 +237,7 @@ export function ContentTypesTable({ data: initialData }: { data: ContentType[] }
               size="icon"
               variant="outline"
             >
-              <span className="sr-only">Go to last page</span>
+              <span className="sr-only">{t('common.aria.goToLastPage')}</span>
               <ChevronsRight />
             </Button>
           </div>

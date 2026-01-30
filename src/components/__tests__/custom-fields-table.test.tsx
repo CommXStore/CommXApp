@@ -1,5 +1,6 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
+import { renderWithI18n } from '@/test/render'
 import { CustomFieldsTable } from '@/components/custom-fields-table'
 import type { ContentType, CustomField } from '@/lib/clerk/content-schemas'
 
@@ -44,7 +45,7 @@ const fields: CustomField[] = [
 
 describe('CustomFieldsTable', () => {
   it('renders rows and add button', () => {
-    render(<CustomFieldsTable contentTypes={contentTypes} data={fields} />)
+    renderWithI18n(<CustomFieldsTable contentTypes={contentTypes} data={fields} />)
     expect(screen.getByText('Title')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /adicionar campo/i })).toBeInTheDocument()
   })
