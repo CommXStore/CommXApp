@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server'
-import { checkAuth } from '@/lib/clerk/check-auth'
+import { checkAdmin, checkAuth } from '@/lib/clerk/check-auth'
 import { getAgents, createAgent, deleteAgent } from '@/lib/clerk/metadata-utils'
 import { logger } from '@/lib/logger'
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
@@ -24,7 +24,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const { success, error, data } = await checkAuth()
+  const { success, error, data } = await checkAdmin()
 
   if (!success) {
     logger.warn({ error, route: 'POST /api/agents' }, 'Unauthorized request')
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const { success, error, data } = await checkAuth()
+  const { success, error, data } = await checkAdmin()
 
   if (!success) {
     logger.warn({ error, route: 'DELETE /api/agents' }, 'Unauthorized request')

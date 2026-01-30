@@ -55,7 +55,7 @@ export async function getAgentsAction() {
 }
 
 export async function createAgentAction(payload: AgentInput) {
-  const { success, error, data } = await checkAuth()
+  const { success, error, data } = await checkAdmin()
   if (!success) {
     throw new Error(error.message)
   }
@@ -66,7 +66,7 @@ export async function createAgentAction(payload: AgentInput) {
 }
 
 export async function deleteAgentAction(agentId: string) {
-  const { success, error, data } = await checkAuth()
+  const { success, error, data } = await checkAdmin()
   if (!success) {
     throw new Error(error.message)
   }
