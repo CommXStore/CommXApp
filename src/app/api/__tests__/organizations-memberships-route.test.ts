@@ -1,0 +1,99 @@
+import { describe, expect, it, vi } from 'vitest'
+import { NextRequest } from 'next/server'
+import { POST } from '@/app/api/organizations/memberships/route'
+
+const createUser = vi.fn(async () => ({ id: 'user_1' }))
+const createOrganizationMembership = vi.fn(async () => ({ id: 'mem_1' }))
+
+vi.mock('@clerk/nextjs/server', () => ({
+  clerkClient: vi.fn(async () => ({
+    users: { createUser },
+    organizations: { createOrganizationMembership },
+  })),
+}))
+
+vi.mock('@/lib/clerk/check-auth', () => ({
+  checkAuth: vi.fn(async () => ({
+    success: true,
+    data: { orgId: 'org_1', userId: 'user_admin', tokenType: 'api_key' },
+  })),
+}))
+
+vi.mock('@/lib/rate-limit', () => ({
+  checkRateLimit: vi.fn(() => ({ allowed: true })),
+  getClientIp: vi.fn(() => '127.0.0.1'),
+}))
+
+describe('organization memberships api route', () => {
+  it('returns 400 when email is missing', async () => {
+    const req = new NextRequest(
+      'http://localhost/api/organizations/memberships',
+      {
+        method: 'POST',
+        body: JSON.stringify({}),
+      }
+    )
+    const res = await POST(req)
+    expect(res.status).toBe(400)
+    const json = await res.json()
+    expect(json.error).toBe('Email is required.')
+  })
+
+  it('returns 403 when organization mismatch', async () => {
+    const req = new NextRequest(
+      'http://localhost/api/organizations/memberships',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          email: 'user@example.com',
+          organizationId: 'org_2',
+        }),
+      }
+    )
+    const res = await POST(req)
+    expect(res.status).toBe(403)
+  })
+
+  it('creates user and membership', async () => {
+    const req = new NextRequest(
+      'http://localhost/api/organizations/memberships',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          email: 'user@example.com',
+          firstName: 'User',
+          lastName: 'Example',
+        }),
+      }
+    )
+    const res = await POST(req)
+    expect(res.status).toBe(201)
+    const json = await res.json()
+    expect(json.success).toBe(true)
+    expect(json.data.userId).toBe('user_1')
+    expect(json.data.membershipId).toBe('mem_1')
+    expect(createUser).toHaveBeenCalled()
+    expect(createOrganizationMembership).toHaveBeenCalledWith({
+      organizationId: 'org_1',
+      userId: 'user_1',
+      role: 'org:member',
+    })
+  })
+
+  it('returns 401 when auth fails', async () => {
+    const { checkAuth } = await import('@/lib/clerk/check-auth')
+    vi.mocked(checkAuth).mockResolvedValueOnce({
+      success: false,
+      error: { message: 'Unauthorized', status: 401 },
+    })
+    const req = new NextRequest(
+      'http://localhost/api/organizations/memberships',
+      {
+        method: 'POST',
+        body: JSON.stringify({ email: 'user@example.com' }),
+      }
+    )
+    const res = await POST(req)
+    expect(res.status).toBe(401)
+  })
+})
