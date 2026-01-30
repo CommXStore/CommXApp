@@ -19,10 +19,13 @@ import {
   SidebarMenu,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
+import { useAuth } from '@clerk/nextjs'
 import { useTranslations } from '@/i18n/provider'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const t = useTranslations()
+  const { orgRole } = useAuth()
+  const isAdmin = orgRole === 'org:admin'
   const navMain = [
     {
       title: t('common.nav.dashboard'),
@@ -36,18 +39,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       icon: SquareTerminal,
       items: [],
     },
-    {
-      title: t('common.nav.contentTypes'),
-      url: '/content-types',
-      icon: Layers,
-      items: [],
-    },
-    {
-      title: t('common.nav.customFields'),
-      url: '/custom-fields',
-      icon: SlidersHorizontal,
-      items: [],
-    },
+    ...(isAdmin
+      ? [
+          {
+            title: t('common.nav.contentTypes'),
+            url: '/content-types',
+            icon: Layers,
+            items: [],
+          },
+          {
+            title: t('common.nav.customFields'),
+            url: '/custom-fields',
+            icon: SlidersHorizontal,
+            items: [],
+          },
+        ]
+      : []),
     {
       title: t('common.nav.billing'),
       url: '/billing/upgrade',
