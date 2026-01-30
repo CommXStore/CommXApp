@@ -48,6 +48,13 @@
     "toggleLight": "Switch to light mode",
     "toggleDark": "Switch to dark mode"
   },
+  "language": {
+    "label": "Language",
+    "options": {
+      "ptBR": "Portuguese",
+      "enUS": "English"
+    }
+  },
   "nav": {
     "dashboard": "Dashboard",
     "agents": "Agents",

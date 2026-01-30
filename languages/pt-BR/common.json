@@ -48,6 +48,13 @@
     "toggleLight": "Ativar modo claro",
     "toggleDark": "Ativar modo escuro"
   },
+  "language": {
+    "label": "Idioma",
+    "options": {
+      "ptBR": "Português",
+      "enUS": "English"
+    }
+  },
   "nav": {
     "dashboard": "Dashboard",
     "agents": "Agentes",
