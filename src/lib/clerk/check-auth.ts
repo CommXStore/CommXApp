@@ -10,13 +10,23 @@ const errors = {
     message: 'Organization not found. Did you use an org-scoped API key?',
     status: 404,
   },
+  forbidden: {
+    message: 'Forbidden',
+    status: 403,
+  },
 }
 
 type CheckAuthResponse =
   | {
       success: true
       error?: null
-      data: { tokenType: TokenType; userId: string | null; orgId: string }
+      data: {
+        tokenType: TokenType
+        userId: string | null
+        orgId: string
+        orgRole?: string
+        orgPermissions?: string[]
+      }
     }
   | {
       success: false
@@ -41,6 +51,19 @@ export async function checkAuth(): Promise<CheckAuthResponse> {
       tokenType: res.tokenType,
       userId: res.userId,
       orgId: res.orgId,
+      orgRole: res.orgRole ?? undefined,
+      orgPermissions: res.orgPermissions ?? undefined,
     },
   }
+}
+
+export async function checkAdmin(): Promise<CheckAuthResponse> {
+  const result = await checkAuth()
+  if (!result.success) {
+    return result
+  }
+  if (result.data.orgRole !== 'org:admin') {
+    return { success: false, error: errors.forbidden }
+  }
+  return result
 }

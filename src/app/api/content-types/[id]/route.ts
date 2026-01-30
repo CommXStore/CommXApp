@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server'
-import { checkAuth } from '@/lib/clerk/check-auth'
+import { checkAdmin } from '@/lib/clerk/check-auth'
 import {
   deleteContentType,
   updateContentType,
@@ -12,7 +12,7 @@ type RouteParams = {
 }
 
 export async function PATCH(req: NextRequest, { params }: RouteParams) {
-  const { success, error, data } = await checkAuth()
+  const { success, error, data } = await checkAdmin()
   if (!success) {
     logger.warn(
       { error, route: 'PATCH /api/content-types/[id]' },
@@ -47,7 +47,7 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
 }
 
 export async function DELETE(req: NextRequest, { params }: RouteParams) {
-  const { success, error, data } = await checkAuth()
+  const { success, error, data } = await checkAdmin()
   if (!success) {
     logger.warn(
       { error, route: 'DELETE /api/content-types/[id]' },

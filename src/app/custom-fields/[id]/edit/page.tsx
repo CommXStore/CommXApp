@@ -4,6 +4,7 @@ import {
   getContentTypesAction,
   getCustomFieldAction,
 } from '@/lib/clerk/actions'
+import { requireOrgAdmin } from '@/lib/clerk/require-org-admin'
 import { getTranslations } from '@/i18n/server'
 
 type PageProps = {
@@ -13,6 +14,7 @@ type PageProps = {
 export const dynamic = 'force-dynamic'
 
 export default async function Page({ params }: PageProps) {
+  await requireOrgAdmin()
   const t = await getTranslations()
   const { id } = await params
   const [customField, contentTypes] = await Promise.all([

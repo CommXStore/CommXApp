@@ -1,10 +1,12 @@
 import { ContentTypeForm } from '@/components/content-type-form'
 import { getCustomFieldsAction } from '@/lib/clerk/actions'
+import { requireOrgAdmin } from '@/lib/clerk/require-org-admin'
 import { getTranslations } from '@/i18n/server'
 
 export const dynamic = 'force-dynamic'
 
 export default async function Page() {
+  await requireOrgAdmin()
   const t = await getTranslations()
   const customFields = await getCustomFieldsAction()
 

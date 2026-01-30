@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server'
-import { checkAuth } from '@/lib/clerk/check-auth'
+import { checkAdmin } from '@/lib/clerk/check-auth'
 import {
   getCustomFields,
   createCustomField,
@@ -8,7 +8,7 @@ import { logger } from '@/lib/logger'
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
 
 export async function GET() {
-  const { success, error, data } = await checkAuth()
+  const { success, error, data } = await checkAdmin()
   if (!success) {
     logger.warn(
       { error, route: 'GET /api/custom-fields' },
@@ -31,7 +31,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const { success, error, data } = await checkAuth()
+  const { success, error, data } = await checkAdmin()
   if (!success) {
     logger.warn(
       { error, route: 'POST /api/custom-fields' },

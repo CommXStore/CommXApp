@@ -2,7 +2,7 @@
 
 import { unstable_cache, revalidateTag } from 'next/cache'
 import { cacheTags } from '@/lib/cache-tags'
-import { checkAuth } from './check-auth'
+import { checkAdmin, checkAuth } from './check-auth'
 import { getAgents, createAgent, deleteAgent } from './metadata-utils'
 import type { AgentInput } from './metadata-utils'
 import {
@@ -73,7 +73,7 @@ export async function deleteAgentAction(agentId: string) {
 }
 
 export async function getContentTypesAction() {
-  const { success, error, data } = await checkAuth()
+  const { success, error, data } = await checkAdmin()
   if (!success) {
     throw new Error(error.message)
   }
@@ -85,7 +85,7 @@ export async function getContentTypesAction() {
 }
 
 export async function getContentTypeAction(id: string) {
-  const { success, error, data } = await checkAuth()
+  const { success, error, data } = await checkAdmin()
   if (!success) {
     throw new Error(error.message)
   }
@@ -97,7 +97,7 @@ export async function getContentTypeAction(id: string) {
 }
 
 export async function getContentTypeBySlugAction(slug: string) {
-  const { success, error, data } = await checkAuth()
+  const { success, error, data } = await checkAdmin()
   if (!success) {
     throw new Error(error.message)
   }
@@ -109,7 +109,7 @@ export async function getContentTypeBySlugAction(slug: string) {
 }
 
 export async function createContentTypeAction(payload: ContentTypeInput) {
-  const { success, error, data } = await checkAuth()
+  const { success, error, data } = await checkAdmin()
   if (!success) {
     throw new Error(error.message)
   }
@@ -123,7 +123,7 @@ export async function updateContentTypeAction(
   id: string,
   payload: ContentTypeInput
 ) {
-  const { success, error, data } = await checkAuth()
+  const { success, error, data } = await checkAdmin()
   if (!success) {
     throw new Error(error.message)
   }
@@ -141,7 +141,7 @@ export async function updateContentTypeAction(
 }
 
 export async function deleteContentTypeAction(id: string) {
-  const { success, error, data } = await checkAuth()
+  const { success, error, data } = await checkAdmin()
   if (!success) {
     throw new Error(error.message)
   }
@@ -156,7 +156,7 @@ export async function deleteContentTypeAction(id: string) {
 }
 
 export async function getCustomFieldsAction() {
-  const { success, error, data } = await checkAuth()
+  const { success, error, data } = await checkAdmin()
   if (!success) {
     throw new Error(error.message)
   }
@@ -168,7 +168,7 @@ export async function getCustomFieldsAction() {
 }
 
 export async function getCustomFieldAction(id: string) {
-  const { success, error, data } = await checkAuth()
+  const { success, error, data } = await checkAdmin()
   if (!success) {
     throw new Error(error.message)
   }
@@ -260,7 +260,7 @@ export async function deleteContentEntryAction(
 }
 
 export async function createCustomFieldAction(payload: CustomFieldInput) {
-  const { success, error, data } = await checkAuth()
+  const { success, error, data } = await checkAdmin()
   if (!success) {
     throw new Error(error.message)
   }
@@ -274,7 +274,7 @@ export async function updateCustomFieldAction(
   id: string,
   payload: CustomFieldInput
 ) {
-  const { success, error, data } = await checkAuth()
+  const { success, error, data } = await checkAdmin()
   if (!success) {
     throw new Error(error.message)
   }
@@ -285,7 +285,7 @@ export async function updateCustomFieldAction(
 }
 
 export async function deleteCustomFieldAction(id: string) {
-  const { success, error, data } = await checkAuth()
+  const { success, error, data } = await checkAdmin()
   if (!success) {
     throw new Error(error.message)
   }

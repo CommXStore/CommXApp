@@ -4,9 +4,14 @@ import { GET, POST } from '@/app/api/custom-fields/route'
 import { PATCH, DELETE } from '@/app/api/custom-fields/[id]/route'
 
 vi.mock('@/lib/clerk/check-auth', () => ({
-  checkAuth: vi.fn(async () => ({
+  checkAdmin: vi.fn(async () => ({
     success: true,
-    data: { orgId: 'org_1', userId: 'user_1', tokenType: 'session_token' },
+    data: {
+      orgId: 'org_1',
+      userId: 'user_1',
+      tokenType: 'session_token',
+      orgRole: 'org:admin',
+    },
   })),
 }))
 
@@ -36,8 +41,8 @@ describe('custom fields api route', () => {
   })
 
   it('GET returns 401 when auth fails', async () => {
-    const { checkAuth } = await import('@/lib/clerk/check-auth')
-    vi.mocked(checkAuth).mockResolvedValueOnce({
+    const { checkAdmin } = await import('@/lib/clerk/check-auth')
+    vi.mocked(checkAdmin).mockResolvedValueOnce({
       success: false,
       error: { message: 'Unauthorized', status: 401 },
     })
@@ -71,8 +76,8 @@ describe('custom fields api route', () => {
   })
 
   it('PATCH returns 401 when auth fails', async () => {
-    const { checkAuth } = await import('@/lib/clerk/check-auth')
-    vi.mocked(checkAuth).mockResolvedValueOnce({
+    const { checkAdmin } = await import('@/lib/clerk/check-auth')
+    vi.mocked(checkAdmin).mockResolvedValueOnce({
       success: false,
       error: { message: 'Unauthorized', status: 401 },
     })
