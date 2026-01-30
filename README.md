@@ -32,6 +32,7 @@ Aplicacao web multi-tenant para criacao de tipos de conteudo, campos personaliza
 ## Rotas principais (UI)
 
 - `/agents`
+- `/billing/upgrade`
 - `/content-types`
 - `/content-types/new`
 - `/content-types/[id]/edit`
@@ -45,6 +46,7 @@ Aplicacao web multi-tenant para criacao de tipos de conteudo, campos personaliza
 ## Rotas principais (API)
 
 - `GET/POST /api/agents`
+- `POST /api/organizations/memberships`
 - `GET/POST /api/content-types`
 - `PATCH/DELETE /api/content-types/[id]`
 - `GET/POST /api/custom-fields`
