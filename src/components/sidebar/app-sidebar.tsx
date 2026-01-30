@@ -7,6 +7,7 @@ import {
   Settings2,
   SlidersHorizontal,
   SquareTerminal,
+  TicketCheck,
 } from 'lucide-react'
 import { ActiveOrg } from '@/components/sidebar/active-org'
 import { NavMain } from '@/components/sidebar/nav-main'
@@ -45,6 +46,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       title: t('common.nav.customFields'),
       url: '/custom-fields',
       icon: SlidersHorizontal,
+      items: [],
+    },
+    {
+      title: t('common.nav.billing'),
+      url: '/billing/upgrade',
+      icon: TicketCheck,
       items: [],
     },
     {
