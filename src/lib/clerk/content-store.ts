@@ -26,6 +26,10 @@ type SaveContentStoreInput = {
 
 const MAX_SNAPSHOTS = 5
 
+function sanitizeForClerk<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value)) as T
+}
+
 function parseSnapshots(value: unknown): ContentSnapshot[] {
   if (!Array.isArray(value)) {
     return []
@@ -75,13 +79,18 @@ export async function saveContentStore({
     ...parseSnapshots(publicMetadata.contentSnapshots),
   ].slice(0, MAX_SNAPSHOTS)
 
+  const safeContentTypes = sanitizeForClerk(contentTypes)
+  const safeCustomFields = sanitizeForClerk(customFields)
+  const safeContentEntries = sanitizeForClerk(contentEntries)
+  const safeSnapshots = sanitizeForClerk(snapshots)
+
   await clerk.organizations.updateOrganizationMetadata(organizationId, {
     publicMetadata: {
       ...publicMetadata,
-      contentTypes,
-      customFields,
-      contentEntries,
-      contentSnapshots: snapshots,
+      contentTypes: safeContentTypes,
+      customFields: safeCustomFields,
+      contentEntries: safeContentEntries,
+      contentSnapshots: safeSnapshots,
     },
   })
 }

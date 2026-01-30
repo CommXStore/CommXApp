@@ -26,7 +26,71 @@ import {
   Zap,
 } from 'lucide-react'
 
-const ICON_MAP: Record<string, LucideIcon> = {
+export const ICON_NAMES = [
+  'book',
+  'book-open',
+  'box',
+  'calendar',
+  'clipboard',
+  'clipboard-list',
+  'database',
+  'file',
+  'file-text',
+  'folder',
+  'globe',
+  'grid',
+  'grid-3x3',
+  'image',
+  'layout',
+  'layout-grid',
+  'list',
+  'message',
+  'message-square',
+  'note',
+  'notebook',
+  'package',
+  'sparkle',
+  'sparkles',
+  'square',
+  'star',
+  'tag',
+  'ticket',
+  'ticket-check',
+  'user',
+  'users',
+  'zap',
+] as const
+
+export const ICON_SELECTION_NAMES = [
+  'book',
+  'book-open',
+  'box',
+  'calendar',
+  'clipboard-list',
+  'database',
+  'file-text',
+  'folder',
+  'globe',
+  'grid-3x3',
+  'image',
+  'layout-grid',
+  'list',
+  'message-square',
+  'notebook',
+  'package',
+  'sparkles',
+  'square',
+  'star',
+  'tag',
+  'ticket-check',
+  'user',
+  'users',
+  'zap',
+] as const
+
+export type IconName = (typeof ICON_NAMES)[number]
+
+const ICON_MAP: Record<IconName, LucideIcon> = {
   book: Book,
   'book-open': BookOpen,
   box: Box,
@@ -63,11 +127,15 @@ const ICON_MAP: Record<string, LucideIcon> = {
 
 const DEFAULT_ICON: LucideIcon = FileText
 
-function normalizeIconName(value: string) {
+export function normalizeIconName(value: string) {
   return value
     .trim()
     .toLowerCase()
     .replace(/[_\s]+/g, '-')
+}
+
+export function isIconName(value: string): value is IconName {
+  return (ICON_NAMES as readonly string[]).includes(value)
 }
 
 export function getIconByName(value?: string | null): LucideIcon {
@@ -75,5 +143,8 @@ export function getIconByName(value?: string | null): LucideIcon {
     return DEFAULT_ICON
   }
   const key = normalizeIconName(value)
-  return ICON_MAP[key] ?? DEFAULT_ICON
+  if (!isIconName(key)) {
+    return DEFAULT_ICON
+  }
+  return ICON_MAP[key]
 }

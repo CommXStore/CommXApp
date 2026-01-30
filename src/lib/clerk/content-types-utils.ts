@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid'
 import { isKebabCase, normalizeKebabCase, nowIso } from '@/lib/content-utils'
+import { isIconName, normalizeIconName } from '@/lib/icon-map'
 import {
   contentTypeInputSchema,
   type ContentType,
@@ -26,6 +27,14 @@ function assertUniqueSlug(
   if (exists) {
     throw new Error('Slug já existe para outro tipo de conteúdo.')
   }
+}
+
+function resolveIcon(value?: string) {
+  if (!value) {
+    return
+  }
+  const normalized = normalizeIconName(value)
+  return isIconName(normalized) ? normalized : undefined
 }
 
 export async function getContentTypes(organizationId: string) {
@@ -75,7 +84,7 @@ export async function createContentType(
     slug,
     description: payload.description,
     status: payload.status,
-    icon: payload.icon,
+    icon: resolveIcon(payload.icon),
     fields,
     createdAt: timestamp,
     updatedAt: timestamp,
@@ -138,7 +147,7 @@ export async function updateContentType(
           slug,
           description: payload.description,
           status: payload.status,
-          icon: payload.icon,
+          icon: resolveIcon(payload.icon),
           fields,
           updatedAt: timestamp,
         }
