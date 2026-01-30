@@ -79,102 +79,102 @@ alter table content_snapshots enable row level security;
 
 create policy org_agents_select on organization_agents
   for select to authenticated
-  using (organization_id = auth.jwt()->>'org_id');
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
 
 create policy org_agents_insert on organization_agents
   for insert to authenticated
-  with check (organization_id = auth.jwt()->>'org_id');
+  with check (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
 
 create policy org_agents_update on organization_agents
   for update to authenticated
-  using (organization_id = auth.jwt()->>'org_id')
-  with check (organization_id = auth.jwt()->>'org_id');
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'))
+  with check (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
 
 create policy org_agents_delete on organization_agents
   for delete to authenticated
-  using (organization_id = auth.jwt()->>'org_id');
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
 
 create policy content_types_select on content_types
   for select to authenticated
-  using (organization_id = auth.jwt()->>'org_id');
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
 
 create policy content_types_insert on content_types
   for insert to authenticated
-  with check (organization_id = auth.jwt()->>'org_id');
+  with check (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
 
 create policy content_types_update on content_types
   for update to authenticated
-  using (organization_id = auth.jwt()->>'org_id')
-  with check (organization_id = auth.jwt()->>'org_id');
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'))
+  with check (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
 
 create policy content_types_delete on content_types
   for delete to authenticated
-  using (organization_id = auth.jwt()->>'org_id');
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
 
 create policy custom_fields_select on custom_fields
   for select to authenticated
-  using (organization_id = auth.jwt()->>'org_id');
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
 
 create policy custom_fields_insert on custom_fields
   for insert to authenticated
-  with check (organization_id = auth.jwt()->>'org_id');
+  with check (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
 
 create policy custom_fields_update on custom_fields
   for update to authenticated
-  using (organization_id = auth.jwt()->>'org_id')
-  with check (organization_id = auth.jwt()->>'org_id');
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'))
+  with check (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
 
 create policy custom_fields_delete on custom_fields
   for delete to authenticated
-  using (organization_id = auth.jwt()->>'org_id');
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
 
 create policy content_type_fields_select on content_type_fields
   for select to authenticated
-  using (organization_id = auth.jwt()->>'org_id');
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
 
 create policy content_type_fields_insert on content_type_fields
   for insert to authenticated
-  with check (organization_id = auth.jwt()->>'org_id');
+  with check (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
 
 create policy content_type_fields_update on content_type_fields
   for update to authenticated
-  using (organization_id = auth.jwt()->>'org_id')
-  with check (organization_id = auth.jwt()->>'org_id');
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'))
+  with check (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
 
 create policy content_type_fields_delete on content_type_fields
   for delete to authenticated
-  using (organization_id = auth.jwt()->>'org_id');
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
 
 create policy content_entries_select on content_entries
   for select to authenticated
-  using (organization_id = auth.jwt()->>'org_id');
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
 
 create policy content_entries_insert on content_entries
   for insert to authenticated
-  with check (organization_id = auth.jwt()->>'org_id');
+  with check (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
 
 create policy content_entries_update on content_entries
   for update to authenticated
-  using (organization_id = auth.jwt()->>'org_id')
-  with check (organization_id = auth.jwt()->>'org_id');
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'))
+  with check (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
 
 create policy content_entries_delete on content_entries
   for delete to authenticated
-  using (organization_id = auth.jwt()->>'org_id');
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
 
 create policy content_snapshots_select on content_snapshots
   for select to authenticated
-  using (organization_id = auth.jwt()->>'org_id');
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
 
 create policy content_snapshots_insert on content_snapshots
   for insert to authenticated
-  with check (organization_id = auth.jwt()->>'org_id');
+  with check (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
 
 create policy content_snapshots_update on content_snapshots
   for update to authenticated
-  using (organization_id = auth.jwt()->>'org_id')
-  with check (organization_id = auth.jwt()->>'org_id');
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'))
+  with check (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
 
 create policy content_snapshots_delete on content_snapshots
   for delete to authenticated
-  using (organization_id = auth.jwt()->>'org_id');
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
