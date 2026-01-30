@@ -198,7 +198,7 @@ function mapSnapshots(rows: ContentSnapshotRow[]) {
 }
 
 async function deleteByOrg(table: string, organizationId: string) {
-  const supabase = getSupabaseServerClient()
+  const supabase = await getSupabaseServerClient()
   const { error } = await supabase
     .from(table)
     .delete()
@@ -212,7 +212,7 @@ async function upsertRows(table: string, rows: Record<string, unknown>[]) {
   if (rows.length === 0) {
     return
   }
-  const supabase = getSupabaseServerClient()
+  const supabase = await getSupabaseServerClient()
   const { error } = await supabase.from(table).upsert(rows)
   if (error) {
     throw new Error(`Supabase upsert failed: ${error.message}`)
@@ -223,7 +223,7 @@ async function insertRows(table: string, rows: Record<string, unknown>[]) {
   if (rows.length === 0) {
     return
   }
-  const supabase = getSupabaseServerClient()
+  const supabase = await getSupabaseServerClient()
   const { error } = await supabase.from(table).insert(rows)
   if (error) {
     throw new Error(`Supabase insert failed: ${error.message}`)
@@ -231,7 +231,7 @@ async function insertRows(table: string, rows: Record<string, unknown>[]) {
 }
 
 async function fetchNormalizedStore(organizationId: string) {
-  const supabase = getSupabaseServerClient()
+  const supabase = await getSupabaseServerClient()
   const [
     agentsRes,
     contentTypesRes,

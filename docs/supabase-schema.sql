@@ -69,3 +69,112 @@ create index if not exists idx_custom_fields_org on custom_fields (organization_
 create index if not exists idx_content_entries_org on content_entries (organization_id);
 create index if not exists idx_content_entries_type on content_entries (content_type_id);
 create index if not exists idx_agents_org on organization_agents (organization_id);
+
+alter table organization_agents enable row level security;
+alter table content_types enable row level security;
+alter table custom_fields enable row level security;
+alter table content_type_fields enable row level security;
+alter table content_entries enable row level security;
+alter table content_snapshots enable row level security;
+
+create policy org_agents_select on organization_agents to authenticated
+  for select
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
+
+create policy org_agents_insert on organization_agents to authenticated
+  for insert
+  with check (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
+
+create policy org_agents_update on organization_agents to authenticated
+  for update
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'))
+  with check (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
+
+create policy org_agents_delete on organization_agents to authenticated
+  for delete
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
+
+create policy content_types_select on content_types to authenticated
+  for select
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
+
+create policy content_types_insert on content_types to authenticated
+  for insert
+  with check (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
+
+create policy content_types_update on content_types to authenticated
+  for update
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'))
+  with check (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
+
+create policy content_types_delete on content_types to authenticated
+  for delete
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
+
+create policy custom_fields_select on custom_fields to authenticated
+  for select
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
+
+create policy custom_fields_insert on custom_fields to authenticated
+  for insert
+  with check (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
+
+create policy custom_fields_update on custom_fields to authenticated
+  for update
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'))
+  with check (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
+
+create policy custom_fields_delete on custom_fields to authenticated
+  for delete
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
+
+create policy content_type_fields_select on content_type_fields to authenticated
+  for select
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
+
+create policy content_type_fields_insert on content_type_fields to authenticated
+  for insert
+  with check (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
+
+create policy content_type_fields_update on content_type_fields to authenticated
+  for update
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'))
+  with check (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
+
+create policy content_type_fields_delete on content_type_fields to authenticated
+  for delete
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
+
+create policy content_entries_select on content_entries to authenticated
+  for select
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
+
+create policy content_entries_insert on content_entries to authenticated
+  for insert
+  with check (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
+
+create policy content_entries_update on content_entries to authenticated
+  for update
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'))
+  with check (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
+
+create policy content_entries_delete on content_entries to authenticated
+  for delete
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
+
+create policy content_snapshots_select on content_snapshots to authenticated
+  for select
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
+
+create policy content_snapshots_insert on content_snapshots to authenticated
+  for insert
+  with check (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
+
+create policy content_snapshots_update on content_snapshots to authenticated
+  for update
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'))
+  with check (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
+
+create policy content_snapshots_delete on content_snapshots to authenticated
+  for delete
+  using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
