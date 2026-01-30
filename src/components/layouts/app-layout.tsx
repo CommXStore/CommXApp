@@ -9,6 +9,7 @@ import { UserButton } from '@clerk/nextjs'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { OrgRefresh } from '@/components/org-refresh'
 import { LanguageSwitcher } from '@/components/language-switcher'
+import { HeaderBreadcrumb } from '@/components/header-breadcrumb'
 
 export function AppLayout({
   children,
@@ -27,6 +28,7 @@ export function AppLayout({
                 className="mr-2 data-[orientation=vertical]:h-4"
                 orientation="vertical"
               />
+              <HeaderBreadcrumb />
             </div>
             <div className="flex items-center gap-2">
               <LanguageSwitcher />
