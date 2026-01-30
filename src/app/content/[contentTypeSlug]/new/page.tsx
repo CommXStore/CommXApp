@@ -38,7 +38,7 @@ export default async function Page({ params }: PageProps) {
   } catch (error) {
     const message = error instanceof Error ? error.message : ''
     if (message.includes(t('routes.content.errors.contentTypeNotFound'))) {
-      redirect('/')
+      redirect('/dashboard')
     }
     throw error
   }
