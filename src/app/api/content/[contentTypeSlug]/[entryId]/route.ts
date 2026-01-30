@@ -8,6 +8,7 @@ import {
 import { logger } from '@/lib/logger'
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
 import { getSupabaseToken } from '@/lib/supabase/clerk-token'
+import { buildLogContext } from '@/lib/logger-context'
 
 type RouteParams = {
   params: Promise<{ contentTypeSlug: string; entryId: string }>
@@ -17,7 +18,14 @@ export async function GET(_: NextRequest, { params }: RouteParams) {
   const { success, error, data } = await checkAuth()
   if (!success) {
     logger.warn(
-      { error, route: 'GET /api/content/[contentTypeSlug]/[entryId]' },
+      {
+        error,
+        ...buildLogContext(
+          'GET /api/content/[contentTypeSlug]/[entryId]',
+          undefined,
+          _
+        ),
+      },
       'Unauthorized request'
     )
     return NextResponse.json({ error: error.message }, { status: error.status })
@@ -36,7 +44,14 @@ export async function GET(_: NextRequest, { params }: RouteParams) {
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Invalid request.'
     logger.error(
-      { err, route: 'GET /api/content/[contentTypeSlug]/[entryId]' },
+      {
+        err,
+        ...buildLogContext(
+          'GET /api/content/[contentTypeSlug]/[entryId]',
+          { orgId: data.orgId, userId: data.userId },
+          _
+        ),
+      },
       message
     )
     return NextResponse.json({ error: message }, { status: 400 })
@@ -47,7 +62,14 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
   const { success, error, data } = await checkAuth()
   if (!success) {
     logger.warn(
-      { error, route: 'PATCH /api/content/[contentTypeSlug]/[entryId]' },
+      {
+        error,
+        ...buildLogContext(
+          'PATCH /api/content/[contentTypeSlug]/[entryId]',
+          undefined,
+          req
+        ),
+      },
       'Unauthorized request'
     )
     return NextResponse.json({ error: error.message }, { status: error.status })
@@ -76,7 +98,14 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Invalid request.'
     logger.error(
-      { err, route: 'PATCH /api/content/[contentTypeSlug]/[entryId]' },
+      {
+        err,
+        ...buildLogContext(
+          'PATCH /api/content/[contentTypeSlug]/[entryId]',
+          { orgId: data.orgId, userId: data.userId },
+          req
+        ),
+      },
       message
     )
     return NextResponse.json({ error: message }, { status: 400 })
@@ -87,7 +116,14 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
   const { success, error, data } = await checkAuth()
   if (!success) {
     logger.warn(
-      { error, route: 'DELETE /api/content/[contentTypeSlug]/[entryId]' },
+      {
+        error,
+        ...buildLogContext(
+          'DELETE /api/content/[contentTypeSlug]/[entryId]',
+          undefined,
+          req
+        ),
+      },
       'Unauthorized request'
     )
     return NextResponse.json({ error: error.message }, { status: error.status })
@@ -115,7 +151,14 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Invalid request.'
     logger.error(
-      { err, route: 'DELETE /api/content/[contentTypeSlug]/[entryId]' },
+      {
+        err,
+        ...buildLogContext(
+          'DELETE /api/content/[contentTypeSlug]/[entryId]',
+          { orgId: data.orgId, userId: data.userId },
+          req
+        ),
+      },
       message
     )
     return NextResponse.json({ error: message }, { status: 400 })

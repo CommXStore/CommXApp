@@ -7,12 +7,13 @@ import {
 import { logger } from '@/lib/logger'
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
 import { getSupabaseToken } from '@/lib/supabase/clerk-token'
+import { buildLogContext } from '@/lib/logger-context'
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const { success, error, data } = await checkAdmin()
   if (!success) {
     logger.warn(
-      { error, route: 'GET /api/custom-fields' },
+      { error, ...buildLogContext('GET /api/custom-fields', undefined, req) },
       'Unauthorized request'
     )
     return NextResponse.json({ error: error.message }, { status: error.status })
@@ -27,7 +28,17 @@ export async function GET() {
     )
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unexpected error.'
-    logger.error({ err, route: 'GET /api/custom-fields' }, message)
+    logger.error(
+      {
+        err,
+        ...buildLogContext(
+          'GET /api/custom-fields',
+          { orgId: data.orgId, userId: data.userId },
+          req
+        ),
+      },
+      message
+    )
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }
@@ -36,7 +47,7 @@ export async function POST(req: NextRequest) {
   const { success, error, data } = await checkAdmin()
   if (!success) {
     logger.warn(
-      { error, route: 'POST /api/custom-fields' },
+      { error, ...buildLogContext('POST /api/custom-fields', undefined, req) },
       'Unauthorized request'
     )
     return NextResponse.json({ error: error.message }, { status: error.status })
@@ -61,7 +72,17 @@ export async function POST(req: NextRequest) {
     )
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Invalid request.'
-    logger.error({ err, route: 'POST /api/custom-fields' }, message)
+    logger.error(
+      {
+        err,
+        ...buildLogContext(
+          'POST /api/custom-fields',
+          { orgId: data.orgId, userId: data.userId },
+          req
+        ),
+      },
+      message
+    )
     return NextResponse.json({ error: message }, { status: 400 })
   }
 }

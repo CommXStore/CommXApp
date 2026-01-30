@@ -7,6 +7,7 @@ import {
 import { logger } from '@/lib/logger'
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
 import { getSupabaseToken } from '@/lib/supabase/clerk-token'
+import { buildLogContext } from '@/lib/logger-context'
 
 type RouteParams = {
   params: Promise<{ contentTypeSlug: string }>
@@ -16,7 +17,10 @@ export async function GET(_: NextRequest, { params }: RouteParams) {
   const { success, error, data } = await checkAuth()
   if (!success) {
     logger.warn(
-      { error, route: 'GET /api/content/[contentTypeSlug]' },
+      {
+        error,
+        ...buildLogContext('GET /api/content/[contentTypeSlug]', undefined, _),
+      },
       'Unauthorized request'
     )
     return NextResponse.json({ error: error.message }, { status: error.status })
@@ -29,7 +33,17 @@ export async function GET(_: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ success: true, data: result }, { status: 200 })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Invalid request.'
-    logger.error({ err, route: 'GET /api/content/[contentTypeSlug]' }, message)
+    logger.error(
+      {
+        err,
+        ...buildLogContext(
+          'GET /api/content/[contentTypeSlug]',
+          { orgId: data.orgId, userId: data.userId },
+          _
+        ),
+      },
+      message
+    )
     return NextResponse.json({ error: message }, { status: 400 })
   }
 }
@@ -38,7 +52,14 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
   const { success, error, data } = await checkAuth()
   if (!success) {
     logger.warn(
-      { error, route: 'POST /api/content/[contentTypeSlug]' },
+      {
+        error,
+        ...buildLogContext(
+          'POST /api/content/[contentTypeSlug]',
+          undefined,
+          req
+        ),
+      },
       'Unauthorized request'
     )
     return NextResponse.json({ error: error.message }, { status: error.status })
@@ -66,7 +87,17 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ success: true, data: entry }, { status: 201 })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Invalid request.'
-    logger.error({ err, route: 'POST /api/content/[contentTypeSlug]' }, message)
+    logger.error(
+      {
+        err,
+        ...buildLogContext(
+          'POST /api/content/[contentTypeSlug]',
+          { orgId: data.orgId, userId: data.userId },
+          req
+        ),
+      },
+      message
+    )
     return NextResponse.json({ error: message }, { status: 400 })
   }
 }

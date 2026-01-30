@@ -1,14 +1,18 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 import { checkAuth } from '@/lib/clerk/check-auth'
 import { getContentTypes } from '@/lib/clerk/content-types-utils'
 import { logger } from '@/lib/logger'
 import { getSupabaseToken } from '@/lib/supabase/clerk-token'
+import { buildLogContext } from '@/lib/logger-context'
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const { success, error, data } = await checkAuth()
   if (!success) {
     logger.warn(
-      { error, route: 'GET /api/content-types/viewer' },
+      {
+        error,
+        ...buildLogContext('GET /api/content-types/viewer', undefined, req),
+      },
       'Unauthorized request'
     )
     return NextResponse.json({ error: error.message }, { status: error.status })
@@ -23,7 +27,17 @@ export async function GET() {
     )
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unexpected error.'
-    logger.error({ err, route: 'GET /api/content-types/viewer' }, message)
+    logger.error(
+      {
+        err,
+        ...buildLogContext(
+          'GET /api/content-types/viewer',
+          { orgId: data.orgId, userId: data.userId },
+          req
+        ),
+      },
+      message
+    )
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }

@@ -3,6 +3,7 @@ import { clerkClient } from '@clerk/nextjs/server'
 import { checkAuth } from '@/lib/clerk/check-auth'
 import { logger } from '@/lib/logger'
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
+import { buildLogContext } from '@/lib/logger-context'
 
 type CreateOrganizationMemberPayload = {
   email: string
@@ -20,7 +21,14 @@ export async function POST(req: NextRequest) {
   const { success, error, data } = await checkAuth()
   if (!success) {
     logger.warn(
-      { error, route: 'POST /api/organizations/memberships' },
+      {
+        error,
+        ...buildLogContext(
+          'POST /api/organizations/memberships',
+          undefined,
+          req
+        ),
+      },
       'Unauthorized request'
     )
     return NextResponse.json({ error: error.message }, { status: error.status })
@@ -79,7 +87,17 @@ export async function POST(req: NextRequest) {
     )
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Invalid request.'
-    logger.error({ err, route: 'POST /api/organizations/memberships' }, message)
+    logger.error(
+      {
+        err,
+        ...buildLogContext(
+          'POST /api/organizations/memberships',
+          { orgId: data.orgId, userId: data.userId },
+          req
+        ),
+      },
+      message
+    )
     return NextResponse.json({ error: message }, { status: 400 })
   }
 }
