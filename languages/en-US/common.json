@@ -63,9 +63,15 @@
     "empty": "No organizations found.",
     "none": "No organization"
   },
+  "breadcrumbs": {
+    "new": "New",
+    "edit": "Edit",
+    "entries": "Entries"
+  },
   "nav": {
     "dashboard": "Dashboard",
     "agents": "Agents",
+    "content": "Content",
     "contentTypes": "Content types",
     "customFields": "Custom fields",
     "billing": "Plans",

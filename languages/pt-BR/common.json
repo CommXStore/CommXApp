@@ -63,9 +63,15 @@
     "empty": "Nenhuma organização encontrada.",
     "none": "Sem organização"
   },
+  "breadcrumbs": {
+    "new": "Novo",
+    "edit": "Editar",
+    "entries": "Entradas"
+  },
   "nav": {
     "dashboard": "Dashboard",
     "agents": "Agentes",
+    "content": "Conteúdos",
     "contentTypes": "Tipos de conteúdo",
     "customFields": "Campos personalizados",
     "billing": "Upgrade",
