@@ -4,7 +4,8 @@ truncate table
   content_type_fields,
   custom_fields,
   content_types,
-  organization_agents
+  organization_agents,
+  user_entitlements
 restart identity;
 
 drop policy if exists org_agents_select on organization_agents;
@@ -36,3 +37,5 @@ drop policy if exists content_snapshots_select on content_snapshots;
 drop policy if exists content_snapshots_insert on content_snapshots;
 drop policy if exists content_snapshots_update on content_snapshots;
 drop policy if exists content_snapshots_delete on content_snapshots;
+
+drop policy if exists user_entitlements_select on user_entitlements;

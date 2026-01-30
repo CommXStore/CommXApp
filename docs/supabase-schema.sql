@@ -64,11 +64,22 @@ create table if not exists content_snapshots (
   content_entries jsonb not null default '{}'::jsonb
 );
 
+create table if not exists user_entitlements (
+  user_id text primary key,
+  status text not null,
+  plan_id text,
+  plan_slug text,
+  plan_name text,
+  features jsonb not null default '[]'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
 create index if not exists idx_content_types_org on content_types (organization_id);
 create index if not exists idx_custom_fields_org on custom_fields (organization_id);
 create index if not exists idx_content_entries_org on content_entries (organization_id);
 create index if not exists idx_content_entries_type on content_entries (content_type_id);
 create index if not exists idx_agents_org on organization_agents (organization_id);
+create index if not exists idx_user_entitlements_status on user_entitlements (status);
 
 alter table organization_agents enable row level security;
 alter table content_types enable row level security;
@@ -76,6 +87,7 @@ alter table custom_fields enable row level security;
 alter table content_type_fields enable row level security;
 alter table content_entries enable row level security;
 alter table content_snapshots enable row level security;
+alter table user_entitlements enable row level security;
 
 create policy org_agents_select on organization_agents
   for select to authenticated
@@ -178,3 +190,7 @@ create policy content_snapshots_update on content_snapshots
 create policy content_snapshots_delete on content_snapshots
   for delete to authenticated
   using (organization_id = coalesce(auth.jwt()->'o'->>'id', auth.jwt()->>'org_id'));
+
+create policy user_entitlements_select on user_entitlements
+  for select to authenticated
+  using (user_id = auth.jwt()->>'sub');

@@ -1,4 +1,5 @@
 import { clerkClient } from '@clerk/nextjs/server'
+import { normalizeFeatureList } from '@/lib/entitlements/features'
 
 type EntitlementDecision =
   | { allowed: true }
@@ -6,15 +7,6 @@ type EntitlementDecision =
 
 type EntitlementsProvider = {
   canJoinOrg: (userId: string, orgSlug: string) => Promise<EntitlementDecision>
-}
-
-function parseFeatureList(value: unknown): string[] {
-  if (!Array.isArray(value)) {
-    return []
-  }
-  return value
-    .map(item => (typeof item === 'string' ? item.trim() : ''))
-    .filter(Boolean)
 }
 
 const clerkEntitlements: EntitlementsProvider = {
@@ -29,8 +21,27 @@ const clerkEntitlements: EntitlementsProvider = {
     }
 
     const plan = await client.billing.getPlan(active.planId)
-    const features = parseFeatureList(plan.features)
+    const features = normalizeFeatureList(plan.features)
     if (features.includes(orgSlug)) {
+      return { allowed: true }
+    }
+    return { allowed: false, reason: 'Plan does not include this app.' }
+  },
+}
+
+const webhookEntitlements: EntitlementsProvider = {
+  async canJoinOrg(userId: string, orgSlug: string) {
+    const { getUserEntitlements } = await import(
+      '@/lib/supabase/entitlements-store'
+    )
+    const record = await getUserEntitlements(userId)
+    if (!record) {
+      return { allowed: false, reason: 'No subscription record found.' }
+    }
+    if (record.status !== 'active') {
+      return { allowed: false, reason: 'Subscription is not active.' }
+    }
+    if (record.features.includes(orgSlug)) {
       return { allowed: true }
     }
     return { allowed: false, reason: 'Plan does not include this app.' }
@@ -43,9 +54,15 @@ const allowAll: EntitlementsProvider = {
   },
 }
 
-const provider =
-  process.env.ENTITLEMENTS_PROVIDER === 'allow-all'
-    ? allowAll
-    : clerkEntitlements
+const provider = (() => {
+  const mode = process.env.ENTITLEMENTS_PROVIDER
+  if (mode === 'allow-all') {
+    return allowAll
+  }
+  if (mode === 'webhook-cache') {
+    return webhookEntitlements
+  }
+  return clerkEntitlements
+})()
 
 export const entitlements = provider
