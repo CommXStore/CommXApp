@@ -6,6 +6,10 @@ import {
   DELETE,
 } from '@/app/api/content/[contentTypeSlug]/[entryId]/route'
 
+vi.mock('@/lib/supabase/clerk-token', () => ({
+  getSupabaseToken: vi.fn(async () => 'token'),
+}))
+
 vi.mock('@/lib/clerk/check-auth', () => ({
   checkAuth: vi.fn(async () => ({
     success: true,

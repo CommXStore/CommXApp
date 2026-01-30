@@ -3,6 +3,7 @@ import { checkAuth } from '@/lib/clerk/check-auth'
 import { getAgents, createAgent, deleteAgent } from '@/lib/clerk/metadata-utils'
 import { logger } from '@/lib/logger'
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
+import { getSupabaseToken } from '@/lib/supabase/clerk-token'
 
 export async function GET() {
   const { success, error, data } = await checkAuth()
@@ -12,7 +13,8 @@ export async function GET() {
   }
 
   try {
-    const agents = await getAgents(data.orgId)
+    const token = await getSupabaseToken()
+    const agents = await getAgents(data.orgId, token)
     return NextResponse.json({ success: true, data: agents }, { status: 200 })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unexpected error.'
@@ -40,7 +42,8 @@ export async function POST(req: NextRequest) {
 
   try {
     const payload = await req.json()
-    const agent = await createAgent(data.orgId, payload)
+    const token = await getSupabaseToken()
+    const agent = await createAgent(data.orgId, payload, token)
     return NextResponse.json({ success: true, data: agent }, { status: 201 })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Invalid request.'
@@ -68,7 +71,8 @@ export async function DELETE(req: NextRequest) {
 
   try {
     const { agentId } = await req.json()
-    const agent = await deleteAgent(data.orgId, agentId)
+    const token = await getSupabaseToken()
+    const agent = await deleteAgent(data.orgId, agentId, token)
     return NextResponse.json({ success: true, data: agent }, { status: 200 })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Invalid request.'

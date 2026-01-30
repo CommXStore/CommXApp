@@ -2,7 +2,7 @@
 
 import { unstable_cache, revalidateTag } from 'next/cache'
 import { cacheTags } from '@/lib/cache-tags'
-import { auth } from '@clerk/nextjs/server'
+import { getSupabaseToken } from '@/lib/supabase/clerk-token'
 import { checkAdmin, checkAuth } from './check-auth'
 import { getAgents, createAgent, deleteAgent } from './metadata-utils'
 import type { AgentInput } from './metadata-utils'
@@ -43,15 +43,6 @@ function withCache<T>(
   return cached()
 }
 
-async function getSupabaseToken() {
-  const { getToken } = await auth()
-  const token = await getToken()
-  if (!token) {
-    throw new Error('Missing Clerk session token for Supabase')
-  }
-  return token
-}
-
 export async function getAgentsAction() {
   const { success, error, data } = await checkAuth()
   if (!success) {
@@ -68,7 +59,8 @@ export async function createAgentAction(payload: AgentInput) {
   if (!success) {
     throw new Error(error.message)
   }
-  const agent = await createAgent(data.orgId, payload)
+  const token = await getSupabaseToken()
+  const agent = await createAgent(data.orgId, payload, token)
   revalidateTag(cacheTags.agents(data.orgId))
   return agent
 }
@@ -78,7 +70,8 @@ export async function deleteAgentAction(agentId: string) {
   if (!success) {
     throw new Error(error.message)
   }
-  const result = await deleteAgent(data.orgId, agentId)
+  const token = await getSupabaseToken()
+  const result = await deleteAgent(data.orgId, agentId, token)
   revalidateTag(cacheTags.agents(data.orgId))
   return result
 }
@@ -140,7 +133,8 @@ export async function createContentTypeAction(payload: ContentTypeInput) {
   if (!success) {
     throw new Error(error.message)
   }
-  const contentType = await createContentType(data.orgId, payload)
+  const token = await getSupabaseToken()
+  const contentType = await createContentType(data.orgId, payload, token)
   revalidateTag(cacheTags.contentTypes(data.orgId))
   revalidateTag(cacheTags.customFields(data.orgId))
   return contentType
@@ -154,8 +148,9 @@ export async function updateContentTypeAction(
   if (!success) {
     throw new Error(error.message)
   }
-  const existing = await getContentType(data.orgId, id)
-  const contentType = await updateContentType(data.orgId, id, payload)
+  const token = await getSupabaseToken()
+  const existing = await getContentType(data.orgId, id, token)
+  const contentType = await updateContentType(data.orgId, id, payload, token)
   revalidateTag(cacheTags.contentTypes(data.orgId))
   revalidateTag(cacheTags.customFields(data.orgId))
   if (existing?.slug) {
@@ -172,8 +167,9 @@ export async function deleteContentTypeAction(id: string) {
   if (!success) {
     throw new Error(error.message)
   }
-  const existing = await getContentType(data.orgId, id)
-  const result = await deleteContentType(data.orgId, id)
+  const token = await getSupabaseToken()
+  const existing = await getContentType(data.orgId, id, token)
+  const result = await deleteContentType(data.orgId, id, token)
   revalidateTag(cacheTags.contentTypes(data.orgId))
   revalidateTag(cacheTags.customFields(data.orgId))
   if (existing?.slug) {
@@ -253,7 +249,13 @@ export async function createContentEntryAction(
   if (!success) {
     throw new Error(error.message)
   }
-  const entry = await createContentEntry(data.orgId, contentTypeSlug, payload)
+  const token = await getSupabaseToken()
+  const entry = await createContentEntry(
+    data.orgId,
+    contentTypeSlug,
+    payload,
+    token
+  )
   revalidateTag(cacheTags.contentEntries(data.orgId, contentTypeSlug))
   return entry
 }
@@ -267,8 +269,10 @@ export async function updateContentEntryAction(
   if (!success) {
     throw new Error(error.message)
   }
+  const token = await getSupabaseToken()
   const entry = await updateContentEntry(data.orgId, contentTypeSlug, entryId, {
     input: payload,
+    token,
   })
   revalidateTag(cacheTags.contentEntries(data.orgId, contentTypeSlug))
   return entry
@@ -282,7 +286,13 @@ export async function deleteContentEntryAction(
   if (!success) {
     throw new Error(error.message)
   }
-  const result = await deleteContentEntry(data.orgId, contentTypeSlug, entryId)
+  const token = await getSupabaseToken()
+  const result = await deleteContentEntry(
+    data.orgId,
+    contentTypeSlug,
+    entryId,
+    token
+  )
   revalidateTag(cacheTags.contentEntries(data.orgId, contentTypeSlug))
   return result
 }
@@ -292,7 +302,8 @@ export async function createCustomFieldAction(payload: CustomFieldInput) {
   if (!success) {
     throw new Error(error.message)
   }
-  const field = await createCustomField(data.orgId, payload)
+  const token = await getSupabaseToken()
+  const field = await createCustomField(data.orgId, payload, token)
   revalidateTag(cacheTags.customFields(data.orgId))
   revalidateTag(cacheTags.contentTypes(data.orgId))
   return field
@@ -306,7 +317,8 @@ export async function updateCustomFieldAction(
   if (!success) {
     throw new Error(error.message)
   }
-  const field = await updateCustomField(data.orgId, id, payload)
+  const token = await getSupabaseToken()
+  const field = await updateCustomField(data.orgId, id, payload, token)
   revalidateTag(cacheTags.customFields(data.orgId))
   revalidateTag(cacheTags.contentTypes(data.orgId))
   return field
@@ -317,7 +329,8 @@ export async function deleteCustomFieldAction(id: string) {
   if (!success) {
     throw new Error(error.message)
   }
-  const result = await deleteCustomField(data.orgId, id)
+  const token = await getSupabaseToken()
+  const result = await deleteCustomField(data.orgId, id, token)
   revalidateTag(cacheTags.customFields(data.orgId))
   revalidateTag(cacheTags.contentTypes(data.orgId))
   return result

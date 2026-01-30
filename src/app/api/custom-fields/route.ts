@@ -6,6 +6,7 @@ import {
 } from '@/lib/clerk/custom-fields-utils'
 import { logger } from '@/lib/logger'
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
+import { getSupabaseToken } from '@/lib/supabase/clerk-token'
 
 export async function GET() {
   const { success, error, data } = await checkAdmin()
@@ -18,7 +19,8 @@ export async function GET() {
   }
 
   try {
-    const customFields = await getCustomFields(data.orgId)
+    const token = await getSupabaseToken()
+    const customFields = await getCustomFields(data.orgId, token)
     return NextResponse.json(
       { success: true, data: customFields },
       { status: 200 }
@@ -51,7 +53,8 @@ export async function POST(req: NextRequest) {
 
   try {
     const payload = await req.json()
-    const customField = await createCustomField(data.orgId, payload)
+    const token = await getSupabaseToken()
+    const customField = await createCustomField(data.orgId, payload, token)
     return NextResponse.json(
       { success: true, data: customField },
       { status: 201 }

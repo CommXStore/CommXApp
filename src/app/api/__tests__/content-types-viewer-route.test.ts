@@ -1,6 +1,10 @@
 import { describe, expect, it, vi } from 'vitest'
 import { GET } from '@/app/api/content-types/viewer/route'
 
+vi.mock('@/lib/supabase/clerk-token', () => ({
+  getSupabaseToken: vi.fn(async () => 'token'),
+}))
+
 vi.mock('@/lib/clerk/check-auth', () => ({
   checkAuth: vi.fn(async () => ({
     success: true,

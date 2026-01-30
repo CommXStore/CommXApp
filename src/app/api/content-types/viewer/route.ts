@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { checkAuth } from '@/lib/clerk/check-auth'
 import { getContentTypes } from '@/lib/clerk/content-types-utils'
 import { logger } from '@/lib/logger'
+import { getSupabaseToken } from '@/lib/supabase/clerk-token'
 
 export async function GET() {
   const { success, error, data } = await checkAuth()
@@ -14,7 +15,8 @@ export async function GET() {
   }
 
   try {
-    const contentTypes = await getContentTypes(data.orgId)
+    const token = await getSupabaseToken()
+    const contentTypes = await getContentTypes(data.orgId, token)
     return NextResponse.json(
       { success: true, data: contentTypes },
       { status: 200 }

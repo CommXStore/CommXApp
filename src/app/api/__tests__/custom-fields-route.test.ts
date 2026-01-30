@@ -3,6 +3,10 @@ import { NextRequest } from 'next/server'
 import { GET, POST } from '@/app/api/custom-fields/route'
 import { PATCH, DELETE } from '@/app/api/custom-fields/[id]/route'
 
+vi.mock('@/lib/supabase/clerk-token', () => ({
+  getSupabaseToken: vi.fn(async () => 'token'),
+}))
+
 vi.mock('@/lib/clerk/check-auth', () => ({
   checkAdmin: vi.fn(async () => ({
     success: true,

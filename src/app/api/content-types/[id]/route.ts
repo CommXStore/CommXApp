@@ -6,6 +6,7 @@ import {
 } from '@/lib/clerk/content-types-utils'
 import { logger } from '@/lib/logger'
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
+import { getSupabaseToken } from '@/lib/supabase/clerk-token'
 
 type RouteParams = {
   params: Promise<{ id: string }>
@@ -34,7 +35,8 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
 
   try {
     const payload = await req.json()
-    const contentType = await updateContentType(data.orgId, id, payload)
+    const token = await getSupabaseToken()
+    const contentType = await updateContentType(data.orgId, id, payload, token)
     return NextResponse.json(
       { success: true, data: contentType },
       { status: 200 }
@@ -68,7 +70,8 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
   }
 
   try {
-    const result = await deleteContentType(data.orgId, id)
+    const token = await getSupabaseToken()
+    const result = await deleteContentType(data.orgId, id, token)
     return NextResponse.json({ success: true, data: result }, { status: 200 })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Invalid request.'

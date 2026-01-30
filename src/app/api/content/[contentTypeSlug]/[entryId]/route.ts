@@ -7,6 +7,7 @@ import {
 } from '@/lib/clerk/content-entries-utils'
 import { logger } from '@/lib/logger'
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
+import { getSupabaseToken } from '@/lib/supabase/clerk-token'
 
 type RouteParams = {
   params: Promise<{ contentTypeSlug: string; entryId: string }>
@@ -24,7 +25,13 @@ export async function GET(_: NextRequest, { params }: RouteParams) {
 
   try {
     const { contentTypeSlug, entryId } = await params
-    const result = await getContentEntry(data.orgId, contentTypeSlug, entryId)
+    const token = await getSupabaseToken()
+    const result = await getContentEntry(
+      data.orgId,
+      contentTypeSlug,
+      entryId,
+      token
+    )
     return NextResponse.json({ success: true, data: result }, { status: 200 })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Invalid request.'
@@ -58,11 +65,12 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
   try {
     const payload = await req.json()
     const { contentTypeSlug, entryId } = await params
+    const token = await getSupabaseToken()
     const entry = await updateContentEntry(
       data.orgId,
       contentTypeSlug,
       entryId,
-      { input: payload }
+      { input: payload, token }
     )
     return NextResponse.json({ success: true, data: entry }, { status: 200 })
   } catch (err) {
@@ -96,10 +104,12 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
 
   try {
     const { contentTypeSlug, entryId } = await params
+    const token = await getSupabaseToken()
     const result = await deleteContentEntry(
       data.orgId,
       contentTypeSlug,
-      entryId
+      entryId,
+      token
     )
     return NextResponse.json({ success: true, data: result }, { status: 200 })
   } catch (err) {

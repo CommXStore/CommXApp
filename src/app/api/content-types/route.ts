@@ -6,6 +6,7 @@ import {
 } from '@/lib/clerk/content-types-utils'
 import { logger } from '@/lib/logger'
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
+import { getSupabaseToken } from '@/lib/supabase/clerk-token'
 
 export async function GET() {
   const { success, error, data } = await checkAdmin()
@@ -18,7 +19,8 @@ export async function GET() {
   }
 
   try {
-    const contentTypes = await getContentTypes(data.orgId)
+    const token = await getSupabaseToken()
+    const contentTypes = await getContentTypes(data.orgId, token)
     return NextResponse.json(
       { success: true, data: contentTypes },
       { status: 200 }
@@ -51,7 +53,8 @@ export async function POST(req: NextRequest) {
 
   try {
     const payload = await req.json()
-    const contentType = await createContentType(data.orgId, payload)
+    const token = await getSupabaseToken()
+    const contentType = await createContentType(data.orgId, payload, token)
     return NextResponse.json(
       { success: true, data: contentType },
       { status: 201 }

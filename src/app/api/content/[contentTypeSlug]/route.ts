@@ -6,6 +6,7 @@ import {
 } from '@/lib/clerk/content-entries-utils'
 import { logger } from '@/lib/logger'
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
+import { getSupabaseToken } from '@/lib/supabase/clerk-token'
 
 type RouteParams = {
   params: Promise<{ contentTypeSlug: string }>
@@ -23,7 +24,8 @@ export async function GET(_: NextRequest, { params }: RouteParams) {
 
   try {
     const { contentTypeSlug } = await params
-    const result = await getContentEntries(data.orgId, contentTypeSlug)
+    const token = await getSupabaseToken()
+    const result = await getContentEntries(data.orgId, contentTypeSlug, token)
     return NextResponse.json({ success: true, data: result }, { status: 200 })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Invalid request.'
@@ -54,7 +56,13 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
   try {
     const payload = await req.json()
     const { contentTypeSlug } = await params
-    const entry = await createContentEntry(data.orgId, contentTypeSlug, payload)
+    const token = await getSupabaseToken()
+    const entry = await createContentEntry(
+      data.orgId,
+      contentTypeSlug,
+      payload,
+      token
+    )
     return NextResponse.json({ success: true, data: entry }, { status: 201 })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Invalid request.'
