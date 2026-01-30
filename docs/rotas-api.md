@@ -8,6 +8,10 @@ As rotas aceitam session token (cookies) e organization API key (Bearer token). 
 - `POST /api/agents` cria
 - `DELETE /api/agents` remove
 
+## Organizacoes
+
+- `POST /api/organizations/memberships` cria usuario e adiciona como member
+
 ## Tipos de conteudo
 
 - `GET /api/content-types` lista
