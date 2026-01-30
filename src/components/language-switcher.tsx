@@ -15,6 +15,7 @@ import { useLocale, useTranslations } from '@/i18n/provider'
 const LOCALE_LABELS: Record<Locale, string> = {
   'pt-BR': 'common.language.options.ptBR',
   'en-US': 'common.language.options.enUS',
+  'es-ES': 'common.language.options.esES',
 }
 
 export function LanguageSwitcher() {

@@ -1,0 +1,44 @@
+{
+  "create": {
+    "button": "Agregar agente",
+    "title": "Agregar agente",
+    "description": "Agrega un agente a tu organización.",
+    "fields": {
+      "name": {
+        "label": "Nombre",
+        "description": "El nombre del agente.",
+        "placeholder": "Agente de procesamiento de pedidos"
+      },
+      "model": {
+        "label": "Modelo",
+        "placeholder": "Selecciona un modelo"
+      },
+      "description": {
+        "label": "Descripción",
+        "description": "La descripción del agente.",
+        "placeholder": "Descripción"
+      }
+    },
+    "submit": "Agregar agente"
+  },
+  "table": {
+    "headers": {
+      "id": "Id",
+      "name": "Nombre",
+      "model": "Modelo",
+      "description": "Descripción"
+    }
+  },
+  "toasts": {
+    "createSuccess": "Agente creado: {name}",
+    "deleteSuccess": "Agente eliminado: {name}"
+  },
+  "requestTester": {
+    "inputPlaceholder": "Introduce la clave de API para completar los ejemplos",
+    "codes": {
+      "getAgents": "curl -X GET {siteUrl}/api/agents \\\n  -H \"Authorization: Bearer {apiKey}\"",
+      "createAgent": "curl -X POST {siteUrl}/api/agents \\\n  -H \"Authorization: Bearer {apiKey}\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"name\": \"Mi agente\", \"description\": \"Descripción del agente\", \"model\": \"gpt-4o\"}'",
+      "deleteAgent": "curl -X DELETE {siteUrl}/api/agents \\\n  -H \"Authorization: Bearer {apiKey}\" \\\n  -d '{\"agentId\": \"1\"}'"
+    }
+  }
+}

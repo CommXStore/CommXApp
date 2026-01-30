@@ -1,0 +1,52 @@
+{
+  "new": {
+    "title": "Nueva entrada",
+    "description": "Creando entrada para {contentType}."
+  },
+  "edit": {
+    "title": "Editar entrada",
+    "description": "Actualiza la entrada de {contentType}."
+  },
+  "table": {
+    "description": "Gestiona las entradas del tipo {slug}.",
+    "add": "Nueva entrada",
+    "empty": {
+      "title": "No hay entradas registradas.",
+      "cta": "Crear primera entrada"
+    },
+    "headers": {
+      "slug": "Slug",
+      "status": "Estado",
+      "fields": "Campos",
+      "updatedAt": "Actualizado el"
+    },
+    "dialog": {
+      "title": "Respuesta de la API",
+      "description": "Entrada: {slug} ({id})",
+      "fallback": "Consulta de entrada"
+    },
+    "toasts": {
+      "deleted": "Entrada eliminada: {slug}"
+    }
+  },
+  "form": {
+    "slug": {
+      "description": "Opcional. Si está vacío, intentamos generar a partir del título/nombre.",
+      "placeholder": "mi-entrada"
+    },
+    "actions": {
+      "create": "Crear entrada"
+    },
+    "toasts": {
+      "created": "Entrada creada.",
+      "updated": "Entrada actualizada."
+    }
+  },
+  "api": {
+    "keyMissing": "No se encontró ninguna clave. Genera una clave de API o inicia sesión nuevamente.",
+    "requestFailed": "Error al consultar la API."
+  },
+  "errors": {
+    "contentTypeNotFound": "Tipo de contenido no encontrado"
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "app": {
+    "name": "CommX Shop",
+    "description": "CommX Shop"
+  },
+  "aria": {
+    "more": "Más",
+    "toggleSidebar": "Alternar barra lateral",
+    "goToFirstPage": "Ir a la primera página",
+    "goToPreviousPage": "Ir a la página anterior",
+    "goToNextPage": "Ir a la página siguiente",
+    "goToLastPage": "Ir a la última página",
+    "selectAll": "Seleccionar todo",
+    "selectRow": "Seleccionar fila",
+    "breadcrumb": "Ruta de navegación"
+  },
+  "actions": {
+    "close": "Cerrar",
+    "cancel": "Cancelar",
+    "saveChanges": "Guardar cambios",
+    "toggle": "Alternar",
+    "toggleSidebar": "Alternar barra lateral",
+    "enable": "Habilitar"
+  },
+  "table": {
+    "noResults": "Sin resultados.",
+    "rowsPerPage": "Filas por página",
+    "pageOf": "Página {page} de {total}",
+    "selectedRows": "{selected} de {total} fila(s) seleccionada(s)."
+  },
+  "labels": {
+    "status": "Estado",
+    "slug": "Slug"
+  },
+  "placeholders": {
+    "selectStatus": "Selecciona un estado",
+    "selectOption": "Selecciona una opción",
+    "selectOptionShort": "Selecciona..."
+  },
+  "status": {
+    "draft": "Borrador",
+    "published": "Publicado"
+  },
+  "messages": {
+    "loading": "Cargando..."
+  },
+  "theme": {
+    "toggleLight": "Cambiar a modo claro",
+    "toggleDark": "Cambiar a modo oscuro"
+  },
+  "language": {
+    "label": "Idioma",
+    "options": {
+      "ptBR": "Portugués",
+      "enUS": "English",
+      "esES": "Español"
+    }
+  },
+  "nav": {
+    "dashboard": "Panel",
+    "agents": "Agentes",
+    "contentTypes": "Tipos de contenido",
+    "customFields": "Campos personalizados",
+    "billing": "Upgrade",
+    "settings": "Configuración",
+    "members": "Miembros",
+    "apiKeys": "Claves de API",
+    "docs": "Docs",
+    "github": "GitHub"
+  },
+  "errors": {
+    "saveFailed": "Error al guardar.",
+    "invalidSlug": "Slug inválido. Usa solo letras minúsculas, números y guiones.",
+    "requiredField": "Campo obligatorio.",
+    "invalidNumber": "Ingresa un número válido.",
+    "invalidOption": "Selecciona una opción válida.",
+    "unexpected": "Error inesperado."
+  },
+  "sidebar": {
+    "title": "Barra lateral",
+    "mobileDescription": "Muestra la barra lateral en móvil."
+  }
+}
