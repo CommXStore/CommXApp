@@ -62,7 +62,7 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
       data.orgId,
       contentTypeSlug,
       entryId,
-      payload
+      { input: payload }
     )
     return NextResponse.json({ success: true, data: entry }, { status: 200 })
   } catch (err) {

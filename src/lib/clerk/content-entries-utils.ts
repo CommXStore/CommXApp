@@ -180,10 +180,11 @@ function resolveEntrySlug(
 
 export async function getContentEntries(
   organizationId: string,
-  contentTypeSlug: string
+  contentTypeSlug: string,
+  token?: string | null
 ) {
   const { contentTypes, customFields, contentEntries } =
-    await contentRepository.getStore(organizationId)
+    await contentRepository.getStore(organizationId, token)
   const contentType = contentTypes.find(item => item.slug === contentTypeSlug)
   if (!contentType) {
     throw new Error('Tipo de conteúdo não encontrado.')
@@ -196,11 +197,13 @@ export async function getContentEntries(
 export async function getContentEntry(
   organizationId: string,
   contentTypeSlug: string,
-  entryId: string
+  entryId: string,
+  token?: string | null
 ) {
   const { contentType, entries, fields } = await getContentEntries(
     organizationId,
-    contentTypeSlug
+    contentTypeSlug,
+    token
   )
   const entry = entries.find(item => item.id === entryId) ?? null
   return { contentType, entry, fields }
@@ -209,10 +212,11 @@ export async function getContentEntry(
 export async function createContentEntry(
   organizationId: string,
   contentTypeSlug: string,
-  input: ContentEntryInput
+  input: ContentEntryInput,
+  token?: string | null
 ) {
   const { publicMetadata, contentTypes, customFields, contentEntries } =
-    await contentRepository.getStore(organizationId)
+    await contentRepository.getStore(organizationId, token)
 
   const contentType = contentTypes.find(item => item.slug === contentTypeSlug)
   if (!contentType) {
@@ -250,6 +254,7 @@ export async function createContentEntry(
     contentTypes,
     customFields,
     contentEntries: updatedEntries,
+    token,
   })
 
   return newEntry
@@ -259,10 +264,11 @@ export async function updateContentEntry(
   organizationId: string,
   contentTypeSlug: string,
   entryId: string,
-  input: ContentEntryInput
+  params: { input: ContentEntryInput; token?: string | null }
 ) {
+  const { input, token } = params
   const { publicMetadata, contentTypes, customFields, contentEntries } =
-    await contentRepository.getStore(organizationId)
+    await contentRepository.getStore(organizationId, token)
 
   const contentType = contentTypes.find(item => item.slug === contentTypeSlug)
   if (!contentType) {
@@ -275,19 +281,19 @@ export async function updateContentEntry(
     throw new Error('Entrada não encontrada.')
   }
 
-  const payload = contentEntryInputSchema.parse(input)
+  const payloadData = contentEntryInputSchema.parse(input)
   const typeFields = resolveTypeFields(contentType, customFields)
-  const fieldsInput = payload.fields ?? existing.fields
+  const fieldsInput = payloadData.fields ?? existing.fields
   const fields = validateEntryFields(fieldsInput, typeFields)
 
-  const slug = resolveEntrySlug(payload, fields)
+  const slug = resolveEntrySlug(payloadData, fields)
   ensureUniqueEntrySlug(entries, slug, entryId)
 
   const timestamp = nowIso()
   const updatedEntry: ContentEntry = {
     ...existing,
     slug,
-    status: payload.status ?? existing.status,
+    status: payloadData.status ?? existing.status,
     fields,
     updatedAt: timestamp,
   }
@@ -305,6 +311,7 @@ export async function updateContentEntry(
     contentTypes,
     customFields,
     contentEntries: updatedEntries,
+    token,
   })
 
   return updatedEntry
@@ -313,10 +320,11 @@ export async function updateContentEntry(
 export async function deleteContentEntry(
   organizationId: string,
   contentTypeSlug: string,
-  entryId: string
+  entryId: string,
+  token?: string | null
 ) {
   const { publicMetadata, contentTypes, customFields, contentEntries } =
-    await contentRepository.getStore(organizationId)
+    await contentRepository.getStore(organizationId, token)
 
   const contentType = contentTypes.find(item => item.slug === contentTypeSlug)
   if (!contentType) {
@@ -340,6 +348,7 @@ export async function deleteContentEntry(
     contentTypes,
     customFields,
     contentEntries: updatedEntries,
+    token,
   })
 
   return { success: true }

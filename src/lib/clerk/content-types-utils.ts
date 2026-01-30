@@ -37,30 +37,48 @@ function resolveIcon(value?: string) {
   return isIconName(normalized) ? normalized : undefined
 }
 
-export async function getContentTypes(organizationId: string) {
-  const { contentTypes } = await contentRepository.getStore(organizationId)
+export async function getContentTypes(
+  organizationId: string,
+  token?: string | null
+) {
+  const { contentTypes } = await contentRepository.getStore(
+    organizationId,
+    token
+  )
   return contentTypes
 }
 
-export async function getContentType(organizationId: string, id: string) {
-  const { contentTypes } = await contentRepository.getStore(organizationId)
+export async function getContentType(
+  organizationId: string,
+  id: string,
+  token?: string | null
+) {
+  const { contentTypes } = await contentRepository.getStore(
+    organizationId,
+    token
+  )
   return contentTypes.find(item => item.id === id) || null
 }
 
 export async function getContentTypeBySlug(
   organizationId: string,
-  slug: string
+  slug: string,
+  token?: string | null
 ) {
-  const { contentTypes } = await contentRepository.getStore(organizationId)
+  const { contentTypes } = await contentRepository.getStore(
+    organizationId,
+    token
+  )
   return contentTypes.find(item => item.slug === slug) || null
 }
 
 export async function createContentType(
   organizationId: string,
-  input: ContentTypeInput
+  input: ContentTypeInput,
+  token?: string | null
 ) {
   const { publicMetadata, contentTypes, customFields, contentEntries } =
-    await contentRepository.getStore(organizationId)
+    await contentRepository.getStore(organizationId, token)
 
   const payload = contentTypeInputSchema.parse(input)
   const slugSource = payload.slug ?? payload.name
@@ -106,6 +124,7 @@ export async function createContentType(
     contentTypes: [...contentTypes, newItem],
     customFields: updatedCustomFields,
     contentEntries,
+    token,
   })
 
   return newItem
@@ -114,10 +133,11 @@ export async function createContentType(
 export async function updateContentType(
   organizationId: string,
   id: string,
-  input: ContentTypeInput
+  input: ContentTypeInput,
+  token?: string | null
 ) {
   const { publicMetadata, contentTypes, customFields, contentEntries } =
-    await contentRepository.getStore(organizationId)
+    await contentRepository.getStore(organizationId, token)
 
   const existing = contentTypes.find(item => item.id === id)
   if (!existing) {
@@ -178,14 +198,19 @@ export async function updateContentType(
     contentTypes: updatedContentTypes,
     customFields: updatedCustomFields,
     contentEntries,
+    token,
   })
 
   return updatedContentTypes.find(item => item.id === id) || null
 }
 
-export async function deleteContentType(organizationId: string, id: string) {
+export async function deleteContentType(
+  organizationId: string,
+  id: string,
+  token?: string | null
+) {
   const { publicMetadata, contentTypes, customFields, contentEntries } =
-    await contentRepository.getStore(organizationId)
+    await contentRepository.getStore(organizationId, token)
 
   const existing = contentTypes.find(item => item.id === id)
   if (!existing) {
@@ -210,6 +235,7 @@ export async function deleteContentType(organizationId: string, id: string) {
     contentTypes: updatedContentTypes,
     customFields: updatedCustomFields,
     contentEntries: updatedContentEntries,
+    token,
   })
 
   return { success: true }

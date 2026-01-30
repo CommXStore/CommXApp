@@ -12,10 +12,14 @@ type SaveContentStoreInput = {
   contentTypes: ContentType[]
   customFields: CustomField[]
   contentEntries: Record<string, ContentEntry[]>
+  token?: string | null
 }
 
-export async function getContentStore(organizationId: string) {
-  const store = await getOrganizationStore(organizationId)
+export async function getContentStore(
+  organizationId: string,
+  token?: string | null
+) {
+  const store = await getOrganizationStore(organizationId, token)
 
   return {
     publicMetadata: {},
@@ -31,8 +35,9 @@ export async function saveContentStore({
   contentTypes,
   customFields,
   contentEntries,
+  token,
 }: SaveContentStoreInput) {
-  const store = await getOrganizationStore(organizationId)
+  const store = await getOrganizationStore(organizationId, token)
   const previousSnapshot: ContentSnapshot = {
     at: nowIso(),
     contentTypes: store.contentTypes,
@@ -45,10 +50,14 @@ export async function saveContentStore({
     MAX_SNAPSHOTS
   )
 
-  await updateOrganizationStore(organizationId, {
-    contentTypes,
-    customFields,
-    contentEntries,
-    contentSnapshots: snapshots,
-  })
+  await updateOrganizationStore(
+    organizationId,
+    {
+      contentTypes,
+      customFields,
+      contentEntries,
+      contentSnapshots: snapshots,
+    },
+    token
+  )
 }

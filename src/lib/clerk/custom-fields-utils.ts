@@ -34,22 +34,36 @@ function assertSelectOptions(type: CustomField['type'], options?: string[]) {
   }
 }
 
-export async function getCustomFields(organizationId: string) {
-  const { customFields } = await contentRepository.getStore(organizationId)
+export async function getCustomFields(
+  organizationId: string,
+  token?: string | null
+) {
+  const { customFields } = await contentRepository.getStore(
+    organizationId,
+    token
+  )
   return customFields
 }
 
-export async function getCustomField(organizationId: string, id: string) {
-  const { customFields } = await contentRepository.getStore(organizationId)
+export async function getCustomField(
+  organizationId: string,
+  id: string,
+  token?: string | null
+) {
+  const { customFields } = await contentRepository.getStore(
+    organizationId,
+    token
+  )
   return customFields.find(item => item.id === id) || null
 }
 
 export async function createCustomField(
   organizationId: string,
-  input: CustomFieldInput
+  input: CustomFieldInput,
+  token?: string | null
 ) {
   const { publicMetadata, contentTypes, customFields, contentEntries } =
-    await contentRepository.getStore(organizationId)
+    await contentRepository.getStore(organizationId, token)
 
   const payload = customFieldInputSchema.parse(input)
   const keySource = payload.key ?? payload.label
@@ -99,6 +113,7 @@ export async function createCustomField(
     contentTypes: updatedContentTypes,
     customFields: [...customFields, newItem],
     contentEntries,
+    token,
   })
 
   return newItem
@@ -107,10 +122,11 @@ export async function createCustomField(
 export async function updateCustomField(
   organizationId: string,
   id: string,
-  input: CustomFieldInput
+  input: CustomFieldInput,
+  token?: string | null
 ) {
   const { publicMetadata, contentTypes, customFields, contentEntries } =
-    await contentRepository.getStore(organizationId)
+    await contentRepository.getStore(organizationId, token)
 
   const existing = customFields.find(item => item.id === id)
   if (!existing) {
@@ -179,14 +195,19 @@ export async function updateCustomField(
     contentTypes: updatedContentTypes,
     customFields: updatedCustomFields,
     contentEntries,
+    token,
   })
 
   return updatedCustomFields.find(item => item.id === id) || null
 }
 
-export async function deleteCustomField(organizationId: string, id: string) {
+export async function deleteCustomField(
+  organizationId: string,
+  id: string,
+  token?: string | null
+) {
   const { publicMetadata, contentTypes, customFields, contentEntries } =
-    await contentRepository.getStore(organizationId)
+    await contentRepository.getStore(organizationId, token)
 
   const existing = customFields.find(item => item.id === id)
   if (!existing) {
@@ -225,6 +246,7 @@ export async function deleteCustomField(organizationId: string, id: string) {
     contentTypes: updatedContentTypes,
     customFields: updatedCustomFields,
     contentEntries: updatedContentEntries,
+    token,
   })
 
   return { success: true }

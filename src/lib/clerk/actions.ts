@@ -2,6 +2,7 @@
 
 import { unstable_cache, revalidateTag } from 'next/cache'
 import { cacheTags } from '@/lib/cache-tags'
+import { auth } from '@clerk/nextjs/server'
 import { checkAdmin, checkAuth } from './check-auth'
 import { getAgents, createAgent, deleteAgent } from './metadata-utils'
 import type { AgentInput } from './metadata-utils'
@@ -42,13 +43,23 @@ function withCache<T>(
   return cached()
 }
 
+async function getSupabaseToken() {
+  const { getToken } = await auth()
+  const token = await getToken()
+  if (!token) {
+    throw new Error('Missing Clerk session token for Supabase')
+  }
+  return token
+}
+
 export async function getAgentsAction() {
   const { success, error, data } = await checkAuth()
   if (!success) {
     throw new Error(error.message)
   }
+  const token = await getSupabaseToken()
   return withCache(['agents', data.orgId], [cacheTags.agents(data.orgId)], () =>
-    getAgents(data.orgId)
+    getAgents(data.orgId, token)
   )
 }
 
@@ -77,10 +88,11 @@ export async function getContentTypesAction() {
   if (!success) {
     throw new Error(error.message)
   }
+  const token = await getSupabaseToken()
   return withCache(
     ['content-types', data.orgId],
     [cacheTags.contentTypes(data.orgId)],
-    () => getContentTypes(data.orgId)
+    () => getContentTypes(data.orgId, token)
   )
 }
 
@@ -89,10 +101,11 @@ export async function getContentTypesViewerAction() {
   if (!success) {
     throw new Error(error.message)
   }
+  const token = await getSupabaseToken()
   return withCache(
     ['content-types-viewer', data.orgId],
     [cacheTags.contentTypes(data.orgId)],
-    () => getContentTypes(data.orgId)
+    () => getContentTypes(data.orgId, token)
   )
 }
 
@@ -101,10 +114,11 @@ export async function getContentTypeAction(id: string) {
   if (!success) {
     throw new Error(error.message)
   }
+  const token = await getSupabaseToken()
   return withCache(
     ['content-type', data.orgId, id],
     [cacheTags.contentTypes(data.orgId)],
-    () => getContentType(data.orgId, id)
+    () => getContentType(data.orgId, id, token)
   )
 }
 
@@ -113,10 +127,11 @@ export async function getContentTypeBySlugAction(slug: string) {
   if (!success) {
     throw new Error(error.message)
   }
+  const token = await getSupabaseToken()
   return withCache(
     ['content-type-slug', data.orgId, slug],
     [cacheTags.contentTypes(data.orgId)],
-    () => getContentTypeBySlug(data.orgId, slug)
+    () => getContentTypeBySlug(data.orgId, slug, token)
   )
 }
 
@@ -172,10 +187,11 @@ export async function getCustomFieldsAction() {
   if (!success) {
     throw new Error(error.message)
   }
+  const token = await getSupabaseToken()
   return withCache(
     ['custom-fields', data.orgId],
     [cacheTags.customFields(data.orgId)],
-    () => getCustomFields(data.orgId)
+    () => getCustomFields(data.orgId, token)
   )
 }
 
@@ -184,10 +200,11 @@ export async function getCustomFieldAction(id: string) {
   if (!success) {
     throw new Error(error.message)
   }
+  const token = await getSupabaseToken()
   return withCache(
     ['custom-field', data.orgId, id],
     [cacheTags.customFields(data.orgId)],
-    () => getCustomField(data.orgId, id)
+    () => getCustomField(data.orgId, id, token)
   )
 }
 
@@ -196,6 +213,7 @@ export async function getContentEntriesAction(contentTypeSlug: string) {
   if (!success) {
     throw new Error(error.message)
   }
+  const token = await getSupabaseToken()
   return withCache(
     ['content-entries', data.orgId, contentTypeSlug],
     [
@@ -203,7 +221,7 @@ export async function getContentEntriesAction(contentTypeSlug: string) {
       cacheTags.customFields(data.orgId),
       cacheTags.contentEntries(data.orgId, contentTypeSlug),
     ],
-    () => getContentEntries(data.orgId, contentTypeSlug)
+    () => getContentEntries(data.orgId, contentTypeSlug, token)
   )
 }
 
@@ -215,6 +233,7 @@ export async function getContentEntryAction(
   if (!success) {
     throw new Error(error.message)
   }
+  const token = await getSupabaseToken()
   return withCache(
     ['content-entry', data.orgId, contentTypeSlug, entryId],
     [
@@ -222,7 +241,7 @@ export async function getContentEntryAction(
       cacheTags.customFields(data.orgId),
       cacheTags.contentEntries(data.orgId, contentTypeSlug),
     ],
-    () => getContentEntry(data.orgId, contentTypeSlug, entryId)
+    () => getContentEntry(data.orgId, contentTypeSlug, entryId, token)
   )
 }
 
@@ -248,12 +267,9 @@ export async function updateContentEntryAction(
   if (!success) {
     throw new Error(error.message)
   }
-  const entry = await updateContentEntry(
-    data.orgId,
-    contentTypeSlug,
-    entryId,
-    payload
-  )
+  const entry = await updateContentEntry(data.orgId, contentTypeSlug, entryId, {
+    input: payload,
+  })
   revalidateTag(cacheTags.contentEntries(data.orgId, contentTypeSlug))
   return entry
 }

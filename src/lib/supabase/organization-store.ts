@@ -197,8 +197,12 @@ function mapSnapshots(rows: ContentSnapshotRow[]) {
   )
 }
 
-async function deleteByOrg(table: string, organizationId: string) {
-  const supabase = await getSupabaseServerClient()
+async function deleteByOrg(
+  table: string,
+  organizationId: string,
+  token?: string | null
+) {
+  const supabase = await getSupabaseServerClient(token)
   const { error } = await supabase
     .from(table)
     .delete()
@@ -208,30 +212,41 @@ async function deleteByOrg(table: string, organizationId: string) {
   }
 }
 
-async function upsertRows(table: string, rows: Record<string, unknown>[]) {
+async function upsertRows(
+  table: string,
+  rows: Record<string, unknown>[],
+  token?: string | null
+) {
   if (rows.length === 0) {
     return
   }
-  const supabase = await getSupabaseServerClient()
+  const supabase = await getSupabaseServerClient(token)
   const { error } = await supabase.from(table).upsert(rows)
   if (error) {
     throw new Error(`Supabase upsert failed: ${error.message}`)
   }
 }
 
-async function insertRows(table: string, rows: Record<string, unknown>[]) {
+async function insertRows(
+  table: string,
+  rows: Record<string, unknown>[],
+  token?: string | null
+) {
   if (rows.length === 0) {
     return
   }
-  const supabase = await getSupabaseServerClient()
+  const supabase = await getSupabaseServerClient(token)
   const { error } = await supabase.from(table).insert(rows)
   if (error) {
     throw new Error(`Supabase insert failed: ${error.message}`)
   }
 }
 
-async function fetchNormalizedStore(organizationId: string) {
-  const supabase = await getSupabaseServerClient()
+async function fetchNormalizedStore(
+  organizationId: string,
+  token?: string | null
+) {
+  const supabase = await getSupabaseServerClient(token)
   const [
     agentsRes,
     contentTypesRes,
@@ -294,7 +309,8 @@ async function fetchNormalizedStore(organizationId: string) {
 
 async function upsertStoreData(
   organizationId: string,
-  store: OrganizationStore
+  store: OrganizationStore,
+  token?: string | null
 ) {
   const now = nowIso()
   const contentTypeRows: ContentTypeRow[] = store.contentTypes.map(item => ({
@@ -363,19 +379,19 @@ async function upsertStoreData(
     updated_at: now,
   }))
 
-  await upsertRows(CONTENT_TYPES_TABLE, contentTypeRows)
-  await upsertRows(CUSTOM_FIELDS_TABLE, customFieldRows)
-  await deleteByOrg(CONTENT_TYPE_FIELDS_TABLE, organizationId)
-  await insertRows(CONTENT_TYPE_FIELDS_TABLE, relationRows)
-  await deleteByOrg(CONTENT_ENTRIES_TABLE, organizationId)
-  await insertRows(CONTENT_ENTRIES_TABLE, entryRows)
-  await deleteByOrg(CONTENT_SNAPSHOTS_TABLE, organizationId)
-  await insertRows(CONTENT_SNAPSHOTS_TABLE, snapshotRows)
-  await deleteByOrg(AGENTS_TABLE, organizationId)
-  await insertRows(AGENTS_TABLE, agentRows)
+  await upsertRows(CONTENT_TYPES_TABLE, contentTypeRows, token)
+  await upsertRows(CUSTOM_FIELDS_TABLE, customFieldRows, token)
+  await deleteByOrg(CONTENT_TYPE_FIELDS_TABLE, organizationId, token)
+  await insertRows(CONTENT_TYPE_FIELDS_TABLE, relationRows, token)
+  await deleteByOrg(CONTENT_ENTRIES_TABLE, organizationId, token)
+  await insertRows(CONTENT_ENTRIES_TABLE, entryRows, token)
+  await deleteByOrg(CONTENT_SNAPSHOTS_TABLE, organizationId, token)
+  await insertRows(CONTENT_SNAPSHOTS_TABLE, snapshotRows, token)
+  await deleteByOrg(AGENTS_TABLE, organizationId, token)
+  await insertRows(AGENTS_TABLE, agentRows, token)
 }
 
-async function migrateFromClerk(organizationId: string) {
+async function migrateFromClerk(organizationId: string, token?: string | null) {
   const clerk = await clerkClient()
   const org = await clerk.organizations.getOrganization({ organizationId })
   const publicMetadata = org.publicMetadata ?? {}
@@ -389,15 +405,16 @@ async function migrateFromClerk(organizationId: string) {
     contentSnapshots: parseSnapshots(publicMetadata.contentSnapshots),
   }
 
-  await upsertStoreData(organizationId, store)
+  await upsertStoreData(organizationId, store, token)
 
   return store
 }
 
 export async function getOrganizationStore(
-  organizationId: string
+  organizationId: string,
+  token?: string | null
 ): Promise<OrganizationStore> {
-  const normalized = await fetchNormalizedStore(organizationId)
+  const normalized = await fetchNormalizedStore(organizationId, token)
   const hasData =
     normalized.agents.length > 0 ||
     normalized.contentTypes.length > 0 ||
@@ -406,7 +423,7 @@ export async function getOrganizationStore(
     normalized.snapshots.length > 0
 
   if (!hasData) {
-    return migrateFromClerk(organizationId)
+    return migrateFromClerk(organizationId, token)
   }
 
   return {
@@ -427,12 +444,13 @@ export async function getOrganizationStore(
 
 export async function updateOrganizationStore(
   organizationId: string,
-  update: OrganizationStoreUpdate
+  update: OrganizationStoreUpdate,
+  token?: string | null
 ) {
-  await getOrganizationStore(organizationId)
+  await getOrganizationStore(organizationId, token)
 
   if (update.contentTypes || update.customFields || update.contentEntries) {
-    const merged = await getOrganizationStore(organizationId)
+    const merged = await getOrganizationStore(organizationId, token)
     const store: OrganizationStore = {
       organizationId,
       agents: update.agents ?? merged.agents,
@@ -441,12 +459,12 @@ export async function updateOrganizationStore(
       contentEntries: update.contentEntries ?? merged.contentEntries,
       contentSnapshots: update.contentSnapshots ?? merged.contentSnapshots,
     }
-    await upsertStoreData(organizationId, store)
+    await upsertStoreData(organizationId, store, token)
     return
   }
 
   if (update.agents) {
-    await deleteByOrg(AGENTS_TABLE, organizationId)
+    await deleteByOrg(AGENTS_TABLE, organizationId, token)
     await insertRows(
       AGENTS_TABLE,
       update.agents.map(agent => ({
@@ -457,12 +475,13 @@ export async function updateOrganizationStore(
         model: agent.model,
         created_at: nowIso(),
         updated_at: nowIso(),
-      }))
+      })),
+      token
     )
   }
 
   if (update.contentSnapshots) {
-    await deleteByOrg(CONTENT_SNAPSHOTS_TABLE, organizationId)
+    await deleteByOrg(CONTENT_SNAPSHOTS_TABLE, organizationId, token)
     await insertRows(
       CONTENT_SNAPSHOTS_TABLE,
       update.contentSnapshots.map(snapshot => ({
@@ -471,7 +490,8 @@ export async function updateOrganizationStore(
         content_types: sanitizeForSupabase(snapshot.contentTypes),
         custom_fields: sanitizeForSupabase(snapshot.customFields),
         content_entries: sanitizeForSupabase(snapshot.contentEntries),
-      }))
+      })),
+      token
     )
   }
 }

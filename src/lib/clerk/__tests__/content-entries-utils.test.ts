@@ -120,8 +120,10 @@ describe('content entries utils', () => {
 
     await expect(
       updateContentEntry('org_1', 'posts', 'ce_1', {
-        slug: 'duplicate',
-        fields: { title: 'Hello World', category: 'News' },
+        input: {
+          slug: 'duplicate',
+          fields: { title: 'Hello World', category: 'News' },
+        },
       })
     ).rejects.toThrow('Slug já existe')
   })

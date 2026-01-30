@@ -9,20 +9,24 @@ type ContentStore = {
 }
 
 type ContentRepository = {
-  getStore: (organizationId: string) => Promise<ContentStore>
+  getStore: (
+    organizationId: string,
+    token?: string | null
+  ) => Promise<ContentStore>
   saveStore: (input: {
     organizationId: string
     publicMetadata: Record<string, unknown>
     contentTypes: ContentType[]
     customFields: CustomField[]
     contentEntries: Record<string, ContentEntry[]>
+    token?: string | null
   }) => Promise<void>
 }
 
 export const contentRepository: ContentRepository = {
-  async getStore(organizationId) {
+  async getStore(organizationId, token) {
     const { publicMetadata, contentTypes, customFields, contentEntries } =
-      await getContentStore(organizationId)
+      await getContentStore(organizationId, token)
 
     return { publicMetadata, contentTypes, customFields, contentEntries }
   },
