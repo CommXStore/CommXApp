@@ -56,6 +56,13 @@
       "esES": "Spanish"
     }
   },
+  "organization": {
+    "label": "Organizations",
+    "switcher": "Select organization",
+    "active": "Active",
+    "empty": "No organizations found.",
+    "none": "No organization"
+  },
   "nav": {
     "dashboard": "Dashboard",
     "agents": "Agents",

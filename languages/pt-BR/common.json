@@ -56,6 +56,13 @@
       "esES": "Español"
     }
   },
+  "organization": {
+    "label": "Organizações",
+    "switcher": "Selecionar organização",
+    "active": "Ativa",
+    "empty": "Nenhuma organização encontrada.",
+    "none": "Sem organização"
+  },
   "nav": {
     "dashboard": "Dashboard",
     "agents": "Agentes",
