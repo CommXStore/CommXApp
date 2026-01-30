@@ -3,13 +3,13 @@
 import { useEffect, useState, type ComponentProps } from 'react'
 import {
   Home,
-  FileText,
   Layers,
   Settings2,
   SlidersHorizontal,
   SquareTerminal,
   TicketCheck,
 } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { ActiveOrg } from '@/components/sidebar/active-org'
 import { NavMain } from '@/components/sidebar/nav-main'
 import { NavSecondary } from '@/components/sidebar/nav-secondary'
@@ -23,12 +23,14 @@ import {
 import { useAuth } from '@clerk/nextjs'
 import { useTranslations } from '@/i18n/provider'
 import type { ContentType } from '@/lib/clerk/content-schemas'
+import { getIconByName } from '@/lib/icon-map'
 
 type SidebarProps = ComponentProps<typeof Sidebar>
 
 type ContentTypeLink = {
   title: string
   url: string
+  icon: LucideIcon
 }
 
 export function AppSidebar({ ...props }: SidebarProps) {
@@ -64,6 +66,7 @@ export function AppSidebar({ ...props }: SidebarProps) {
           payload.data.map(item => ({
             title: item.name,
             url: `/content/${item.slug}`,
+            icon: getIconByName(item.icon),
           }))
         )
       } catch (error) {
@@ -96,7 +99,7 @@ export function AppSidebar({ ...props }: SidebarProps) {
     ...contentTypeLinks.map(item => ({
       title: item.title,
       url: item.url,
-      icon: FileText,
+      icon: item.icon,
       items: [],
     })),
     ...(isAdmin
