@@ -1,4 +1,3 @@
-import React from 'react'
 import { act, fireEvent, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ContentTypeForm } from '@/components/content-type-form'
@@ -6,33 +5,34 @@ import { CustomFieldForm } from '@/components/custom-field-form'
 import { ContentEntryForm } from '@/components/content-entry-form'
 import type { ContentType, CustomField } from '@/lib/clerk/content-schemas'
 import { renderWithI18n } from '@/test/render'
+import { vi } from 'vitest'
+
+const CREATE_TYPE_LABEL = /criar tipo/i
+const CREATE_FIELD_LABEL = /criar campo/i
+const CREATE_ENTRY_LABEL = /criar entrada/i
 
 const createContentTypeAction = vi.fn(async () => ({}))
 const createCustomFieldAction = vi.fn(async () => ({}))
 const createContentEntryAction = vi.fn(async () => ({}))
 
-vi.mock('next/navigation', () => {
-  return {
-    useRouter: () => ({
-      push: vi.fn(),
-      refresh: vi.fn(),
-    }),
-  }
-})
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    refresh: vi.fn(),
+  }),
+}))
 
-vi.mock('@/lib/clerk/actions', () => {
-  return {
-    createContentTypeAction: (...args: unknown[]) =>
-      createContentTypeAction(...args),
-    createCustomFieldAction: (...args: unknown[]) =>
-      createCustomFieldAction(...args),
-    createContentEntryAction: (...args: unknown[]) =>
-      createContentEntryAction(...args),
-    updateContentTypeAction: vi.fn(async () => ({})),
-    updateCustomFieldAction: vi.fn(async () => ({})),
-    updateContentEntryAction: vi.fn(async () => ({})),
-  }
-})
+vi.mock('@/lib/clerk/actions', () => ({
+  createContentTypeAction: (...args: unknown[]) =>
+    createContentTypeAction(...args),
+  createCustomFieldAction: (...args: unknown[]) =>
+    createCustomFieldAction(...args),
+  createContentEntryAction: (...args: unknown[]) =>
+    createContentEntryAction(...args),
+  updateContentTypeAction: vi.fn(async () => ({})),
+  updateCustomFieldAction: vi.fn(async () => ({})),
+  updateContentEntryAction: vi.fn(async () => ({})),
+}))
 
 const contentType: ContentType = {
   id: 'ct_1',
@@ -65,11 +65,11 @@ describe('Forms flow', () => {
     renderWithI18n(<ContentTypeForm customFields={[]} mode="create" />)
 
     await user.type(screen.getByLabelText('Nome'), 'Articles')
-    const submitButton = screen.getByRole('button', { name: /criar tipo/i })
+    const submitButton = screen.getByRole('button', { name: CREATE_TYPE_LABEL })
     const form = submitButton.closest('form')
     if (form) {
       form.noValidate = true
-      await act(async () => {
+      act(() => {
         fireEvent.submit(form)
       })
     }
@@ -84,11 +84,13 @@ describe('Forms flow', () => {
     )
 
     await user.type(screen.getByLabelText('Nome'), 'Title')
-    const submitButton = screen.getByRole('button', { name: /criar campo/i })
+    const submitButton = screen.getByRole('button', {
+      name: CREATE_FIELD_LABEL,
+    })
     const form = submitButton.closest('form')
     if (form) {
       form.noValidate = true
-      await act(async () => {
+      act(() => {
         fireEvent.submit(form)
       })
     }
@@ -107,11 +109,13 @@ describe('Forms flow', () => {
     )
 
     await user.type(screen.getByPlaceholderText('title'), 'Hello')
-    const submitButton = screen.getByRole('button', { name: /criar entrada/i })
+    const submitButton = screen.getByRole('button', {
+      name: CREATE_ENTRY_LABEL,
+    })
     const form = submitButton.closest('form')
     if (form) {
       form.noValidate = true
-      await act(async () => {
+      act(() => {
         fireEvent.submit(form)
       })
     }

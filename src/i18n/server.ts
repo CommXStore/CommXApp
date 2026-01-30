@@ -12,7 +12,9 @@ type Messages = {
   routes: RouteMessages
 }
 
-async function readJson(filePath: string): Promise<Record<string, unknown> | null> {
+async function readJson(
+  filePath: string
+): Promise<Record<string, unknown> | null> {
   try {
     const content = await fs.readFile(filePath, 'utf-8')
     return JSON.parse(content) as Record<string, unknown>
@@ -23,7 +25,12 @@ async function readJson(filePath: string): Promise<Record<string, unknown> | nul
 
 async function loadRouteMessages(locale: Locale): Promise<RouteMessages> {
   const baseDir = process.cwd()
-  const defaultRoutesDir = path.join(baseDir, 'languages', defaultLocale, 'routes')
+  const defaultRoutesDir = path.join(
+    baseDir,
+    'languages',
+    defaultLocale,
+    'routes'
+  )
   const localeRoutesDir = path.join(baseDir, 'languages', locale, 'routes')
   const files = await fs.readdir(defaultRoutesDir)
 
@@ -44,8 +51,18 @@ async function loadRouteMessages(locale: Locale): Promise<RouteMessages> {
 export const getMessages = cache(async (locale?: Locale): Promise<Messages> => {
   const resolvedLocale = isLocale(locale) ? locale : defaultLocale
   const baseDir = process.cwd()
-  const localeCommonPath = path.join(baseDir, 'languages', resolvedLocale, 'common.json')
-  const fallbackCommonPath = path.join(baseDir, 'languages', defaultLocale, 'common.json')
+  const localeCommonPath = path.join(
+    baseDir,
+    'languages',
+    resolvedLocale,
+    'common.json'
+  )
+  const fallbackCommonPath = path.join(
+    baseDir,
+    'languages',
+    defaultLocale,
+    'common.json'
+  )
 
   const [common, routes] = await Promise.all([
     readJson(localeCommonPath),

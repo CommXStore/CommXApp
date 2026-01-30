@@ -1,13 +1,20 @@
-import React from 'react'
+import type React from 'react'
 import { screen } from '@testing-library/react'
 import { ContentEntriesTable } from '@/components/content-entries-table'
 import type { ContentEntry, ContentType } from '@/lib/clerk/content-schemas'
 import { renderWithI18n } from '@/test/render'
+import { vi } from 'vitest'
+
+const NEW_ENTRY_LABEL = /nova entrada/i
 
 vi.mock('next/link', () => ({
-  default: ({ href, children }: { href: string; children: React.ReactNode }) => (
-    <a href={href}>{children}</a>
-  ),
+  default: ({
+    href,
+    children,
+  }: {
+    href: string
+    children: React.ReactNode
+  }) => <a href={href}>{children}</a>,
 }))
 
 vi.mock('@/lib/clerk/actions', () => ({
@@ -59,6 +66,8 @@ describe('ContentEntriesTable', () => {
       <ContentEntriesTable contentType={contentType} entries={entries} />
     )
     expect(screen.getByText('hello')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /nova entrada/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: NEW_ENTRY_LABEL })
+    ).toBeInTheDocument()
   })
 })

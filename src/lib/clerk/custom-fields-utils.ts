@@ -8,12 +8,18 @@ import {
 import { contentRepository } from './content-repository'
 
 function assertKey(key: string) {
-  if (!key || !isKebabCase(key)) {
-    throw new Error('Chave inválida. Use apenas letras minúsculas, números e hífens.')
+  if (!(key && isKebabCase(key))) {
+    throw new Error(
+      'Chave inválida. Use apenas letras minúsculas, números e hífens.'
+    )
   }
 }
 
-function assertUniqueKey(customFields: CustomField[], key: string, id?: string) {
+function assertUniqueKey(
+  customFields: CustomField[],
+  key: string,
+  id?: string
+) {
   const exists = customFields.some(
     item => item.key === key && (id ? item.id !== id : true)
   )
@@ -87,13 +93,13 @@ export async function createCustomField(
     }
   })
 
-  await contentRepository.saveStore(
+  await contentRepository.saveStore({
     organizationId,
     publicMetadata,
-    updatedContentTypes,
-    [...customFields, newItem],
-    contentEntries
-  )
+    contentTypes: updatedContentTypes,
+    customFields: [...customFields, newItem],
+    contentEntries,
+  })
 
   return newItem
 }
@@ -167,15 +173,13 @@ export async function updateCustomField(
     return item
   })
 
-  await contentRepository.saveStore(
+  await contentRepository.saveStore({
     organizationId,
     publicMetadata,
-    organizationId,
-    publicMetadata,
-    updatedContentTypes,
-    updatedCustomFields,
-    contentEntries
-  )
+    contentTypes: updatedContentTypes,
+    customFields: updatedCustomFields,
+    contentEntries,
+  })
 
   return updatedCustomFields.find(item => item.id === id) || null
 }
@@ -215,13 +219,13 @@ export async function deleteCustomField(organizationId: string, id: string) {
     }
   }
 
-  await contentRepository.saveStore(
+  await contentRepository.saveStore({
     organizationId,
     publicMetadata,
-    updatedContentTypes,
-    updatedCustomFields,
-    updatedContentEntries
-  )
+    contentTypes: updatedContentTypes,
+    customFields: updatedCustomFields,
+    contentEntries: updatedContentEntries,
+  })
 
   return { success: true }
 }

@@ -36,6 +36,44 @@ type CustomFieldFormProps = {
   initialData?: CustomField | null
 }
 
+function buildOptions(type: CustomField['type'], input: string) {
+  if (type !== 'select') {
+    return
+  }
+  return input
+    .split(',')
+    .map(option => option.trim())
+    .filter(Boolean)
+}
+
+function validatePayload({
+  label,
+  key,
+  type,
+  options,
+  t,
+}: {
+  label: string
+  key: string
+  type: CustomField['type']
+  options: string[] | undefined
+  t: (key: string) => string
+}) {
+  const nextErrors: Record<string, string> = {}
+
+  if (!label) {
+    nextErrors.label = t('routes.custom-fields.form.errors.labelRequired')
+  }
+  if (key && !isKebabCase(key)) {
+    nextErrors.key = t('routes.custom-fields.form.errors.invalidKey')
+  }
+  if (type === 'select' && (!options || options.length === 0)) {
+    nextErrors.options = t('routes.custom-fields.form.errors.optionsRequired')
+  }
+
+  return nextErrors
+}
+
 export function CustomFieldForm({
   mode,
   contentTypes,
@@ -67,6 +105,34 @@ export function CustomFieldForm({
     )
   }
 
+  async function submitPayload(payload: {
+    label: string
+    key?: string
+    type: CustomField['type']
+    required: boolean
+    helpText?: string
+    options?: string[]
+    attachedTo: string[]
+  }) {
+    try {
+      if (mode === 'create') {
+        await createCustomFieldAction(payload)
+        toast.success(t('routes.custom-fields.form.toasts.created'))
+      } else if (initialData) {
+        await updateCustomFieldAction(initialData.id, payload)
+        toast.success(t('routes.custom-fields.form.toasts.updated'))
+      }
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : t('common.errors.saveFailed')
+      toast.error(message)
+      return
+    }
+
+    router.push('/custom-fields')
+    router.refresh()
+  }
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setIsSubmitting(true)
@@ -76,24 +142,9 @@ export function CustomFieldForm({
     const key = String(formData.get('key') ?? '').trim()
     const helpTextRaw = String(formData.get('helpText') ?? '').trim()
 
-    const options =
-      type === 'select'
-        ? optionsInput
-            .split(',')
-            .map(option => option.trim())
-            .filter(Boolean)
-        : undefined
+    const options = buildOptions(type, optionsInput)
+    const nextErrors = validatePayload({ label, key, type, options, t })
 
-    const nextErrors: Record<string, string> = {}
-    if (!label) {
-      nextErrors.label = t('routes.custom-fields.form.errors.labelRequired')
-    }
-    if (key && !isKebabCase(key)) {
-      nextErrors.key = t('routes.custom-fields.form.errors.invalidKey')
-    }
-    if (type === 'select' && (!options || options.length === 0)) {
-      nextErrors.options = t('routes.custom-fields.form.errors.optionsRequired')
-    }
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors)
       setIsSubmitting(false)
@@ -112,23 +163,8 @@ export function CustomFieldForm({
       attachedTo,
     }
 
-    try {
-      if (mode === 'create') {
-        await createCustomFieldAction(payload)
-        toast.success(t('routes.custom-fields.form.toasts.created'))
-      } else if (initialData) {
-        await updateCustomFieldAction(initialData.id, payload)
-        toast.success(t('routes.custom-fields.form.toasts.updated'))
-      }
-      router.push('/custom-fields')
-      router.refresh()
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : t('common.errors.saveFailed')
-      toast.error(message)
-    } finally {
-      setIsSubmitting(false)
-    }
+    await submitPayload(payload)
+    setIsSubmitting(false)
   }
 
   const fieldTypeLabels: Record<CustomField['type'], string> = {
@@ -154,7 +190,9 @@ export function CustomFieldForm({
               defaultValue={initialData?.label ?? ''}
               id="label"
               name="label"
-              placeholder={t('routes.custom-fields.form.fields.label.placeholder')}
+              placeholder={t(
+                'routes.custom-fields.form.fields.label.placeholder'
+              )}
               required
               type="text"
             />
@@ -171,16 +209,27 @@ export function CustomFieldForm({
               defaultValue={initialData?.key ?? ''}
               id="key"
               name="key"
-              placeholder={t('routes.custom-fields.form.fields.key.placeholder')}
+              placeholder={t(
+                'routes.custom-fields.form.fields.key.placeholder'
+              )}
               type="text"
             />
             {errors.key && <FieldError>{errors.key}</FieldError>}
           </Field>
           <Field>
-            <FieldLabel>{t('routes.custom-fields.form.fields.type.label')}</FieldLabel>
-            <Select onValueChange={value => setType(value as CustomField['type'])} value={type}>
+            <FieldLabel>
+              {t('routes.custom-fields.form.fields.type.label')}
+            </FieldLabel>
+            <Select
+              onValueChange={value => setType(value as CustomField['type'])}
+              value={type}
+            >
               <SelectTrigger>
-                <SelectValue placeholder={t('routes.custom-fields.form.fields.type.placeholder')} />
+                <SelectValue
+                  placeholder={t(
+                    'routes.custom-fields.form.fields.type.placeholder'
+                  )}
+                />
               </SelectTrigger>
               <SelectContent>
                 {Object.entries(fieldTypeLabels).map(([value, label]) => (
@@ -192,7 +241,9 @@ export function CustomFieldForm({
             </Select>
           </Field>
           <Field>
-            <FieldLabel>{t('routes.custom-fields.form.fields.required.label')}</FieldLabel>
+            <FieldLabel>
+              {t('routes.custom-fields.form.fields.required.label')}
+            </FieldLabel>
             <div className="flex items-center gap-2">
               <Checkbox
                 checked={required}
@@ -211,7 +262,9 @@ export function CustomFieldForm({
               defaultValue={initialData?.helpText ?? ''}
               id="helpText"
               name="helpText"
-              placeholder={t('routes.custom-fields.form.fields.helpText.placeholder')}
+              placeholder={t(
+                'routes.custom-fields.form.fields.helpText.placeholder'
+              )}
               type="text"
             />
           </Field>
@@ -227,20 +280,29 @@ export function CustomFieldForm({
               id="options"
               name="options"
               onChange={event => setOptionsInput(event.target.value)}
-              placeholder={t('routes.custom-fields.form.fields.options.placeholder')}
+              placeholder={t(
+                'routes.custom-fields.form.fields.options.placeholder'
+              )}
               type="text"
               value={optionsInput}
             />
             {errors.options && <FieldError>{errors.options}</FieldError>}
           </Field>
           <Field>
-            <FieldLabel>{t('routes.custom-fields.form.fields.attach.label')}</FieldLabel>
+            <FieldLabel>
+              {t('routes.custom-fields.form.fields.attach.label')}
+            </FieldLabel>
             <div className="flex flex-col gap-2 rounded-md border p-4">
               {attachedOptions.length ? (
                 attachedOptions.map(option => (
-                  <label className="flex items-center gap-2" key={option.id}>
+                  <label
+                    className="flex items-center gap-2"
+                    htmlFor={`attach-${option.id}`}
+                    key={option.id}
+                  >
                     <Checkbox
                       checked={attachedTo.includes(option.id)}
+                      id={`attach-${option.id}`}
                       onCheckedChange={value =>
                         toggleAttached(option.id, Boolean(value))
                       }

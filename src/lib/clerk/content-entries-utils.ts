@@ -18,69 +18,92 @@ function resolveTypeFields(
     .filter((field): field is CustomField => Boolean(field))
 }
 
+function coerceTextValue(field: CustomField, value: unknown) {
+  if (typeof value !== 'string') {
+    throw new Error(`Campo ${field.key} deve ser texto.`)
+  }
+  return value
+}
+
+function coerceNumberValue(field: CustomField, value: unknown) {
+  if (typeof value === 'number' && !Number.isNaN(value)) {
+    return value
+  }
+  if (typeof value === 'string') {
+    if (value.trim() === '') {
+      return
+    }
+    const parsed = Number(value)
+    if (!Number.isNaN(parsed)) {
+      return parsed
+    }
+  }
+  throw new Error(`Campo ${field.key} deve ser número.`)
+}
+
+function coerceBooleanValue(field: CustomField, value: unknown) {
+  if (typeof value === 'boolean') {
+    return value
+  }
+  if (typeof value === 'string') {
+    if (value.toLowerCase() === 'true') {
+      return true
+    }
+    if (value.toLowerCase() === 'false') {
+      return false
+    }
+  }
+  throw new Error(`Campo ${field.key} deve ser booleano.`)
+}
+
+function coerceDateValue(field: CustomField, value: unknown) {
+  if (typeof value !== 'string') {
+    throw new Error(`Campo ${field.key} deve ser data.`)
+  }
+  if (value.trim() === '') {
+    return
+  }
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) {
+    throw new Error(`Campo ${field.key} deve ser data válida.`)
+  }
+  return date.toISOString()
+}
+
+function coerceSelectValue(field: CustomField, value: unknown) {
+  if (typeof value !== 'string') {
+    throw new Error(`Campo ${field.key} deve ser seleção.`)
+  }
+  if (value.trim() === '') {
+    return
+  }
+  if (!field.options?.includes(value)) {
+    throw new Error(`Campo ${field.key} possui opção inválida.`)
+  }
+  return value
+}
+
+const COERCE_HANDLERS = {
+  text: coerceTextValue,
+  number: coerceNumberValue,
+  boolean: coerceBooleanValue,
+  date: coerceDateValue,
+  select: coerceSelectValue,
+} satisfies Record<
+  CustomField['type'],
+  (field: CustomField, value: unknown) => unknown
+>
+
 function coerceFieldValue(field: CustomField, value: unknown) {
   if (value === undefined || value === null) {
-    return undefined
+    return
   }
 
-  switch (field.type) {
-    case 'text': {
-      if (typeof value !== 'string') {
-        throw new Error(`Campo ${field.key} deve ser texto.`)
-      }
-      return value
-    }
-    case 'number': {
-      if (typeof value === 'number' && !Number.isNaN(value)) {
-        return value
-      }
-      if (typeof value === 'string') {
-        if (value.trim() === '') {
-          return undefined
-        }
-        const parsed = Number(value)
-        if (!Number.isNaN(parsed)) {
-          return parsed
-        }
-      }
-      throw new Error(`Campo ${field.key} deve ser número.`)
-    }
-    case 'boolean': {
-      if (typeof value === 'boolean') {
-        return value
-      }
-      if (typeof value === 'string') {
-        if (value.toLowerCase() === 'true') return true
-        if (value.toLowerCase() === 'false') return false
-      }
-      throw new Error(`Campo ${field.key} deve ser booleano.`)
-    }
-    case 'date': {
-      if (typeof value !== 'string') {
-        throw new Error(`Campo ${field.key} deve ser data.`)
-      }
-      if (value.trim() === '') {
-        return undefined
-      }
-      const date = new Date(value)
-      if (Number.isNaN(date.getTime())) {
-        throw new Error(`Campo ${field.key} deve ser data válida.`)
-      }
-      return date.toISOString()
-    }
-    case 'select': {
-      if (typeof value !== 'string') {
-        throw new Error(`Campo ${field.key} deve ser seleção.`)
-      }
-      if (value.trim() === '') {
-        return undefined
-      }
-      if (!field.options?.includes(value)) {
-        throw new Error(`Campo ${field.key} possui opção inválida.`)
-      }
-      return value
-    }
+  const handler = COERCE_HANDLERS[field.type]
+  if (!handler) {
+    throw new Error(`Campo ${field.key} possui tipo inválido.`)
   }
+  return handler(field, value)
 }
 
 function validateEntryFields(
@@ -119,7 +142,11 @@ function validateEntryFields(
   return output
 }
 
-function ensureUniqueEntrySlug(entries: ContentEntry[], slug: string, id?: string) {
+function ensureUniqueEntrySlug(
+  entries: ContentEntry[],
+  slug: string,
+  id?: string
+) {
   const exists = entries.some(
     entry => entry.slug === slug && (id ? entry.id !== id : true)
   )
@@ -128,18 +155,21 @@ function ensureUniqueEntrySlug(entries: ContentEntry[], slug: string, id?: strin
   }
 }
 
-function resolveEntrySlug(payload: ContentEntryInput, fields: Record<string, unknown>) {
+function resolveEntrySlug(
+  payload: ContentEntryInput,
+  fields: Record<string, unknown>
+) {
   const explicit = payload.slug?.trim()
   if (explicit) {
     return normalizeKebabCase(explicit)
   }
 
-  const fromTitle =
-    typeof fields.title === 'string'
-      ? fields.title
-      : typeof fields.name === 'string'
-        ? fields.name
-        : ''
+  let fromTitle = ''
+  if (typeof fields.title === 'string') {
+    fromTitle = fields.title
+  } else if (typeof fields.name === 'string') {
+    fromTitle = fields.name
+  }
 
   const candidate = normalizeKebabCase(fromTitle)
   if (!candidate) {
@@ -214,13 +244,13 @@ export async function createContentEntry(
     [contentType.id]: [...entries, newEntry],
   }
 
-  await contentRepository.saveStore(
+  await contentRepository.saveStore({
     organizationId,
     publicMetadata,
     contentTypes,
     customFields,
-    updatedEntries
-  )
+    contentEntries: updatedEntries,
+  })
 
   return newEntry
 }
@@ -269,13 +299,13 @@ export async function updateContentEntry(
     ),
   }
 
-  await contentRepository.saveStore(
+  await contentRepository.saveStore({
     organizationId,
     publicMetadata,
     contentTypes,
     customFields,
-    updatedEntries
-  )
+    contentEntries: updatedEntries,
+  })
 
   return updatedEntry
 }
@@ -304,13 +334,13 @@ export async function deleteContentEntry(
     [contentType.id]: entries.filter(entry => entry.id !== entryId),
   }
 
-  await contentRepository.saveStore(
+  await contentRepository.saveStore({
     organizationId,
     publicMetadata,
     contentTypes,
     customFields,
-    updatedEntries
-  )
+    contentEntries: updatedEntries,
+  })
 
   return { success: true }
 }

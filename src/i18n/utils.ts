@@ -10,14 +10,17 @@ export function resolveMessage(
   let current: MessageValue | undefined = messages
   for (const part of parts) {
     if (!current || typeof current !== 'object') {
-      return undefined
+      return
     }
     current = current[part]
   }
   return typeof current === 'string' ? current : undefined
 }
 
-export function formatMessage(message: string, params?: TranslationParams): string {
+export function formatMessage(
+  message: string,
+  params?: TranslationParams
+): string {
   if (!params) {
     return message
   }

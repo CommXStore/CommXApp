@@ -20,10 +20,16 @@ export default async function Page({ params }: PageProps) {
           {t('routes.content.new.title')}
         </h1>
         <p className="text-muted-foreground">
-          {t('routes.content.new.description', { contentType: contentType.name })}
+          {t('routes.content.new.description', {
+            contentType: contentType.name,
+          })}
         </p>
       </div>
-      <ContentEntryForm contentType={contentType} fields={fields} mode="create" />
+      <ContentEntryForm
+        contentType={contentType}
+        fields={fields}
+        mode="create"
+      />
     </div>
   )
 }

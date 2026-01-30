@@ -33,7 +33,7 @@ import type {
   CustomFieldInput,
 } from './content-schemas'
 
-async function withCache<T>(
+function withCache<T>(
   keyParts: string[],
   tags: string[],
   fn: () => Promise<T>
@@ -47,10 +47,8 @@ export async function getAgentsAction() {
   if (!success) {
     throw new Error(error.message)
   }
-  return withCache(
-    ['agents', data.orgId],
-    [cacheTags.agents(data.orgId)],
-    () => getAgents(data.orgId)
+  return withCache(['agents', data.orgId], [cacheTags.agents(data.orgId)], () =>
+    getAgents(data.orgId)
   )
 }
 

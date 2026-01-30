@@ -4,9 +4,15 @@ import React from 'react'
 Object.assign(globalThis, { React })
 
 class ResizeObserverMock {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
+  observe() {
+    // noop
+  }
+  unobserve() {
+    // noop
+  }
+  disconnect() {
+    // noop
+  }
 }
 
 Object.assign(globalThis, { ResizeObserver: ResizeObserverMock })

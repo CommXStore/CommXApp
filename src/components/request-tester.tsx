@@ -14,26 +14,23 @@ export function RequestTester() {
   const [apiKey, setApiKey] = useState('')
   const t = useTranslations()
 
-  const codes = useMemo(
-    () => {
-      const safeApiKey = apiKey.trim() || '<API_KEY>'
-      return {
-        'get-agents': t('routes.agents.requestTester.codes.getAgents', {
-          siteUrl: SITE_URL,
-          apiKey: safeApiKey,
-        }),
-        'create-agent': t('routes.agents.requestTester.codes.createAgent', {
-          siteUrl: SITE_URL,
-          apiKey: safeApiKey,
-        }),
-        'delete-agent': t('routes.agents.requestTester.codes.deleteAgent', {
-          siteUrl: SITE_URL,
-          apiKey: safeApiKey,
-        }),
-      }
-    },
-    [apiKey, t]
-  )
+  const codes = useMemo(() => {
+    const safeApiKey = apiKey.trim() || '<API_KEY>'
+    return {
+      'get-agents': t('routes.agents.requestTester.codes.getAgents', {
+        siteUrl: SITE_URL,
+        apiKey: safeApiKey,
+      }),
+      'create-agent': t('routes.agents.requestTester.codes.createAgent', {
+        siteUrl: SITE_URL,
+        apiKey: safeApiKey,
+      }),
+      'delete-agent': t('routes.agents.requestTester.codes.deleteAgent', {
+        siteUrl: SITE_URL,
+        apiKey: safeApiKey,
+      }),
+    }
+  }, [apiKey, t])
 
   return (
     <div className="mt-4 flex flex-col gap-2">

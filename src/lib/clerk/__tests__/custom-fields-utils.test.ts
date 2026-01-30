@@ -4,26 +4,23 @@ import {
   deleteCustomField,
   updateCustomField,
 } from '@/lib/clerk/custom-fields-utils'
-import type {
-  ContentType,
-  CustomField,
-} from '@/lib/clerk/content-schemas'
+import type { ContentType, CustomField } from '@/lib/clerk/content-schemas'
 
 let store: Awaited<
-  ReturnType<typeof import('@/lib/clerk/content-repository').contentRepository.getStore>
+  ReturnType<
+    typeof import('@/lib/clerk/content-repository').contentRepository.getStore
+  >
 >
 let saveSpy: ReturnType<typeof vi.fn>
 
-vi.mock('@/lib/clerk/content-repository', () => {
-  return {
-    contentRepository: {
-      getStore: vi.fn(async () => store),
-      saveStore: vi.fn(async (...args) => {
-        saveSpy(...args)
-      }),
-    },
-  }
-})
+vi.mock('@/lib/clerk/content-repository', () => ({
+  contentRepository: {
+    getStore: vi.fn(async () => store),
+    saveStore: vi.fn((...args) => {
+      saveSpy(...args)
+    }),
+  },
+}))
 
 describe('custom fields utils', () => {
   beforeEach(() => {

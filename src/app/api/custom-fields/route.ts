@@ -1,19 +1,28 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { checkAuth } from '@/lib/clerk/check-auth'
-import { getCustomFields, createCustomField } from '@/lib/clerk/custom-fields-utils'
+import {
+  getCustomFields,
+  createCustomField,
+} from '@/lib/clerk/custom-fields-utils'
 import { logger } from '@/lib/logger'
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
 
 export async function GET() {
   const { success, error, data } = await checkAuth()
   if (!success) {
-    logger.warn({ error, route: 'GET /api/custom-fields' }, 'Unauthorized request')
+    logger.warn(
+      { error, route: 'GET /api/custom-fields' },
+      'Unauthorized request'
+    )
     return NextResponse.json({ error: error.message }, { status: error.status })
   }
 
   try {
     const customFields = await getCustomFields(data.orgId)
-    return NextResponse.json({ success: true, data: customFields }, { status: 200 })
+    return NextResponse.json(
+      { success: true, data: customFields },
+      { status: 200 }
+    )
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unexpected error.'
     logger.error({ err, route: 'GET /api/custom-fields' }, message)
@@ -24,7 +33,10 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const { success, error, data } = await checkAuth()
   if (!success) {
-    logger.warn({ error, route: 'POST /api/custom-fields' }, 'Unauthorized request')
+    logger.warn(
+      { error, route: 'POST /api/custom-fields' },
+      'Unauthorized request'
+    )
     return NextResponse.json({ error: error.message }, { status: error.status })
   }
 

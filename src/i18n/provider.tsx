@@ -3,7 +3,11 @@
 import { createContext, useContext, useMemo } from 'react'
 import type { Locale } from '@/i18n/config'
 import type { Messages } from '@/i18n/server'
-import { formatMessage, resolveMessage, type TranslationParams } from '@/i18n/utils'
+import {
+  formatMessage,
+  resolveMessage,
+  type TranslationParams,
+} from '@/i18n/utils'
 
 type I18nContextValue = {
   locale: Locale
@@ -31,7 +35,10 @@ export function useTranslations() {
     throw new Error('useTranslations must be used within I18nProvider')
   }
   return (key: string, params?: TranslationParams) => {
-    const value = resolveMessage(context.messages as unknown as Record<string, unknown>, key)
+    const value = resolveMessage(
+      context.messages as unknown as Record<string, unknown>,
+      key
+    )
     if (!value) {
       return key
     }

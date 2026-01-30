@@ -14,14 +14,16 @@ const definitions = [
   { name: 'ContentEntry', schema: contentEntrySchema },
 ]
 
+const TYPE_PREFIX = /^type /
+
 const types = definitions
   .map(({ name, schema }) => {
     const { node } = zodToTs(schema, name)
-    return printNode(node).replace(/^type /, 'export type ')
+    return printNode(node).replace(TYPE_PREFIX, 'export type ')
   })
   .join('\n\n')
 
-const header = `// Generated file. Do not edit manually.\n`
+const header = '// Generated file. Do not edit manually.\n'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)

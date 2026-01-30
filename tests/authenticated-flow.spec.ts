@@ -9,6 +9,8 @@ test.describe('authenticated flow', () => {
 
   test('can access content types page', async ({ page }) => {
     await page.goto('/content-types')
-    await expect(page.getByRole('link', { name: 'Adicionar tipo' })).toBeVisible()
+    await expect(
+      page.getByRole('link', { name: 'Adicionar tipo' })
+    ).toBeVisible()
   })
 })

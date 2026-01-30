@@ -54,11 +54,7 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
   try {
     const payload = await req.json()
     const { contentTypeSlug } = await params
-    const entry = await createContentEntry(
-      data.orgId,
-      contentTypeSlug,
-      payload
-    )
+    const entry = await createContentEntry(data.orgId, contentTypeSlug, payload)
     return NextResponse.json({ success: true, data: entry }, { status: 201 })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Invalid request.'

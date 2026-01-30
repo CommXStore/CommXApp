@@ -81,30 +81,36 @@ export function ContentEntriesTable({
     pageSize: 10,
   })
 
-  async function deleteEntry(entry: ContentEntry) {
-    setLoading(true)
-    setData(prevData => prevData.filter(item => item.id !== entry.id))
-    try {
-      await deleteContentEntryAction(contentType.slug, entry.id)
-      toast.success(t('routes.content.table.toasts.deleted', { slug: entry.slug }))
-    } catch (error) {
-      setData(prevData => [...prevData, entry])
-      console.error(error)
-    } finally {
-      setLoading(false)
-    }
-  }
+  const deleteEntry = useCallback(
+    async (entry: ContentEntry) => {
+      setLoading(true)
+      setData(prevData => prevData.filter(item => item.id !== entry.id))
+      try {
+        await deleteContentEntryAction(contentType.slug, entry.id)
+        toast.success(
+          t('routes.content.table.toasts.deleted', { slug: entry.slug })
+        )
+      } catch (error) {
+        setData(prevData => [...prevData, entry])
+        console.error(error)
+      } finally {
+        setLoading(false)
+      }
+    },
+    [contentType.slug, t]
+  )
 
   const getFirstApiKeySecret = useCallback(async () => {
-    const apiKeysClient = (clerk as { apiKeys?: { getAll?: () => Promise<unknown> } })
-      ?.apiKeys
+    const apiKeysClient = (
+      clerk as { apiKeys?: { getAll?: () => Promise<unknown> } }
+    )?.apiKeys
     if (!apiKeysClient?.getAll) {
       return null
     }
 
     try {
       const result = await apiKeysClient.getAll()
-      const keys = Array.isArray(result) ? result : result?.data ?? []
+      const keys = Array.isArray(result) ? result : (result?.data ?? [])
       const orgKey = orgId
         ? keys.find(
             (key: { subject?: string; organizationId?: string }) =>
@@ -153,7 +159,9 @@ export function ContentEntriesTable({
 
         const payload = await response.json()
         if (!response.ok) {
-          throw new Error(payload?.error ?? t('routes.content.api.requestFailed'))
+          throw new Error(
+            payload?.error ?? t('routes.content.api.requestFailed')
+          )
         }
 
         setApiResponse(payload)
@@ -165,20 +173,28 @@ export function ContentEntriesTable({
         setApiLoading(false)
       }
     },
-    [contentType.slug, getFirstApiKeySecret, getToken]
+    [contentType.slug, getFirstApiKeySecret, getToken, t]
   )
 
   const openApiPreview = useCallback(
     (entry: ContentEntry) => {
       setApiEntry(entry)
       setApiOpen(true)
-      void fetchEntryApi(entry)
+      fetchEntryApi(entry).catch(error => {
+        console.error(error)
+      })
     },
     [fetchEntryApi]
   )
 
   const columns = useMemo(
-    () => createContentEntryColumns(t, contentType.slug, deleteEntry, openApiPreview),
+    () =>
+      createContentEntryColumns(
+        t,
+        contentType.slug,
+        deleteEntry,
+        openApiPreview
+      ),
     [contentType.slug, deleteEntry, openApiPreview, t]
   )
 
@@ -237,7 +253,7 @@ export function ContentEntriesTable({
             {!apiLoading && apiError && (
               <span className="text-destructive">{apiError}</span>
             )}
-            {!apiLoading && !apiError && apiResponse && (
+            {!(apiLoading || apiError) && apiResponse && (
               <pre className="whitespace-pre-wrap">
                 {JSON.stringify(apiResponse, null, 2)}
               </pre>
@@ -250,7 +266,9 @@ export function ContentEntriesTable({
           <div>
             <h1 className="font-semibold text-2xl">{contentType.name}</h1>
             <p className="text-muted-foreground">
-              {t('routes.content.table.description', { slug: contentType.slug })}
+              {t('routes.content.table.description', {
+                slug: contentType.slug,
+              })}
             </p>
           </div>
           <Button asChild>
@@ -296,7 +314,10 @@ export function ContentEntriesTable({
                 ))
               ) : (
                 <TableRow>
-                  <TableCell className="h-24 text-center" colSpan={columns.length}>
+                  <TableCell
+                    className="h-24 text-center"
+                    colSpan={columns.length}
+                  >
                     <div className="flex flex-col items-center gap-2">
                       <span>{t('routes.content.table.empty.title')}</span>
                       <Button asChild size="sm" variant="outline">
@@ -331,7 +352,9 @@ export function ContentEntriesTable({
               value={`${table.getState().pagination.pageSize}`}
             >
               <SelectTrigger className="w-20" id="rows-per-page" size="sm">
-                <SelectValue placeholder={table.getState().pagination.pageSize} />
+                <SelectValue
+                  placeholder={table.getState().pagination.pageSize}
+                />
               </SelectTrigger>
               <SelectContent side="top">
                 {[10, 20, 30, 40, 50].map(pageSize => (
@@ -365,7 +388,9 @@ export function ContentEntriesTable({
               size="icon"
               variant="outline"
             >
-              <span className="sr-only">{t('common.aria.goToPreviousPage')}</span>
+              <span className="sr-only">
+                {t('common.aria.goToPreviousPage')}
+              </span>
               <ChevronLeft />
             </Button>
             <Button

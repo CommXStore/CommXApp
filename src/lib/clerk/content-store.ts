@@ -16,6 +16,14 @@ type ContentSnapshot = {
   contentEntries: Record<string, ContentEntry[]>
 }
 
+type SaveContentStoreInput = {
+  organizationId: string
+  publicMetadata: Record<string, unknown>
+  contentTypes: ContentType[]
+  customFields: CustomField[]
+  contentEntries: Record<string, ContentEntry[]>
+}
+
 const MAX_SNAPSHOTS = 5
 
 function parseSnapshots(value: unknown): ContentSnapshot[] {
@@ -48,13 +56,13 @@ export async function getContentStore(organizationId: string) {
   }
 }
 
-export async function saveContentStore(
-  organizationId: string,
-  publicMetadata: Record<string, unknown>,
-  contentTypes: ContentType[],
-  customFields: CustomField[],
-  contentEntries: Record<string, ContentEntry[]>
-) {
+export async function saveContentStore({
+  organizationId,
+  publicMetadata,
+  contentTypes,
+  customFields,
+  contentEntries,
+}: SaveContentStoreInput) {
   const clerk = await clerkClient()
   const previousSnapshot: ContentSnapshot = {
     at: nowIso(),

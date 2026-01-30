@@ -28,7 +28,9 @@ export default async function Page({ params }: PageProps) {
           {t('routes.content.edit.title')}
         </h1>
         <p className="text-muted-foreground">
-          {t('routes.content.edit.description', { contentType: contentType.name })}
+          {t('routes.content.edit.description', {
+            contentType: contentType.name,
+          })}
         </p>
       </div>
       <ContentEntryForm

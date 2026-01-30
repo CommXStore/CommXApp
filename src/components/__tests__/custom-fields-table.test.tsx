@@ -1,13 +1,20 @@
-import React from 'react'
+import type React from 'react'
 import { screen } from '@testing-library/react'
 import { renderWithI18n } from '@/test/render'
 import { CustomFieldsTable } from '@/components/custom-fields-table'
 import type { ContentType, CustomField } from '@/lib/clerk/content-schemas'
+import { vi } from 'vitest'
+
+const ADD_FIELD_LABEL = /adicionar campo/i
 
 vi.mock('next/link', () => ({
-  default: ({ href, children }: { href: string; children: React.ReactNode }) => (
-    <a href={href}>{children}</a>
-  ),
+  default: ({
+    href,
+    children,
+  }: {
+    href: string
+    children: React.ReactNode
+  }) => <a href={href}>{children}</a>,
 }))
 
 vi.mock('@/lib/clerk/actions', () => ({
@@ -45,8 +52,12 @@ const fields: CustomField[] = [
 
 describe('CustomFieldsTable', () => {
   it('renders rows and add button', () => {
-    renderWithI18n(<CustomFieldsTable contentTypes={contentTypes} data={fields} />)
+    renderWithI18n(
+      <CustomFieldsTable contentTypes={contentTypes} data={fields} />
+    )
     expect(screen.getByText('Title')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /adicionar campo/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: ADD_FIELD_LABEL })
+    ).toBeInTheDocument()
   })
 })

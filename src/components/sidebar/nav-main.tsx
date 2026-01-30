@@ -59,7 +59,9 @@ export function NavMain({
                   <CollapsibleTrigger asChild>
                     <SidebarMenuAction className="data-[state=open]:rotate-90">
                       <ChevronRight />
-                      <span className="sr-only">{t('common.actions.toggle')}</span>
+                      <span className="sr-only">
+                        {t('common.actions.toggle')}
+                      </span>
                     </SidebarMenuAction>
                   </CollapsibleTrigger>
                   <CollapsibleContent>

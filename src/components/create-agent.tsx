@@ -65,7 +65,9 @@ export function CreateAgentButton({
         <DialogHeader>
           <DialogTitle>{t('routes.agents.create.title')}</DialogTitle>
         </DialogHeader>
-        <DialogDescription>{t('routes.agents.create.description')}</DialogDescription>
+        <DialogDescription>
+          {t('routes.agents.create.description')}
+        </DialogDescription>
         <form action={formAction} className="space-y-4" ref={formRef}>
           <FieldSet>
             <FieldGroup>
@@ -79,7 +81,9 @@ export function CreateAgentButton({
                 <Input
                   id="name"
                   name="name"
-                  placeholder={t('routes.agents.create.fields.name.placeholder')}
+                  placeholder={t(
+                    'routes.agents.create.fields.name.placeholder'
+                  )}
                   type="text"
                 />
               </Field>
@@ -92,7 +96,9 @@ export function CreateAgentButton({
                 <Select defaultValue="gpt-5-nano" name="model">
                   <SelectTrigger>
                     <SelectValue
-                      placeholder={t('routes.agents.create.fields.model.placeholder')}
+                      placeholder={t(
+                        'routes.agents.create.fields.model.placeholder'
+                      )}
                     />
                   </SelectTrigger>
                   <SelectContent>
@@ -113,7 +119,9 @@ export function CreateAgentButton({
                 <Input
                   id="description"
                   name="description"
-                  placeholder={t('routes.agents.create.fields.description.placeholder')}
+                  placeholder={t(
+                    'routes.agents.create.fields.description.placeholder'
+                  )}
                   type="text"
                 />
               </Field>

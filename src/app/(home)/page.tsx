@@ -4,7 +4,13 @@ import { SignedIn, SignedOut } from '@clerk/nextjs'
 import { Button } from '@/components/ui/button'
 import { getTranslations } from '@/i18n/server'
 
-function CTAButton({ signedInLabel, signedOutLabel }: { signedInLabel: string; signedOutLabel: string }) {
+function CTAButton({
+  signedInLabel,
+  signedOutLabel,
+}: {
+  signedInLabel: string
+  signedOutLabel: string
+}) {
   return (
     <>
       <SignedIn>

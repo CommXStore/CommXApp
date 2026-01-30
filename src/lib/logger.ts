@@ -7,9 +7,13 @@ const isTestEnv =
 
 export const logger = pino({
   name: 'commx-app',
-  level: isTestEnv ? 'fatal' : process.env.LOG_LEVEL ?? 'info',
+  level: isTestEnv ? 'fatal' : (process.env.LOG_LEVEL ?? 'info'),
   redact: {
-    paths: ['req.headers.authorization', 'req.headers.cookie', 'req.headers.x-api-key'],
+    paths: [
+      'req.headers.authorization',
+      'req.headers.cookie',
+      'req.headers.x-api-key',
+    ],
     remove: true,
   },
 })

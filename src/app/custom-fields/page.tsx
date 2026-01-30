@@ -1,5 +1,8 @@
 import { CustomFieldsTable } from '@/components/custom-fields-table'
-import { getContentTypesAction, getCustomFieldsAction } from '@/lib/clerk/actions'
+import {
+  getContentTypesAction,
+  getCustomFieldsAction,
+} from '@/lib/clerk/actions'
 
 export const dynamic = 'force-dynamic'
 

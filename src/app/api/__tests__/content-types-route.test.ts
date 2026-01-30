@@ -3,23 +3,29 @@ import { NextRequest } from 'next/server'
 import { GET, POST } from '@/app/api/content-types/route'
 import { PATCH, DELETE } from '@/app/api/content-types/[id]/route'
 
-vi.mock('@/lib/clerk/check-auth', () => {
-  return {
-    checkAuth: vi.fn(async () => ({
-      success: true,
-      data: { orgId: 'org_1', userId: 'user_1', tokenType: 'session_token' },
-    })),
-  }
-})
+vi.mock('@/lib/clerk/check-auth', () => ({
+  checkAuth: vi.fn(async () => ({
+    success: true,
+    data: { orgId: 'org_1', userId: 'user_1', tokenType: 'session_token' },
+  })),
+}))
 
-vi.mock('@/lib/clerk/content-types-utils', () => {
-  return {
-    getContentTypes: vi.fn(async () => [{ id: 'ct_1', name: 'Blog', slug: 'blog' }]),
-    createContentType: vi.fn(async () => ({ id: 'ct_new', name: 'News', slug: 'news' })),
-    updateContentType: vi.fn(async () => ({ id: 'ct_1', name: 'Blog', slug: 'blog' })),
-    deleteContentType: vi.fn(async () => ({ success: true })),
-  }
-})
+vi.mock('@/lib/clerk/content-types-utils', () => ({
+  getContentTypes: vi.fn(async () => [
+    { id: 'ct_1', name: 'Blog', slug: 'blog' },
+  ]),
+  createContentType: vi.fn(async () => ({
+    id: 'ct_new',
+    name: 'News',
+    slug: 'news',
+  })),
+  updateContentType: vi.fn(async () => ({
+    id: 'ct_1',
+    name: 'Blog',
+    slug: 'blog',
+  })),
+  deleteContentType: vi.fn(async () => ({ success: true })),
+}))
 
 describe('content types api route', () => {
   it('GET returns list', async () => {
@@ -42,7 +48,9 @@ describe('content types api route', () => {
   })
 
   it('POST returns 400 on error', async () => {
-    const { createContentType } = await import('@/lib/clerk/content-types-utils')
+    const { createContentType } = await import(
+      '@/lib/clerk/content-types-utils'
+    )
     vi.mocked(createContentType).mockRejectedValueOnce(new Error('invalid'))
 
     const req = new NextRequest('http://localhost/api/content-types', {
@@ -81,7 +89,9 @@ describe('content types api route', () => {
   })
 
   it('DELETE returns 400 on error', async () => {
-    const { deleteContentType } = await import('@/lib/clerk/content-types-utils')
+    const { deleteContentType } = await import(
+      '@/lib/clerk/content-types-utils'
+    )
     vi.mocked(deleteContentType).mockRejectedValueOnce(new Error('fail'))
     const res = await DELETE(new NextRequest('http://localhost'), {
       params: Promise.resolve({ id: 'ct_1' }),

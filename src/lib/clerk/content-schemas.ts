@@ -75,18 +75,15 @@ export const customFieldSchema = z.object({
     .optional(),
   required: z.boolean(),
   helpText: z.string().max(MAX_HELP_TEXT_LENGTH).optional(),
-  attachedTo: z.preprocess(
-    value => {
-      if (Array.isArray(value)) {
-        return value
-      }
-      if (typeof value === 'string' && value.length > 0) {
-        return [value]
-      }
-      return []
-    },
-    z.array(z.string())
-  ),
+  attachedTo: z.preprocess(value => {
+    if (Array.isArray(value)) {
+      return value
+    }
+    if (typeof value === 'string' && value.length > 0) {
+      return [value]
+    }
+    return []
+  }, z.array(z.string())),
   createdAt: z.string(),
   updatedAt: z.string(),
 })
@@ -110,7 +107,10 @@ export const contentTypeInputSchema = contentTypeSchema
   .extend({
     id: z.string().optional(),
     slug: z.string().max(MAX_SLUG_LENGTH).optional(),
-    fields: z.array(z.string().max(MAX_KEY_LENGTH)).max(MAX_FIELDS_COUNT).optional(),
+    fields: z
+      .array(z.string().max(MAX_KEY_LENGTH))
+      .max(MAX_FIELDS_COUNT)
+      .optional(),
   })
 
 export const customFieldInputSchema = customFieldSchema
@@ -160,7 +160,9 @@ export function parseCustomFields(value: unknown): CustomField[] {
   return parsed.success ? parsed.data : []
 }
 
-export function parseContentEntries(value: unknown): Record<string, ContentEntry[]> {
+export function parseContentEntries(
+  value: unknown
+): Record<string, ContentEntry[]> {
   const parsed = z
     .record(z.string(), z.array(contentEntrySchema))
     .safeParse(value)

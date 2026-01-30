@@ -8,8 +8,10 @@ export function normalizeKebabCase(value: string) {
   return normalized
 }
 
+const KEBAB_CASE_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+
 export function isKebabCase(value: string) {
-  return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)
+  return KEBAB_CASE_REGEX.test(value)
 }
 
 export function nowIso() {

@@ -64,7 +64,9 @@ export function DataTable({ data: initialData }: { data: Agent[] }) {
     setData(prevData => [...prevData, payload])
     try {
       await createAgentAction(payload)
-      toast.success(t('routes.agents.toasts.createSuccess', { name: payload.name }))
+      toast.success(
+        t('routes.agents.toasts.createSuccess', { name: payload.name })
+      )
     } catch (error) {
       // Roll back in case of an error
       setData(prevData => prevData.filter(item => item.id !== payload.id))
@@ -79,7 +81,9 @@ export function DataTable({ data: initialData }: { data: Agent[] }) {
     setData(prevData => prevData.filter(item => item.id !== agent.id))
     try {
       await deleteAgentAction(agent.id)
-      toast.success(t('routes.agents.toasts.deleteSuccess', { name: agent.name }))
+      toast.success(
+        t('routes.agents.toasts.deleteSuccess', { name: agent.name })
+      )
     } catch (error) {
       // Roll back in case of an error
       setData(prevData => [...prevData, agent])
@@ -226,7 +230,9 @@ export function DataTable({ data: initialData }: { data: Agent[] }) {
               size="icon"
               variant="outline"
             >
-              <span className="sr-only">{t('common.aria.goToPreviousPage')}</span>
+              <span className="sr-only">
+                {t('common.aria.goToPreviousPage')}
+              </span>
               <ChevronLeft />
             </Button>
             <Button

@@ -14,7 +14,13 @@ import {
   FieldSet,
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { CustomFieldInput } from '@/components/custom-field-input'
 import {
   createContentEntryAction,
@@ -37,6 +43,54 @@ type ContentEntryFormProps = {
 
 type FieldValues = Record<string, unknown>
 
+function validateSlug(
+  trimmedSlug: string,
+  t: (key: string, params?: Record<string, string | number>) => string
+) {
+  if (!trimmedSlug) {
+    return null
+  }
+  return isKebabCase(trimmedSlug) ? null : t('common.errors.invalidSlug')
+}
+
+function validateEntryFields(
+  fields: CustomField[],
+  values: FieldValues,
+  t: (key: string, params?: Record<string, string | number>) => string
+) {
+  const nextErrors: Record<string, string> = {}
+
+  for (const field of fields) {
+    const value = values[field.key]
+    const isEmpty =
+      value === undefined ||
+      value === null ||
+      (typeof value === 'string' && value.trim() === '')
+
+    if (field.required && field.type !== 'boolean' && isEmpty) {
+      nextErrors[field.key] = t('common.errors.requiredField')
+      continue
+    }
+
+    if (field.type === 'number' && !isEmpty) {
+      const numericValue = Number(value)
+      if (Number.isNaN(numericValue)) {
+        nextErrors[field.key] = t('common.errors.invalidNumber')
+      }
+    }
+
+    if (
+      field.type === 'select' &&
+      !isEmpty &&
+      !field.options?.includes(String(value))
+    ) {
+      nextErrors[field.key] = t('common.errors.invalidOption')
+    }
+  }
+
+  return nextErrors
+}
+
 export function ContentEntryForm({
   mode,
   contentType,
@@ -53,23 +107,23 @@ export function ContentEntryForm({
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const initialValues = useMemo(() => {
-    const values: FieldValues = {}
+    const initialValuesMap: FieldValues = {}
     for (const field of fields) {
       const value = initialData?.fields?.[field.key]
       if (field.type === 'boolean') {
-        values[field.key] = Boolean(value)
+        initialValuesMap[field.key] = Boolean(value)
         continue
       }
       if (field.type === 'date' && typeof value === 'string') {
         const date = new Date(value)
-        values[field.key] = Number.isNaN(date.getTime())
+        initialValuesMap[field.key] = Number.isNaN(date.getTime())
           ? ''
           : date.toISOString().slice(0, 10)
         continue
       }
-      values[field.key] = value ?? ''
+      initialValuesMap[field.key] = value ?? ''
     }
-    return values
+    return initialValuesMap
   }, [fields, initialData?.fields])
 
   const [values, setValues] = useState<FieldValues>(initialValues)
@@ -82,35 +136,11 @@ export function ContentEntryForm({
     event.preventDefault()
     setIsSubmitting(true)
 
-    const nextErrors: Record<string, string> = {}
     const trimmedSlug = slug.trim()
-    if (trimmedSlug && !isKebabCase(trimmedSlug)) {
-      nextErrors.slug = t('common.errors.invalidSlug')
-    }
-
-    for (const field of fields) {
-      const value = values[field.key]
-      const isEmpty =
-        value === undefined ||
-        value === null ||
-        (typeof value === 'string' && value.trim() === '')
-
-      if (field.required && field.type !== 'boolean' && isEmpty) {
-        nextErrors[field.key] = t('common.errors.requiredField')
-      }
-
-      if (field.type === 'number' && !isEmpty) {
-        const numericValue = Number(value)
-        if (Number.isNaN(numericValue)) {
-          nextErrors[field.key] = t('common.errors.invalidNumber')
-        }
-      }
-
-      if (field.type === 'select' && !isEmpty) {
-        if (!field.options?.includes(String(value))) {
-          nextErrors[field.key] = t('common.errors.invalidOption')
-        }
-      }
+    const nextErrors = validateEntryFields(fields, values, t)
+    const slugError = validateSlug(trimmedSlug, t)
+    if (slugError) {
+      nextErrors.slug = slugError
     }
 
     if (Object.keys(nextErrors).length > 0) {
@@ -132,7 +162,11 @@ export function ContentEntryForm({
         await createContentEntryAction(contentType.slug, payload)
         toast.success(t('routes.content.form.toasts.created'))
       } else if (initialData) {
-        await updateContentEntryAction(contentType.slug, initialData.id, payload)
+        await updateContentEntryAction(
+          contentType.slug,
+          initialData.id,
+          payload
+        )
         toast.success(t('routes.content.form.toasts.updated'))
       }
       router.push(`/content/${contentType.slug}`)
@@ -153,15 +187,23 @@ export function ContentEntryForm({
           <Field>
             <FieldLabel>{t('common.labels.status')}</FieldLabel>
             <Select
-              onValueChange={value => setStatus(value as ContentEntry['status'])}
+              onValueChange={value =>
+                setStatus(value as ContentEntry['status'])
+              }
               value={status}
             >
               <SelectTrigger>
-                <SelectValue placeholder={t('common.placeholders.selectStatus')} />
+                <SelectValue
+                  placeholder={t('common.placeholders.selectStatus')}
+                />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="draft">{t('common.status.draft')}</SelectItem>
-                <SelectItem value="published">{t('common.status.published')}</SelectItem>
+                <SelectItem value="draft">
+                  {t('common.status.draft')}
+                </SelectItem>
+                <SelectItem value="published">
+                  {t('common.status.published')}
+                </SelectItem>
               </SelectContent>
             </Select>
           </Field>
@@ -204,7 +246,9 @@ export function ContentEntryForm({
             : t('common.actions.saveChanges')}
         </Button>
         <Button asChild variant="outline">
-          <Link href={`/content/${contentType.slug}`}>{t('common.actions.cancel')}</Link>
+          <Link href={`/content/${contentType.slug}`}>
+            {t('common.actions.cancel')}
+          </Link>
         </Button>
       </div>
     </form>

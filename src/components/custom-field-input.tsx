@@ -27,6 +27,88 @@ type CustomFieldInputProps = {
 
 const emptySelectValue = '__empty__'
 
+function renderFieldControl({
+  field,
+  value,
+  onChange,
+  t,
+}: {
+  field: CustomField
+  value: unknown
+  onChange: (value: unknown) => void
+  t: (key: string) => string
+}) {
+  switch (field.type) {
+    case 'text':
+      return (
+        <Input
+          name={field.key}
+          onChange={event => onChange(event.target.value)}
+          placeholder={field.key}
+          required={field.required}
+          type="text"
+          value={String(value ?? '')}
+        />
+      )
+    case 'number':
+      return (
+        <Input
+          name={field.key}
+          onChange={event => onChange(event.target.value)}
+          placeholder={field.key}
+          required={field.required}
+          type="number"
+          value={String(value ?? '')}
+        />
+      )
+    case 'date':
+      return (
+        <Input
+          name={field.key}
+          onChange={event => onChange(event.target.value)}
+          required={field.required}
+          type="date"
+          value={String(value ?? '')}
+        />
+      )
+    case 'boolean':
+      return (
+        <div className="flex items-center gap-2">
+          <Checkbox
+            checked={Boolean(value)}
+            onCheckedChange={nextValue => onChange(Boolean(nextValue))}
+          />
+          <span className="text-sm">{t('common.actions.enable')}</span>
+        </div>
+      )
+    case 'select':
+      return (
+        <Select
+          onValueChange={nextValue =>
+            onChange(nextValue === emptySelectValue ? '' : nextValue)
+          }
+          value={String(value ?? '') === '' ? emptySelectValue : String(value)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder={t('common.placeholders.selectOption')} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={emptySelectValue}>
+              {t('common.placeholders.selectOptionShort')}
+            </SelectItem>
+            {(field.options ?? []).map(option => (
+              <SelectItem key={option} value={option}>
+                {option}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )
+    default:
+      return null
+  }
+}
+
 export function CustomFieldInput({
   field,
   value,
@@ -34,86 +116,15 @@ export function CustomFieldInput({
   onChange,
 }: CustomFieldInputProps) {
   const t = useTranslations()
+  const control = renderFieldControl({ field, value, onChange, t })
+  const errorNode = error ? <FieldError>{error}</FieldError> : null
 
   return (
     <Field>
       <FieldLabel>{field.label}</FieldLabel>
       {field.helpText && <FieldDescription>{field.helpText}</FieldDescription>}
-      {field.type === 'text' && (
-        <>
-          <Input
-            name={field.key}
-            onChange={event => onChange(event.target.value)}
-            placeholder={field.key}
-            required={field.required}
-            type="text"
-            value={String(value ?? '')}
-          />
-          {error && <FieldError>{error}</FieldError>}
-        </>
-      )}
-      {field.type === 'number' && (
-        <>
-          <Input
-            name={field.key}
-            onChange={event => onChange(event.target.value)}
-            placeholder={field.key}
-            required={field.required}
-            type="number"
-            value={String(value ?? '')}
-          />
-          {error && <FieldError>{error}</FieldError>}
-        </>
-      )}
-      {field.type === 'date' && (
-        <>
-          <Input
-            name={field.key}
-            onChange={event => onChange(event.target.value)}
-            required={field.required}
-            type="date"
-            value={String(value ?? '')}
-          />
-          {error && <FieldError>{error}</FieldError>}
-        </>
-      )}
-      {field.type === 'boolean' && (
-        <>
-          <div className="flex items-center gap-2">
-            <Checkbox
-              checked={Boolean(value)}
-              onCheckedChange={nextValue => onChange(Boolean(nextValue))}
-            />
-            <span className="text-sm">{t('common.actions.enable')}</span>
-          </div>
-          {error && <FieldError>{error}</FieldError>}
-        </>
-      )}
-      {field.type === 'select' && (
-        <>
-          <Select
-            onValueChange={nextValue =>
-              onChange(nextValue === emptySelectValue ? '' : nextValue)
-            }
-            value={String(value ?? '') === '' ? emptySelectValue : String(value)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder={t('common.placeholders.selectOption')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={emptySelectValue}>
-                {t('common.placeholders.selectOptionShort')}
-              </SelectItem>
-              {(field.options ?? []).map(option => (
-                <SelectItem key={option} value={option}>
-                  {option}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {error && <FieldError>{error}</FieldError>}
-        </>
-      )}
+      {control}
+      {errorNode}
     </Field>
   )
 }

@@ -1,43 +1,74 @@
-'use client';
+'use client'
 
-import * as React from 'react';
-import { motion, type Transition, type HTMLMotionProps } from 'motion/react';
+import {
+  Children,
+  isValidElement,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ComponentProps,
+  type ReactElement,
+  type ReactNode,
+} from 'react'
+import { motion, type Transition, type HTMLMotionProps } from 'motion/react'
 
 import {
   Highlight,
   HighlightItem,
   type HighlightItemProps,
   type HighlightProps,
-} from '@/components/animate-ui/primitives/effects/highlight';
-import { getStrictContext } from '@/lib/get-strict-context';
-import { Slot, type WithAsChild } from '@/components/animate-ui/primitives/animate/slot';
+} from '@/components/animate-ui/primitives/effects/highlight'
+import { getStrictContext } from '@/lib/get-strict-context'
+import {
+  Slot,
+  type WithAsChild,
+} from '@/components/animate-ui/primitives/animate/slot'
 
 type TabsContextType = {
-  activeValue: string;
-  handleValueChange: (value: string) => void;
-  registerTrigger: (value: string, node: HTMLElement | null) => void;
-};
+  activeValue: string
+  handleValueChange: (value: string) => void
+  registerTrigger: (value: string, node: HTMLElement | null) => void
+}
 
-const [TabsProvider, useTabs] =
-  getStrictContext<TabsContextType>('TabsContext');
+const [TabsProvider, useTabs] = getStrictContext<TabsContextType>('TabsContext')
 
-type BaseTabsProps = React.ComponentProps<'div'> & {
-  children: React.ReactNode;
-};
+function getContainerAdjustment(container: HTMLElement) {
+  const cs = getComputedStyle(container)
+  if (cs.boxSizing !== 'border-box') {
+    return 0
+  }
+  const paddingTop = Number.parseFloat(cs.paddingTop || '0') || 0
+  const paddingBottom = Number.parseFloat(cs.paddingBottom || '0') || 0
+  const borderTop = Number.parseFloat(cs.borderTopWidth || '0') || 0
+  const borderBottom = Number.parseFloat(cs.borderBottomWidth || '0') || 0
+  return paddingTop + paddingBottom + borderTop + borderBottom
+}
+
+function normalizeHeight(value: number) {
+  const dpr = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1
+  return Math.ceil(value * dpr) / dpr
+}
+
+type BaseTabsProps = ComponentProps<'div'> & {
+  children: ReactNode
+}
 
 type UnControlledTabsProps = BaseTabsProps & {
-  defaultValue?: string;
-  value?: never;
-  onValueChange?: never;
-};
+  defaultValue?: string
+  value?: never
+  onValueChange?: never
+}
 
 type ControlledTabsProps = BaseTabsProps & {
-  value: string;
-  onValueChange?: (value: string) => void;
-  defaultValue?: never;
-};
+  value: string
+  onValueChange?: (value: string) => void
+  defaultValue?: never
+}
 
-type TabsProps = UnControlledTabsProps | ControlledTabsProps;
+type TabsProps = UnControlledTabsProps | ControlledTabsProps
 
 function Tabs({
   defaultValue,
@@ -46,14 +77,14 @@ function Tabs({
   children,
   ...props
 }: TabsProps) {
-  const [activeValue, setActiveValue] = React.useState<string | undefined>(
-    defaultValue,
-  );
-  const triggersRef = React.useRef(new Map<string, HTMLElement>());
-  const initialSet = React.useRef(false);
-  const isControlled = value !== undefined;
+  const [activeValue, setActiveValue] = useState<string | undefined>(
+    defaultValue
+  )
+  const triggersRef = useRef(new Map<string, HTMLElement>())
+  const initialSet = useRef(false)
+  const isControlled = value !== undefined
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (
       !isControlled &&
       activeValue === undefined &&
@@ -62,36 +93,39 @@ function Tabs({
     ) {
       const firstTab = triggersRef.current.keys().next().value as
         | string
-        | undefined;
+        | undefined
       if (firstTab !== undefined) {
-        setActiveValue(firstTab);
-        initialSet.current = true;
+        setActiveValue(firstTab)
+        initialSet.current = true
       }
     }
-  }, [activeValue, isControlled]);
+  }, [activeValue, isControlled])
 
-  const registerTrigger = React.useCallback(
+  const registerTrigger = useCallback(
     (val: string, node: HTMLElement | null) => {
       if (node) {
-        triggersRef.current.set(val, node);
+        triggersRef.current.set(val, node)
         if (!isControlled && activeValue === undefined && !initialSet.current) {
-          setActiveValue(val);
-          initialSet.current = true;
+          setActiveValue(val)
+          initialSet.current = true
         }
       } else {
-        triggersRef.current.delete(val);
+        triggersRef.current.delete(val)
       }
     },
-    [activeValue, isControlled],
-  );
+    [activeValue, isControlled]
+  )
 
-  const handleValueChange = React.useCallback(
+  const handleValueChange = useCallback(
     (val: string) => {
-      if (!isControlled) setActiveValue(val);
-      else onValueChange?.(val);
+      if (isControlled) {
+        onValueChange?.(val)
+      } else {
+        setActiveValue(val)
+      }
     },
-    [isControlled, onValueChange],
-  );
+    [isControlled, onValueChange]
+  )
 
   return (
     <TabsProvider
@@ -105,51 +139,51 @@ function Tabs({
         {children}
       </div>
     </TabsProvider>
-  );
+  )
 }
 
-type TabsHighlightProps = Omit<HighlightProps, 'controlledItems' | 'value'>;
+type TabsHighlightProps = Omit<HighlightProps, 'controlledItems' | 'value'>
 
 function TabsHighlight({
   transition = { type: 'spring', stiffness: 200, damping: 25 },
   ...props
 }: TabsHighlightProps) {
-  const { activeValue } = useTabs();
+  const { activeValue } = useTabs()
 
   return (
     <Highlight
-      data-slot="tabs-highlight"
-      controlledItems
-      value={activeValue}
-      transition={transition}
       click={false}
+      controlledItems
+      data-slot="tabs-highlight"
+      transition={transition}
+      value={activeValue}
       {...props}
     />
-  );
+  )
 }
 
-type TabsListProps = React.ComponentProps<'div'> & {
-  children: React.ReactNode;
-};
+type TabsListProps = ComponentProps<'div'> & {
+  children: ReactNode
+}
 
 function TabsList(props: TabsListProps) {
-  return <div role="tablist" data-slot="tabs-list" {...props} />;
+  return <div data-slot="tabs-list" role="tablist" {...props} />
 }
 
 type TabsHighlightItemProps = HighlightItemProps & {
-  value: string;
-};
+  value: string
+}
 
 function TabsHighlightItem(props: TabsHighlightItemProps) {
-  return <HighlightItem data-slot="tabs-highlight-item" {...props} />;
+  return <HighlightItem data-slot="tabs-highlight-item" {...props} />
 }
 
 type TabsTriggerProps = WithAsChild<
   {
-    value: string;
-    children: React.ReactNode;
+    value: string
+    children: ReactNode
   } & HTMLMotionProps<'button'>
->;
+>
 
 function TabsTrigger({
   ref,
@@ -157,34 +191,34 @@ function TabsTrigger({
   asChild = false,
   ...props
 }: TabsTriggerProps) {
-  const { activeValue, handleValueChange, registerTrigger } = useTabs();
+  const { activeValue, handleValueChange, registerTrigger } = useTabs()
 
-  const localRef = React.useRef<HTMLButtonElement | null>(null);
-  React.useImperativeHandle(ref, () => localRef.current as HTMLButtonElement);
+  const localRef = useRef<HTMLButtonElement | null>(null)
+  useImperativeHandle(ref, () => localRef.current as HTMLButtonElement)
 
-  React.useEffect(() => {
-    registerTrigger(value, localRef.current);
-    return () => registerTrigger(value, null);
-  }, [value, registerTrigger]);
+  useEffect(() => {
+    registerTrigger(value, localRef.current)
+    return () => registerTrigger(value, null)
+  }, [value, registerTrigger])
 
-  const Component = asChild ? Slot : motion.button;
+  const Component = asChild ? Slot : motion.button
 
   return (
     <Component
-      ref={localRef}
       data-slot="tabs-trigger"
-      role="tab"
-      onClick={() => handleValueChange(value)}
       data-state={activeValue === value ? 'active' : 'inactive'}
+      onClick={() => handleValueChange(value)}
+      ref={localRef}
+      role="tab"
       {...props}
     />
-  );
+  )
 }
 
 type TabsContentsProps = HTMLMotionProps<'div'> & {
-  children: React.ReactNode;
-  transition?: Transition;
-};
+  children: ReactNode
+  transition?: Transition
+}
 
 function TabsContents({
   children,
@@ -197,117 +231,109 @@ function TabsContents({
   },
   ...props
 }: TabsContentsProps) {
-  const { activeValue } = useTabs();
-  const childrenArray = React.Children.toArray(children);
-  const activeIndex = childrenArray.findIndex(
-    (child): child is React.ReactElement<{ value: string }> =>
-      React.isValidElement(child) &&
+  const { activeValue } = useTabs()
+  const childrenArray = Children.toArray(children)
+  const items = childrenArray.filter(
+    (child): child is ReactElement<{ value: string }> =>
+      isValidElement(child) &&
       typeof child.props === 'object' &&
       child.props !== null &&
-      'value' in child.props &&
-      child.props.value === activeValue,
-  );
+      'value' in child.props
+  )
+  const activeIndex = items.findIndex(item => item.props.value === activeValue)
 
-  const containerRef = React.useRef<HTMLDivElement | null>(null);
-  const itemRefs = React.useRef<Array<HTMLDivElement | null>>([]);
-  const [height, setHeight] = React.useState(0);
-  const roRef = React.useRef<ResizeObserver | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null)
+  const itemRefs = useRef<Array<HTMLDivElement | null>>([])
+  const [height, setHeight] = useState(0)
+  const roRef = useRef<ResizeObserver | null>(null)
 
-  const measure = React.useCallback((index: number) => {
-    const pane = itemRefs.current[index];
-    const container = containerRef.current;
-    if (!pane || !container) return 0;
-
-    const base = pane.getBoundingClientRect().height || 0;
-
-    const cs = getComputedStyle(container);
-    const isBorderBox = cs.boxSizing === 'border-box';
-    const paddingY =
-      (parseFloat(cs.paddingTop || '0') || 0) +
-      (parseFloat(cs.paddingBottom || '0') || 0);
-    const borderY =
-      (parseFloat(cs.borderTopWidth || '0') || 0) +
-      (parseFloat(cs.borderBottomWidth || '0') || 0);
-
-    let total = base + (isBorderBox ? paddingY + borderY : 0);
-
-    const dpr =
-      typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
-    total = Math.ceil(total * dpr) / dpr;
-
-    return total;
-  }, []);
-
-  React.useEffect(() => {
-    if (roRef.current) {
-      roRef.current.disconnect();
-      roRef.current = null;
+  const measure = useCallback((index: number) => {
+    const pane = itemRefs.current[index]
+    const container = containerRef.current
+    if (!(pane && container)) {
+      return 0
     }
 
-    const pane = itemRefs.current[activeIndex];
-    const container = containerRef.current;
-    if (!pane || !container) return;
+    const base = pane.getBoundingClientRect().height || 0
+    const total = base + getContainerAdjustment(container)
 
-    setHeight(measure(activeIndex));
+    return normalizeHeight(total)
+  }, [])
+
+  useEffect(() => {
+    if (roRef.current) {
+      roRef.current.disconnect()
+      roRef.current = null
+    }
+
+    const pane = itemRefs.current[activeIndex]
+    const container = containerRef.current
+    if (!(pane && container)) {
+      return
+    }
+
+    setHeight(measure(activeIndex))
 
     const ro = new ResizeObserver(() => {
-      const next = measure(activeIndex);
-      requestAnimationFrame(() => setHeight(next));
-    });
+      const next = measure(activeIndex)
+      requestAnimationFrame(() => setHeight(next))
+    })
 
-    ro.observe(pane);
-    ro.observe(container);
+    ro.observe(pane)
+    ro.observe(container)
 
-    roRef.current = ro;
+    roRef.current = ro
     return () => {
-      ro.disconnect();
-      roRef.current = null;
-    };
-  }, [activeIndex, childrenArray.length, measure]);
-
-  React.useLayoutEffect(() => {
-    if (height === 0 && activeIndex >= 0) {
-      const next = measure(activeIndex);
-      if (next !== 0) setHeight(next);
+      ro.disconnect()
+      roRef.current = null
     }
-  }, [activeIndex, height, measure]);
+  }, [activeIndex, measure])
+
+  useLayoutEffect(() => {
+    if (height === 0 && activeIndex >= 0) {
+      const next = measure(activeIndex)
+      if (next !== 0) {
+        setHeight(next)
+      }
+    }
+  }, [activeIndex, height, measure])
 
   return (
     <motion.div
-      ref={containerRef}
-      data-slot="tabs-contents"
-      style={{ overflow: 'hidden' }}
       animate={{ height }}
+      data-slot="tabs-contents"
+      ref={containerRef}
+      style={{ overflow: 'hidden' }}
       transition={transition}
       {...props}
     >
       <motion.div
-        className="flex -mx-2"
-        animate={{ x: activeIndex * -100 + '%' }}
+        animate={{ x: `${activeIndex * -100}%` }}
+        className="-mx-2 flex"
         transition={transition}
       >
-        {childrenArray.map((child, index) => (
+        {items.map((child, index) => (
           <div
-            key={index}
-            ref={(el) => {
-              itemRefs.current[index] = el;
+            className="h-full w-full shrink-0 px-2"
+            key={child.props.value}
+            ref={el => {
+              itemRefs.current[index] = el
             }}
-            className="w-full shrink-0 px-2 h-full"
           >
             {child}
           </div>
         ))}
       </motion.div>
     </motion.div>
-  );
+  )
 }
 
 type TabsContentProps = WithAsChild<
   {
-    value: string;
-    children: React.ReactNode;
+    value: string
+    children: ReactNode
   } & HTMLMotionProps<'div'>
->;
+>
 
 function TabsContent({
   value,
@@ -315,24 +341,24 @@ function TabsContent({
   asChild = false,
   ...props
 }: TabsContentProps) {
-  const { activeValue } = useTabs();
-  const isActive = activeValue === value;
+  const { activeValue } = useTabs()
+  const isActive = activeValue === value
 
-  const Component = asChild ? Slot : motion.div;
+  const Component = asChild ? Slot : motion.div
 
   return (
     <Component
-      role="tabpanel"
-      data-slot="tabs-content"
-      inert={!isActive}
-      style={{ overflow: 'hidden', ...style }}
-      initial={{ filter: 'blur(0px)' }}
       animate={{ filter: isActive ? 'blur(0px)' : 'blur(4px)' }}
+      data-slot="tabs-content"
       exit={{ filter: 'blur(0px)' }}
+      inert={!isActive}
+      initial={{ filter: 'blur(0px)' }}
+      role="tabpanel"
+      style={{ overflow: 'hidden', ...style }}
       transition={{ type: 'spring', stiffness: 200, damping: 25 }}
       {...props}
     />
-  );
+  )
 }
 
 export {
@@ -352,4 +378,4 @@ export {
   type TabsContentsProps,
   type TabsContentProps,
   type TabsContextType,
-};
+}

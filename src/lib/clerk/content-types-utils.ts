@@ -8,12 +8,18 @@ import {
 import { contentRepository } from './content-repository'
 
 function assertSlug(slug: string) {
-  if (!slug || !isKebabCase(slug)) {
-    throw new Error('Slug inválido. Use apenas letras minúsculas, números e hífens.')
+  if (!(slug && isKebabCase(slug))) {
+    throw new Error(
+      'Slug inválido. Use apenas letras minúsculas, números e hífens.'
+    )
   }
 }
 
-function assertUniqueSlug(contentTypes: ContentType[], slug: string, id?: string) {
+function assertUniqueSlug(
+  contentTypes: ContentType[],
+  slug: string,
+  id?: string
+) {
   const exists = contentTypes.some(
     item => item.slug === slug && (id ? item.id !== id : true)
   )
@@ -79,17 +85,19 @@ export async function createContentType(
     if (!fields.includes(field.id)) {
       return field
     }
-    const attachedTo = Array.from(new Set([...(field.attachedTo ?? []), newItem.id]))
+    const attachedTo = Array.from(
+      new Set([...(field.attachedTo ?? []), newItem.id])
+    )
     return { ...field, attachedTo, updatedAt: timestamp }
   })
 
-  await contentRepository.saveStore(
+  await contentRepository.saveStore({
     organizationId,
     publicMetadata,
-    [...contentTypes, newItem],
-    updatedCustomFields,
-    contentEntries
-  )
+    contentTypes: [...contentTypes, newItem],
+    customFields: updatedCustomFields,
+    contentEntries,
+  })
 
   return newItem
 }
@@ -148,16 +156,20 @@ export async function updateContentType(
     if (attachedTo.size === (field.attachedTo ?? []).length) {
       return field
     }
-    return { ...field, attachedTo: Array.from(attachedTo), updatedAt: timestamp }
+    return {
+      ...field,
+      attachedTo: Array.from(attachedTo),
+      updatedAt: timestamp,
+    }
   })
 
-  await contentRepository.saveStore(
+  await contentRepository.saveStore({
     organizationId,
     publicMetadata,
-    updatedContentTypes,
-    updatedCustomFields,
-    contentEntries
-  )
+    contentTypes: updatedContentTypes,
+    customFields: updatedCustomFields,
+    contentEntries,
+  })
 
   return updatedContentTypes.find(item => item.id === id) || null
 }
@@ -183,13 +195,13 @@ export async function deleteContentType(organizationId: string, id: string) {
   const updatedContentEntries = { ...contentEntries }
   delete updatedContentEntries[id]
 
-  await contentRepository.saveStore(
+  await contentRepository.saveStore({
     organizationId,
     publicMetadata,
-    updatedContentTypes,
-    updatedCustomFields,
-    updatedContentEntries
-  )
+    contentTypes: updatedContentTypes,
+    customFields: updatedCustomFields,
+    contentEntries: updatedContentEntries,
+  })
 
   return { success: true }
 }

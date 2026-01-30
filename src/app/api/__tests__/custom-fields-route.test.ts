@@ -3,23 +3,29 @@ import { NextRequest } from 'next/server'
 import { GET, POST } from '@/app/api/custom-fields/route'
 import { PATCH, DELETE } from '@/app/api/custom-fields/[id]/route'
 
-vi.mock('@/lib/clerk/check-auth', () => {
-  return {
-    checkAuth: vi.fn(async () => ({
-      success: true,
-      data: { orgId: 'org_1', userId: 'user_1', tokenType: 'session_token' },
-    })),
-  }
-})
+vi.mock('@/lib/clerk/check-auth', () => ({
+  checkAuth: vi.fn(async () => ({
+    success: true,
+    data: { orgId: 'org_1', userId: 'user_1', tokenType: 'session_token' },
+  })),
+}))
 
-vi.mock('@/lib/clerk/custom-fields-utils', () => {
-  return {
-    getCustomFields: vi.fn(async () => [{ id: 'cf_1', label: 'Title', key: 'title' }]),
-    createCustomField: vi.fn(async () => ({ id: 'cf_new', label: 'Category', key: 'category' })),
-    updateCustomField: vi.fn(async () => ({ id: 'cf_1', label: 'Title', key: 'title' })),
-    deleteCustomField: vi.fn(async () => ({ success: true })),
-  }
-})
+vi.mock('@/lib/clerk/custom-fields-utils', () => ({
+  getCustomFields: vi.fn(async () => [
+    { id: 'cf_1', label: 'Title', key: 'title' },
+  ]),
+  createCustomField: vi.fn(async () => ({
+    id: 'cf_new',
+    label: 'Category',
+    key: 'category',
+  })),
+  updateCustomField: vi.fn(async () => ({
+    id: 'cf_1',
+    label: 'Title',
+    key: 'title',
+  })),
+  deleteCustomField: vi.fn(async () => ({ success: true })),
+}))
 
 describe('custom fields api route', () => {
   it('GET returns list', async () => {
@@ -42,7 +48,9 @@ describe('custom fields api route', () => {
   })
 
   it('POST returns 400 on error', async () => {
-    const { createCustomField } = await import('@/lib/clerk/custom-fields-utils')
+    const { createCustomField } = await import(
+      '@/lib/clerk/custom-fields-utils'
+    )
     vi.mocked(createCustomField).mockRejectedValueOnce(new Error('invalid'))
 
     const req = new NextRequest('http://localhost/api/custom-fields', {
@@ -77,7 +85,9 @@ describe('custom fields api route', () => {
   })
 
   it('DELETE returns 400 on error', async () => {
-    const { deleteCustomField } = await import('@/lib/clerk/custom-fields-utils')
+    const { deleteCustomField } = await import(
+      '@/lib/clerk/custom-fields-utils'
+    )
     vi.mocked(deleteCustomField).mockRejectedValueOnce(new Error('fail'))
     const res = await DELETE(new NextRequest('http://localhost'), {
       params: Promise.resolve({ id: 'cf_1' }),

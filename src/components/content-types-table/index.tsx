@@ -44,7 +44,11 @@ import { deleteContentTypeAction } from '@/lib/clerk/actions'
 import type { ContentType } from '@/lib/clerk/content-schemas'
 import { useTranslations } from '@/i18n/provider'
 
-export function ContentTypesTable({ data: initialData }: { data: ContentType[] }) {
+export function ContentTypesTable({
+  data: initialData,
+}: {
+  data: ContentType[]
+}) {
   const [data, setData] = useState<ContentType[]>(initialData)
   const [, setLoading] = useState(false)
   const t = useTranslations()
@@ -64,7 +68,9 @@ export function ContentTypesTable({ data: initialData }: { data: ContentType[] }
     try {
       await deleteContentTypeAction(contentType.id)
       toast.success(
-        t('routes.content-types.table.toasts.deleted', { name: contentType.name })
+        t('routes.content-types.table.toasts.deleted', {
+          name: contentType.name,
+        })
       )
     } catch (error) {
       setData(prevData => [...prevData, contentType])
@@ -148,7 +154,10 @@ export function ContentTypesTable({ data: initialData }: { data: ContentType[] }
                 ))
               ) : (
                 <TableRow>
-                  <TableCell className="h-24 text-center" colSpan={columns.length}>
+                  <TableCell
+                    className="h-24 text-center"
+                    colSpan={columns.length}
+                  >
                     <div className="flex flex-col items-center gap-2">
                       <span>{t('routes.content-types.table.empty.title')}</span>
                       <Button asChild size="sm" variant="outline">
@@ -183,7 +192,9 @@ export function ContentTypesTable({ data: initialData }: { data: ContentType[] }
               value={`${table.getState().pagination.pageSize}`}
             >
               <SelectTrigger className="w-20" id="rows-per-page" size="sm">
-                <SelectValue placeholder={table.getState().pagination.pageSize} />
+                <SelectValue
+                  placeholder={table.getState().pagination.pageSize}
+                />
               </SelectTrigger>
               <SelectContent side="top">
                 {[10, 20, 30, 40, 50].map(pageSize => (
@@ -217,7 +228,9 @@ export function ContentTypesTable({ data: initialData }: { data: ContentType[] }
               size="icon"
               variant="outline"
             >
-              <span className="sr-only">{t('common.aria.goToPreviousPage')}</span>
+              <span className="sr-only">
+                {t('common.aria.goToPreviousPage')}
+              </span>
               <ChevronLeft />
             </Button>
             <Button

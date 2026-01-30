@@ -4,8 +4,10 @@ import { clerkClient } from '@clerk/nextjs/server'
 
 const [organizationId, outputPath] = process.argv.slice(2)
 
-if (!organizationId || !outputPath) {
-  console.error('Usage: node scripts/export-content-metadata.mjs <orgId> <outputPath>')
+if (!(organizationId && outputPath)) {
+  console.error(
+    'Usage: node scripts/export-content-metadata.mjs <orgId> <outputPath>'
+  )
   process.exit(1)
 }
 

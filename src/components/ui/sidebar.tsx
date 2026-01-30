@@ -67,7 +67,6 @@ function SidebarProvider({
   open?: boolean
   onOpenChange?: (open: boolean) => void
 }) {
-  const t = useTranslations()
   const isMobile = useIsMobile()
   const [openMobile, setOpenMobile] = React.useState(false)
 
@@ -167,6 +166,7 @@ function Sidebar({
   collapsible?: 'offcanvas' | 'icon' | 'none'
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+  const t = useTranslations()
 
   if (collapsible === 'none') {
     return (
@@ -200,7 +200,9 @@ function Sidebar({
         >
           <SheetHeader className="sr-only">
             <SheetTitle>{t('common.sidebar.title')}</SheetTitle>
-            <SheetDescription>{t('common.sidebar.mobileDescription')}</SheetDescription>
+            <SheetDescription>
+              {t('common.sidebar.mobileDescription')}
+            </SheetDescription>
           </SheetHeader>
           <div className="flex h-full w-full flex-col">{children}</div>
         </SheetContent>

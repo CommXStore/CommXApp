@@ -10,13 +10,13 @@ type ContentStore = {
 
 type ContentRepository = {
   getStore: (organizationId: string) => Promise<ContentStore>
-  saveStore: (
-    organizationId: string,
-    publicMetadata: Record<string, unknown>,
-    contentTypes: ContentType[],
-    customFields: CustomField[],
+  saveStore: (input: {
+    organizationId: string
+    publicMetadata: Record<string, unknown>
+    contentTypes: ContentType[]
+    customFields: CustomField[]
     contentEntries: Record<string, ContentEntry[]>
-  ) => Promise<void>
+  }) => Promise<void>
 }
 
 export const contentRepository: ContentRepository = {
@@ -28,5 +28,3 @@ export const contentRepository: ContentRepository = {
   },
   saveStore: saveContentStore,
 }
-
-export { getContentStore, saveContentStore }

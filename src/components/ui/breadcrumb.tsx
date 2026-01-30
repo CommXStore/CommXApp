@@ -10,7 +10,11 @@ import { useTranslations } from '@/i18n/provider'
 function Breadcrumb({ ...props }: React.ComponentProps<'nav'>) {
   const t = useTranslations()
   return (
-    <nav aria-label={t('common.aria.breadcrumb')} data-slot="breadcrumb" {...props} />
+    <nav
+      aria-label={t('common.aria.breadcrumb')}
+      data-slot="breadcrumb"
+      {...props}
+    />
   )
 }
 

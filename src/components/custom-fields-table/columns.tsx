@@ -74,7 +74,11 @@ export const createCustomFieldColumns = ({
         return t('routes.custom-fields.table.values.unlinked')
       }
       return attachedIds
-        .map(typeId => contentTypeMap[typeId]?.name ?? t('routes.custom-fields.table.values.removedType'))
+        .map(
+          typeId =>
+            contentTypeMap[typeId]?.name ??
+            t('routes.custom-fields.table.values.removedType')
+        )
         .join(', ')
     },
   },

@@ -1,4 +1,3 @@
-import React from 'react'
 import { describe, expect, it, vi } from 'vitest'
 import { fireEvent, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -6,21 +5,19 @@ import { ContentEntryForm } from '@/components/content-entry-form'
 import type { ContentType, CustomField } from '@/lib/clerk/content-schemas'
 import { renderWithI18n } from '@/test/render'
 
-vi.mock('next/navigation', () => {
-  return {
-    useRouter: () => ({
-      push: vi.fn(),
-      refresh: vi.fn(),
-    }),
-  }
-})
+const CREATE_ENTRY_LABEL = /criar entrada/i
 
-vi.mock('@/lib/clerk/actions', () => {
-  return {
-    createContentEntryAction: vi.fn(async () => ({})),
-    updateContentEntryAction: vi.fn(async () => ({})),
-  }
-})
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    refresh: vi.fn(),
+  }),
+}))
+
+vi.mock('@/lib/clerk/actions', () => ({
+  createContentEntryAction: vi.fn(async () => ({})),
+  updateContentEntryAction: vi.fn(async () => ({})),
+}))
 
 const contentType: ContentType = {
   id: 'ct_1',
@@ -65,10 +62,16 @@ describe('ContentEntryForm', () => {
   it('shows required error when title is empty', async () => {
     const user = userEvent.setup()
     renderWithI18n(
-      <ContentEntryForm contentType={contentType} fields={fields} mode="create" />
+      <ContentEntryForm
+        contentType={contentType}
+        fields={fields}
+        mode="create"
+      />
     )
 
-    const submitButton = screen.getByRole('button', { name: /criar entrada/i })
+    const submitButton = screen.getByRole('button', {
+      name: CREATE_ENTRY_LABEL,
+    })
     const form = submitButton.closest('form')
     if (form) {
       form.noValidate = true
@@ -77,18 +80,24 @@ describe('ContentEntryForm', () => {
       await user.click(submitButton)
     }
     expect(
-      await screen.findByText((text) => text.includes('Campo obrigatório'))
+      await screen.findByText(text => text.includes('Campo obrigatório'))
     ).toBeInTheDocument()
   })
 
   it('shows slug error when invalid', async () => {
     const user = userEvent.setup()
     renderWithI18n(
-      <ContentEntryForm contentType={contentType} fields={fields} mode="create" />
+      <ContentEntryForm
+        contentType={contentType}
+        fields={fields}
+        mode="create"
+      />
     )
 
     await user.type(screen.getByLabelText('Slug'), 'Slug Inválido')
-    const submitButton = screen.getByRole('button', { name: /criar entrada/i })
+    const submitButton = screen.getByRole('button', {
+      name: CREATE_ENTRY_LABEL,
+    })
     const form = submitButton.closest('form')
     if (form) {
       form.noValidate = true
@@ -97,7 +106,7 @@ describe('ContentEntryForm', () => {
       await user.click(submitButton)
     }
     expect(
-      await screen.findByText((text) => text.includes('Slug inválido'))
+      await screen.findByText(text => text.includes('Slug inválido'))
     ).toBeInTheDocument()
   })
 })

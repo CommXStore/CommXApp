@@ -1,7 +1,13 @@
 'use client'
 
 import type * as React from 'react'
-import { Home, Layers, Settings2, SlidersHorizontal, SquareTerminal } from 'lucide-react'
+import {
+  Home,
+  Layers,
+  Settings2,
+  SlidersHorizontal,
+  SquareTerminal,
+} from 'lucide-react'
 import { ActiveOrg } from '@/components/sidebar/active-org'
 import { NavMain } from '@/components/sidebar/nav-main'
 import { NavSecondary } from '@/components/sidebar/nav-secondary'

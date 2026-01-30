@@ -49,7 +49,10 @@ type CustomFieldsTableProps = {
   contentTypes: ContentType[]
 }
 
-export function CustomFieldsTable({ data: initialData, contentTypes }: CustomFieldsTableProps) {
+export function CustomFieldsTable({
+  data: initialData,
+  contentTypes,
+}: CustomFieldsTableProps) {
   const [data, setData] = useState<CustomField[]>(initialData)
   const [, setLoading] = useState(false)
   const t = useTranslations()
@@ -78,7 +81,9 @@ export function CustomFieldsTable({ data: initialData, contentTypes }: CustomFie
     try {
       await deleteCustomFieldAction(customField.id)
       toast.success(
-        t('routes.custom-fields.form.toasts.deleted', { name: customField.label })
+        t('routes.custom-fields.form.toasts.deleted', {
+          name: customField.label,
+        })
       )
     } catch (error) {
       setData(prevData => [...prevData, customField])
@@ -88,7 +93,11 @@ export function CustomFieldsTable({ data: initialData, contentTypes }: CustomFie
     }
   }
 
-  const columns = createCustomFieldColumns({ t, deleteCustomField, contentTypeMap })
+  const columns = createCustomFieldColumns({
+    t,
+    deleteCustomField,
+    contentTypeMap,
+  })
 
   const table = useReactTable({
     data,
@@ -162,7 +171,10 @@ export function CustomFieldsTable({ data: initialData, contentTypes }: CustomFie
                 ))
               ) : (
                 <TableRow>
-                  <TableCell className="h-24 text-center" colSpan={columns.length}>
+                  <TableCell
+                    className="h-24 text-center"
+                    colSpan={columns.length}
+                  >
                     <div className="flex flex-col items-center gap-2">
                       <span>{t('routes.custom-fields.table.empty.title')}</span>
                       <Button asChild size="sm" variant="outline">
@@ -197,7 +209,9 @@ export function CustomFieldsTable({ data: initialData, contentTypes }: CustomFie
               value={`${table.getState().pagination.pageSize}`}
             >
               <SelectTrigger className="w-20" id="rows-per-page" size="sm">
-                <SelectValue placeholder={table.getState().pagination.pageSize} />
+                <SelectValue
+                  placeholder={table.getState().pagination.pageSize}
+                />
               </SelectTrigger>
               <SelectContent side="top">
                 {[10, 20, 30, 40, 50].map(pageSize => (
@@ -231,7 +245,9 @@ export function CustomFieldsTable({ data: initialData, contentTypes }: CustomFie
               size="icon"
               variant="outline"
             >
-              <span className="sr-only">{t('common.aria.goToPreviousPage')}</span>
+              <span className="sr-only">
+                {t('common.aria.goToPreviousPage')}
+              </span>
               <ChevronLeft />
             </Button>
             <Button
