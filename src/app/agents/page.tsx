@@ -1,5 +1,5 @@
 import { DataTable } from '@/components/data-table'
-import { getAgentsAction } from '@/lib/clerk/actions'
+import { getAgentsAction } from '@/lib/clerk/actions/agents'
 
 export const dynamic = 'force-dynamic'
 

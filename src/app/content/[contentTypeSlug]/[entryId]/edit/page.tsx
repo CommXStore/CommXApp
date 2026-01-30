@@ -1,6 +1,6 @@
 import { notFound, redirect } from 'next/navigation'
 import { ContentEntryForm } from '@/components/content-entry-form'
-import { getContentEntryAction } from '@/lib/clerk/actions'
+import { getContentEntryAction } from '@/lib/clerk/actions/content-entries'
 import { getTranslations } from '@/i18n/server'
 
 type PageProps = {

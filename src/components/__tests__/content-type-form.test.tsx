@@ -14,7 +14,7 @@ vi.mock('next/navigation', () => ({
   }),
 }))
 
-vi.mock('@/lib/clerk/actions', () => ({
+vi.mock('@/lib/clerk/actions/content-types', () => ({
   createContentTypeAction: vi.fn(async () => ({})),
   updateContentTypeAction: vi.fn(async () => ({})),
 }))

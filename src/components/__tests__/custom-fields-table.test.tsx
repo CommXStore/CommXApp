@@ -17,7 +17,7 @@ vi.mock('next/link', () => ({
   }) => <a href={href}>{children}</a>,
 }))
 
-vi.mock('@/lib/clerk/actions', () => ({
+vi.mock('@/lib/clerk/actions/custom-fields', () => ({
   deleteCustomFieldAction: vi.fn(async () => ({})),
 }))
 

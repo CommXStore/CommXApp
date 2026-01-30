@@ -40,7 +40,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { createContentTypeColumns } from './columns'
-import { deleteContentTypeAction } from '@/lib/clerk/actions'
+import { deleteContentTypeAction } from '@/lib/clerk/actions/content-types'
 import type { ContentType } from '@/lib/clerk/content-schemas'
 import { useTranslations } from '@/i18n/provider'
 

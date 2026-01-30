@@ -1,5 +1,5 @@
 import { CustomFieldForm } from '@/components/custom-field-form'
-import { getContentTypesAction } from '@/lib/clerk/actions'
+import { getContentTypesAction } from '@/lib/clerk/actions/content-types'
 import { requireOrgAdmin } from '@/lib/clerk/require-org-admin'
 import { getTranslations } from '@/i18n/server'
 

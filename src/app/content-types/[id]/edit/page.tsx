@@ -1,9 +1,7 @@
 import { notFound } from 'next/navigation'
 import { ContentTypeForm } from '@/components/content-type-form'
-import {
-  getContentTypeAction,
-  getCustomFieldsAction,
-} from '@/lib/clerk/actions'
+import { getContentTypeAction } from '@/lib/clerk/actions/content-types'
+import { getCustomFieldsAction } from '@/lib/clerk/actions/custom-fields'
 import { requireOrgAdmin } from '@/lib/clerk/require-org-admin'
 import { getTranslations } from '@/i18n/server'
 

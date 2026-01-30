@@ -1,5 +1,5 @@
 import { ContentEntryForm } from '@/components/content-entry-form'
-import { getContentEntriesAction } from '@/lib/clerk/actions'
+import { getContentEntriesAction } from '@/lib/clerk/actions/content-entries'
 import { redirect } from 'next/navigation'
 import { getTranslations } from '@/i18n/server'
 

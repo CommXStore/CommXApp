@@ -1,8 +1,6 @@
 import { CustomFieldsTable } from '@/components/custom-fields-table'
-import {
-  getContentTypesAction,
-  getCustomFieldsAction,
-} from '@/lib/clerk/actions'
+import { getContentTypesAction } from '@/lib/clerk/actions/content-types'
+import { getCustomFieldsAction } from '@/lib/clerk/actions/custom-fields'
 import { requireOrgAdmin } from '@/lib/clerk/require-org-admin'
 
 export const dynamic = 'force-dynamic'

@@ -1,5 +1,5 @@
 import { ContentTypesTable } from '@/components/content-types-table'
-import { getContentTypesAction } from '@/lib/clerk/actions'
+import { getContentTypesAction } from '@/lib/clerk/actions/content-types'
 import { requireOrgAdmin } from '@/lib/clerk/require-org-admin'
 
 export const dynamic = 'force-dynamic'

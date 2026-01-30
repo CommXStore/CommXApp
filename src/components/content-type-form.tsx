@@ -31,7 +31,7 @@ import {
 import {
   createContentTypeAction,
   updateContentTypeAction,
-} from '@/lib/clerk/actions'
+} from '@/lib/clerk/actions/content-types'
 import { isKebabCase } from '@/lib/content-utils'
 import type { ContentType, CustomField } from '@/lib/clerk/content-schemas'
 import { useTranslations } from '@/i18n/provider'

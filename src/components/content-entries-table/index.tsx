@@ -41,7 +41,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { createContentEntryColumns } from './columns'
-import { deleteContentEntryAction } from '@/lib/clerk/actions'
+import { deleteContentEntryAction } from '@/lib/clerk/actions/content-entries'
 import type { ContentEntry, ContentType } from '@/lib/clerk/content-schemas'
 import {
   Dialog,

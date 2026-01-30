@@ -25,7 +25,7 @@ import { CustomFieldInput } from '@/components/custom-field-input'
 import {
   createContentEntryAction,
   updateContentEntryAction,
-} from '@/lib/clerk/actions'
+} from '@/lib/clerk/actions/content-entries'
 import { isKebabCase } from '@/lib/content-utils'
 import type {
   ContentEntry,

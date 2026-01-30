@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { getContentTypesViewerAction } from '@/lib/clerk/actions'
+import { getContentTypesViewerAction } from '@/lib/clerk/actions/content-types'
 
 export const dynamic = 'force-dynamic'
 

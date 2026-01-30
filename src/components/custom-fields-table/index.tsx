@@ -40,7 +40,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { createCustomFieldColumns } from './columns'
-import { deleteCustomFieldAction } from '@/lib/clerk/actions'
+import { deleteCustomFieldAction } from '@/lib/clerk/actions/custom-fields'
 import type { ContentType, CustomField } from '@/lib/clerk/content-schemas'
 import { useTranslations } from '@/i18n/provider'
 

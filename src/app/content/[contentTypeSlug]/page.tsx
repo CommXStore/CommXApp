@@ -1,5 +1,5 @@
 import { ContentEntriesTable } from '@/components/content-entries-table'
-import { getContentEntriesAction } from '@/lib/clerk/actions'
+import { getContentEntriesAction } from '@/lib/clerk/actions/content-entries'
 import { redirect } from 'next/navigation'
 import { getTranslations } from '@/i18n/server'
 import { defaultLocale } from '@/i18n/config'

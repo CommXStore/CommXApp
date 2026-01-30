@@ -40,7 +40,10 @@ import {
 } from '@/components/ui/table'
 import { CreateAgentButton } from '@/components/create-agent'
 import { createColumns } from './columns'
-import { createAgentAction, deleteAgentAction } from '@/lib/clerk/actions'
+import {
+  createAgentAction,
+  deleteAgentAction,
+} from '@/lib/clerk/actions/agents'
 import type { Agent } from '@/lib/clerk/metadata-utils'
 import { useTranslations } from '@/i18n/provider'
 

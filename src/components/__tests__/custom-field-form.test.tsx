@@ -14,7 +14,7 @@ vi.mock('next/navigation', () => ({
   }),
 }))
 
-vi.mock('@/lib/clerk/actions', () => ({
+vi.mock('@/lib/clerk/actions/custom-fields', () => ({
   createCustomFieldAction: vi.fn(async () => ({})),
   updateCustomFieldAction: vi.fn(async () => ({})),
 }))

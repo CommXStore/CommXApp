@@ -22,15 +22,21 @@ vi.mock('next/navigation', () => ({
   }),
 }))
 
-vi.mock('@/lib/clerk/actions', () => ({
+vi.mock('@/lib/clerk/actions/content-types', () => ({
   createContentTypeAction: (...args: unknown[]) =>
     createContentTypeAction(...args),
+  updateContentTypeAction: vi.fn(async () => ({})),
+}))
+
+vi.mock('@/lib/clerk/actions/custom-fields', () => ({
   createCustomFieldAction: (...args: unknown[]) =>
     createCustomFieldAction(...args),
+  updateCustomFieldAction: vi.fn(async () => ({})),
+}))
+
+vi.mock('@/lib/clerk/actions/content-entries', () => ({
   createContentEntryAction: (...args: unknown[]) =>
     createContentEntryAction(...args),
-  updateContentTypeAction: vi.fn(async () => ({})),
-  updateCustomFieldAction: vi.fn(async () => ({})),
   updateContentEntryAction: vi.fn(async () => ({})),
 }))
 
