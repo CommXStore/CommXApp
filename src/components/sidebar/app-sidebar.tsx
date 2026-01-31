@@ -6,8 +6,10 @@ import {
   BotMessageSquare,
   Layers,
   Bolt,
+  KeyRound,
   SlidersHorizontal,
   TrendingUp,
+  Users,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { ActiveOrg } from '@/components/sidebar/active-org'
@@ -128,24 +130,30 @@ export function AppSidebar({ ...props }: SidebarProps) {
       title: t('common.nav.settings'),
       url: '/dashboard/settings',
       icon: Bolt,
-      items: [
-        ...(isAdmin
-          ? [
-              {
-                title: t('common.nav.members'),
-                url: '/dashboard/settings/organization-members',
-              },
-              {
-                title: t('common.nav.paymentProviders'),
-                url: '/dashboard/settings/payment-providers',
-              },
-            ]
-          : []),
-        {
-          title: t('common.nav.apiKeys'),
-          url: '/dashboard/settings/api-keys',
-        },
-      ],
+      items: isAdmin
+        ? [
+            {
+              title: t('common.nav.paymentProviders'),
+              url: '/dashboard/settings/payment-providers',
+            },
+          ]
+        : [],
+    },
+    ...(isAdmin
+      ? [
+          {
+            title: t('common.nav.members'),
+            url: '/dashboard/settings/organization-members',
+            icon: Users,
+            items: [],
+          },
+        ]
+      : []),
+    {
+      title: t('common.nav.apiKeys'),
+      url: '/dashboard/settings/api-keys',
+      icon: KeyRound,
+      items: [],
     },
   ]
 
