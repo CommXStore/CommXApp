@@ -26,6 +26,10 @@ const getSubscriptionList = vi.hoisted(() =>
     data: [],
   }))
 )
+const getOrganization = vi.hoisted(() =>
+  vi.fn(async () => ({ id: 'org_1' }))
+)
+const deleteOrganizationMembership = vi.hoisted(() => vi.fn(async () => ({})))
 const upsertUserEntitlements = vi.hoisted(() =>
   vi.fn(async () => ({
     userId: 'user_1',
@@ -42,6 +46,7 @@ const verifyWebhook = vi.hoisted(() => vi.fn())
 vi.mock('@clerk/nextjs/server', () => ({
   clerkClient: vi.fn(async () => ({
     billing: { getPlan, getPlanList, getSubscriptionList },
+    organizations: { getOrganization, deleteOrganizationMembership },
   })),
 }))
 
@@ -174,5 +179,34 @@ describe('clerk webhook route', () => {
         planId: 'plan_active',
       })
     )
+  })
+
+  it('revokes memberships for ended subscriptions', async () => {
+    process.env.CLERK_WEBHOOK_SECRET = 'whsec_test'
+    getPlan.mockResolvedValueOnce({
+      slug: 'starter',
+      name: 'Starter',
+      features: ['commx_shop', 'another_app'],
+    })
+    verifyWebhook.mockResolvedValueOnce({
+      type: 'subscriptionItem.ended',
+      data: {
+        status: 'ended',
+        plan_id: 'plan_1',
+        payer: { user_id: 'user_1' },
+      },
+    })
+    const req = buildRequest('{"type":"subscriptionItem.ended"}', {
+      'svix-id': 'msg_1',
+      'svix-timestamp': '123',
+      'svix-signature': 'v1,signature',
+    })
+    const res = await POST(req)
+    expect(res.status).toBe(200)
+    expect(deleteOrganizationMembership).toHaveBeenCalledWith({
+      organizationId: 'org_1',
+      userId: 'user_1',
+    })
+    expect(getOrganization).toHaveBeenCalledWith({ slug: 'commx-shop' })
   })
 })

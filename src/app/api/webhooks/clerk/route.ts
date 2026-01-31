@@ -110,6 +110,36 @@ async function resolveBillingPlan(
   return null
 }
 
+async function revokeMembershipsForFeatures(
+  client: Awaited<ReturnType<typeof clerkClient>>,
+  userId: string,
+  features: string[]
+) {
+  if (!userId || features.length === 0) {
+    return
+  }
+
+  const slugs = features.map(feature => feature.replaceAll('_', '-'))
+  await Promise.all(
+    slugs.map(async slug => {
+      try {
+        const organization = await client.organizations.getOrganization({
+          slug,
+        })
+        await client.organizations.deleteOrganizationMembership({
+          organizationId: organization.id,
+          userId,
+        })
+      } catch (error) {
+        logger.warn(
+          { err: error, userId, slug },
+          'Failed to revoke organization membership.'
+        )
+      }
+    })
+  )
+}
+
 export async function POST(req: NextRequest) {
   try {
     const signingSecret = (
@@ -213,6 +243,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { error: 'Entitlements persistence failed.' },
         { status: 503 }
+      )
+    }
+
+    if (effectivePayload.status === 'ended') {
+      await revokeMembershipsForFeatures(
+        client,
+        effectivePayload.userId,
+        features
       )
     }
 
