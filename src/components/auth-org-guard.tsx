@@ -10,13 +10,26 @@ type EnsureActiveResponse =
   | { action: 'none' }
   | { action: 'switch'; orgId: string; orgName: string }
 
-export function AuthOrgGuard() {
+type AuthOrgGuardProps = {
+  initialNotice?: { orgId: string; orgName: string } | null
+}
+
+export function AuthOrgGuard({ initialNotice }: AuthOrgGuardProps) {
   const t = useTranslations()
   const { organization, isLoaded: isOrgLoaded } = useOrganization()
   const { isLoaded, setActive } = useOrganizationList()
   const didRun = useRef(false)
+  const didNotify = useRef(false)
 
   useEffect(() => {
+    if (initialNotice && !didNotify.current) {
+      didNotify.current = true
+      toast.info(
+        t('common.organization.autoSwitch', { org: initialNotice.orgName })
+      )
+      return
+    }
+
     if (!isLoaded || !isOrgLoaded || didRun.current) {
       return
     }
@@ -38,16 +51,24 @@ export function AuthOrgGuard() {
           return
         }
         await setActive({ organization: payload.orgId })
-        toast.info(
-          t('common.organization.autoSwitch', { org: payload.orgName })
-        )
+        const noticeUrl = new URL(window.location.href)
+        noticeUrl.searchParams.set('orgNotice', payload.orgId)
+        noticeUrl.searchParams.set('orgNoticeName', payload.orgName)
+        window.location.replace(noticeUrl.toString())
       } catch {
         // No-op: avoid blocking auth flow on guard failure.
       }
     }
 
     void ensureActiveOrg()
-  }, [isLoaded, isOrgLoaded, organization?.id, setActive, t])
+  }, [
+    initialNotice,
+    isLoaded,
+    isOrgLoaded,
+    organization?.id,
+    setActive,
+    t,
+  ])
 
   return null
 }
