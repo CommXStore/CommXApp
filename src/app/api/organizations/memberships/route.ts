@@ -181,15 +181,37 @@ async function resolveOrgSlug(
   return { orgSlug, response: null }
 }
 
-async function validateEntitlements(authResult: AuthResult, orgSlug: string) {
-  const decision = await entitlements.canJoinOrg(
-    authResult.userId ?? '',
-    orgSlug
-  )
-  if (!decision.allowed) {
-    return NextResponse.json({ error: decision.reason }, { status: 403 })
+async function validateEntitlements(
+  authResult: AuthResult,
+  orgSlug: string,
+  req: NextRequest
+) {
+  try {
+    const decision = await entitlements.canJoinOrg(
+      authResult.userId ?? '',
+      orgSlug
+    )
+    if (!decision.allowed) {
+      return NextResponse.json({ error: decision.reason }, { status: 403 })
+    }
+    return null
+  } catch (error) {
+    logger.error(
+      {
+        err: error,
+        ...buildLogContext(
+          'POST /api/organizations/memberships',
+          { orgSlug, userId: authResult.userId },
+          req
+        ),
+      },
+      'Entitlements check failed.'
+    )
+    return NextResponse.json(
+      { error: 'Subscription check unavailable. Please try again later.' },
+      { status: 503 }
+    )
   }
-  return null
 }
 
 type MembershipDataOptions = {
@@ -274,7 +296,11 @@ async function handleCreateMembership(
       )
     }
 
-    const entitlementResponse = await validateEntitlements(authResult, orgSlug)
+    const entitlementResponse = await validateEntitlements(
+      authResult,
+      orgSlug,
+      req
+    )
     if (entitlementResponse) {
       return entitlementResponse
     }
