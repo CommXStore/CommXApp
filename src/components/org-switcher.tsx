@@ -132,14 +132,14 @@ export function OrgSwitcher() {
           <span className="flex min-w-0 items-center gap-2">
             <span
               className={cn(
-                'flex size-7 items-center justify-center rounded-md border bg-muted font-semibold text-muted-foreground text-xs uppercase',
+                'flex size-7 items-center justify-center rounded-full border bg-muted font-semibold text-muted-foreground text-xs uppercase',
                 activeImage ? 'border-transparent bg-transparent p-0' : ''
               )}
             >
               {activeImage ? (
                 <Image
                   alt={activeName}
-                  className="size-7 rounded-md object-cover"
+                  className="size-7 rounded-full object-cover"
                   height={28}
                   src={activeImage}
                   width={28}
@@ -165,11 +165,11 @@ export function OrgSwitcher() {
               key={membership.id}
               onSelect={() => handleSelect(membership.organization.id)}
             >
-              <span className="flex size-6 items-center justify-center rounded-md border bg-muted font-semibold text-[10px] text-muted-foreground uppercase">
+              <span className="flex size-6 items-center justify-center rounded-full border bg-muted font-semibold text-[10px] text-muted-foreground uppercase">
                 {membership.organization.imageUrl ? (
                   <Image
                     alt={membership.organization.name}
-                    className="size-6 rounded-md object-cover"
+                    className="size-6 rounded-full object-cover"
                     height={24}
                     src={membership.organization.imageUrl}
                     width={24}
@@ -214,11 +214,11 @@ export function OrgSwitcher() {
                   router.push(`/dashboard/organizations/${org.slug}/join`)
                 }
               >
-                <span className="flex size-6 items-center justify-center rounded-md border bg-muted font-semibold text-[10px] text-muted-foreground uppercase">
+                <span className="flex size-6 items-center justify-center rounded-full border bg-muted font-semibold text-[10px] text-muted-foreground uppercase">
                   {org.imageUrl ? (
                     <Image
                       alt={org.name}
-                      className="size-6 rounded-md object-cover"
+                      className="size-6 rounded-full object-cover"
                       height={24}
                       src={org.imageUrl}
                       width={24}
