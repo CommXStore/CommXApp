@@ -22,6 +22,7 @@
     "prepare": "lefthook install"
   },
   "dependencies": {
+    "@clerk/localizations": "^3.35.3",
     "@clerk/nextjs": "^6.35.2",
     "@clerk/themes": "^2.4.37",
     "@clerk/types": "^4.101.0",
