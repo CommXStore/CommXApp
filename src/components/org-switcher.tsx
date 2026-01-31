@@ -131,7 +131,7 @@ export function OrgSwitcher() {
     return (
       <SidebarMenuButton
         aria-label={t('common.organization.switcher')}
-        className="w-full justify-between gap-2 pl-0"
+        className="w-full justify-between gap-2 pl-0 hover:bg-transparent hover:text-sidebar-foreground"
         disabled
         size="lg"
       >
@@ -162,7 +162,7 @@ export function OrgSwitcher() {
       <DropdownMenuTrigger asChild>
         <SidebarMenuButton
           aria-label={t('common.organization.switcher')}
-          className="w-full justify-between gap-2 pl-0"
+          className="w-full justify-between gap-2 pl-0 hover:bg-transparent hover:text-sidebar-foreground"
           disabled={!isLoaded}
           size="lg"
         >
