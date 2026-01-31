@@ -104,14 +104,17 @@ function getOrganizationId(
   authResult: AuthResult,
   payload: CreateOrganizationMemberPayload
 ) {
-  const orgId = authResult.orgId ?? payload.organizationId
   if (
     payload.organizationId &&
     authResult.orgId &&
     payload.organizationId !== authResult.orgId
   ) {
+    if (payload.joinAsCurrentUser) {
+      return { orgId: payload.organizationId, mismatch: false }
+    }
     return { orgId: null, mismatch: true }
   }
+  const orgId = authResult.orgId ?? payload.organizationId
   return { orgId, mismatch: false }
 }
 
