@@ -6,6 +6,7 @@ import { ChevronDown } from 'lucide-react'
 import { useOrganization, useOrganizationList } from '@clerk/nextjs'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { useTranslations } from '@/i18n/provider'
 import { SidebarMenuButton } from '@/components/ui/sidebar'
 import {
@@ -20,6 +21,7 @@ import {
 export function OrgSwitcher() {
   const t = useTranslations()
   const router = useRouter()
+  const isMobile = useIsMobile()
   const { organization } = useOrganization()
   const { isLoaded, setActive, userMemberships, userSuggestions } =
     useOrganizationList({
@@ -125,7 +127,7 @@ export function OrgSwitcher() {
       <DropdownMenuTrigger asChild>
         <SidebarMenuButton
           aria-label={t('common.organization.switcher')}
-          className="w-full justify-between gap-2"
+          className="w-full justify-between gap-2 pl-0"
           disabled={!isLoaded}
           size="lg"
         >
@@ -152,7 +154,28 @@ export function OrgSwitcher() {
               {activeName}
             </span>
           </span>
-          <ChevronDown className="size-4 shrink-0 opacity-70" />
+          {isMobile ? (
+            <span
+              className={cn(
+                'flex size-7 items-center justify-center rounded-full border bg-muted font-semibold text-muted-foreground text-xs uppercase',
+                activeImage ? 'border-transparent bg-transparent p-0' : ''
+              )}
+            >
+              {activeImage ? (
+                <Image
+                  alt={activeName}
+                  className="size-7 rounded-full object-cover"
+                  height={28}
+                  src={activeImage}
+                  width={28}
+                />
+              ) : (
+                activeName.slice(0, 2)
+              )}
+            </span>
+          ) : (
+            <ChevronDown className="size-4 shrink-0 opacity-70" />
+          )}
         </SidebarMenuButton>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-64">
