@@ -86,7 +86,7 @@ export default async function RootLayout({
   const messages = await getMessages(locale)
 
   return (
-    <ClerkProvider>
+    <ClerkProvider locale={locale}>
       <html
         className={cn(geistSans.variable, jetBrainsMono.variable)}
         lang={locale}
