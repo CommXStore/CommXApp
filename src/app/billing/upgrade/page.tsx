@@ -6,11 +6,11 @@ type BillingUpgradePageProps = {
   searchParams: Promise<{ redirect?: string }>
 }
 
-function buildAbsoluteUrl(path: string) {
+async function buildAbsoluteUrl(path: string) {
   if (/^https?:\/\//i.test(path)) {
     return path
   }
-  const headerStore = headers()
+  const headerStore = await headers()
   const host = headerStore.get('x-forwarded-host') ?? headerStore.get('host')
   const proto = headerStore.get('x-forwarded-proto') ?? 'http'
   if (!host) {
@@ -24,7 +24,7 @@ export default async function BillingUpgradePage({
 }: BillingUpgradePageProps) {
   const t = await getTranslations()
   const { redirect } = await searchParams
-  const redirectUrl = redirect ? buildAbsoluteUrl(redirect) : undefined
+  const redirectUrl = redirect ? await buildAbsoluteUrl(redirect) : undefined
 
   return (
     <main className="flex min-h-[calc(100vh-4rem)] w-full items-start justify-center px-4 py-10">
