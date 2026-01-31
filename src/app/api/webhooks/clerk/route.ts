@@ -61,6 +61,20 @@ export async function POST(req: NextRequest) {
         { status: 500 }
       )
     }
+    const rawBody = await req.clone().text()
+    if (!rawBody) {
+      logger.error(
+        {
+          ...buildLogContext('POST /api/webhooks/clerk', undefined, req),
+        },
+        'Webhook payload is empty.'
+      )
+      return NextResponse.json(
+        { error: 'Webhook payload is empty.' },
+        { status: 400 }
+      )
+    }
+
     const event = await verifyWebhook(req, {
       signingSecret,
     })
