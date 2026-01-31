@@ -57,7 +57,7 @@
     }
   },
   "organization": {
-    "label": "Organizations",
+    "label": "Apps",
     "switcher": "Select organization",
     "active": "Active",
     "available": "Available",
