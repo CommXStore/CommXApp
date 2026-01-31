@@ -7,7 +7,6 @@ import {
   Layers,
   Bolt,
   SlidersHorizontal,
-  SquareTerminal,
   TrendingUp,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
