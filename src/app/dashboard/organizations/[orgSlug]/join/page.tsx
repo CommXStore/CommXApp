@@ -23,14 +23,15 @@ export default async function JoinOrganizationPage({
     .catch(() => notFound())
 
   if (userId) {
-    const membership = await client.organizations
-      .getOrganizationMembership({
+    const memberships = await client.organizations
+      .getOrganizationMembershipList({
         organizationId: organization.id,
-        userId,
+        userId: [userId],
+        limit: 1,
       })
       .catch(() => null)
 
-    if (membership) {
+    if (memberships && memberships.data.length > 0) {
       redirect('/dashboard')
     }
   }
