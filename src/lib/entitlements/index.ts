@@ -10,6 +10,10 @@ type EntitlementsProvider = {
   canJoinOrg: (userId: string, orgSlug: string) => Promise<EntitlementDecision>
 }
 
+function normalizeOrgSlug(value: string) {
+  return value.replaceAll('-', '_')
+}
+
 const getPlanFeatureSlugs = cache(async () => {
   const client = await clerkClient()
   const plans = await client.billing.getPlanList()
@@ -30,8 +34,9 @@ export async function requiresSubscriptionForOrg(
   if (!orgSlug) {
     return false
   }
+  const normalized = normalizeOrgSlug(orgSlug)
   const slugs = await getPlanFeatureSlugs()
-  return slugs.includes(orgSlug)
+  return slugs.includes(normalized)
 }
 
 const clerkEntitlements: EntitlementsProvider = {
@@ -55,7 +60,7 @@ const clerkEntitlements: EntitlementsProvider = {
 
     const plan = await client.billing.getPlan(active.planId)
     const features = normalizeFeatureList(plan.features)
-    if (features.includes(orgSlug)) {
+    if (features.includes(normalizeOrgSlug(orgSlug))) {
       return { allowed: true }
     }
     return { allowed: false, reason: 'Plan does not include this app.' }
@@ -82,7 +87,7 @@ const webhookEntitlements: EntitlementsProvider = {
     if (record.status !== 'active') {
       return { allowed: false, reason: 'Subscription is not active.' }
     }
-    if (record.features.includes(orgSlug)) {
+    if (record.features.includes(normalizeOrgSlug(orgSlug))) {
       return { allowed: true }
     }
     return { allowed: false, reason: 'Plan does not include this app.' }
