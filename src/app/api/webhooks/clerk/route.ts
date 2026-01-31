@@ -34,6 +34,13 @@ type BillingPlan = {
   features?: unknown
 }
 
+type SubscriptionRecord = {
+  status?: string | null
+  planId?: string | null
+  planSlug?: string | null
+  planName?: string | null
+}
+
 function getSubscriptionItemPayload(
   data: BillingSubscriptionItemPayload
 ): SubscriptionItemPayload | null {
@@ -47,6 +54,37 @@ function getSubscriptionItemPayload(
     planSlug: data.plan?.slug ?? null,
     planName: data.plan?.name ?? null,
     status: data.status,
+  }
+}
+
+async function resolveEffectiveSubscription(
+  client: Awaited<ReturnType<typeof clerkClient>>,
+  payload: SubscriptionItemPayload
+): Promise<SubscriptionItemPayload> {
+  if (payload.status === 'active') {
+    return payload
+  }
+  const billing = client.billing as {
+    getSubscriptionList?: (input: {
+      userId: string
+    }) => Promise<{ data?: SubscriptionRecord[] }>
+  }
+  if (typeof billing.getSubscriptionList !== 'function') {
+    return payload
+  }
+  const subscriptions = await billing.getSubscriptionList({
+    userId: payload.userId,
+  })
+  const active = subscriptions.data?.find(item => item.status === 'active')
+  if (!active) {
+    return payload
+  }
+  return {
+    userId: payload.userId,
+    status: 'active',
+    planId: active.planId ?? payload.planId,
+    planSlug: active.planSlug ?? payload.planSlug,
+    planName: active.planName ?? payload.planName,
   }
 }
 
@@ -135,12 +173,16 @@ export async function POST(req: NextRequest) {
     }
 
     const client = await clerkClient()
-    const plan = await resolveBillingPlan(client, payload)
-    if (payload.planId && !plan) {
+    const effectivePayload = await resolveEffectiveSubscription(
+      client,
+      payload
+    )
+    const plan = await resolveBillingPlan(client, effectivePayload)
+    if (effectivePayload.planId && !plan) {
       logger.error(
         {
           ...buildLogContext('POST /api/webhooks/clerk', undefined, req),
-          planId: payload.planId,
+          planId: effectivePayload.planId,
         },
         'Unable to resolve billing plan.'
       )
@@ -153,11 +195,11 @@ export async function POST(req: NextRequest) {
 
     try {
       await upsertUserEntitlements({
-        userId: payload.userId,
-        status: payload.status,
-        planId: payload.planId,
-        planSlug: plan?.slug ?? payload.planSlug,
-        planName: plan?.name ?? payload.planName,
+        userId: effectivePayload.userId,
+        status: effectivePayload.status,
+        planId: effectivePayload.planId,
+        planSlug: plan?.slug ?? effectivePayload.planSlug,
+        planName: plan?.name ?? effectivePayload.planName,
         features,
       })
     } catch (error) {
