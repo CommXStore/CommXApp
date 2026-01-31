@@ -3,6 +3,7 @@
 import { useEffect, useState, type ComponentProps } from 'react'
 import {
   Home,
+  BotMessageSquare,
   Layers,
   Bolt,
   SlidersHorizontal,
@@ -93,7 +94,7 @@ export function AppSidebar({ ...props }: SidebarProps) {
     {
       title: t('common.nav.agents'),
       url: '/agents',
-      icon: SquareTerminal,
+      icon: BotMessageSquare,
       items: [],
     },
     ...contentTypeLinks.map(item => ({
