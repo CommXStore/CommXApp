@@ -45,9 +45,10 @@ function getSubscriptionItemPayload(
 
 export async function POST(req: NextRequest) {
   try {
-    const signingSecret =
+    const signingSecret = (
       process.env.CLERK_WEBHOOK_SECRET ??
       process.env.CLERK_WEBHOOK_SIGNING_SECRET
+    )?.trim()
     if (!signingSecret) {
       logger.error(
         {
