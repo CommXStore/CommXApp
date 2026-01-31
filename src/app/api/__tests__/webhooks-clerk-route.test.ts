@@ -242,4 +242,41 @@ describe('clerk webhook route', () => {
     expect(res.status).toBe(200)
     expect(upsertUserEntitlements).not.toHaveBeenCalled()
   })
+
+  it('skips active event without features when existing entitlements have features', async () => {
+    process.env.CLERK_WEBHOOK_SECRET = 'whsec_test'
+    const { getUserEntitlements } = await import(
+      '@/lib/supabase/entitlements-store'
+    )
+    vi.mocked(getUserEntitlements).mockResolvedValueOnce({
+      userId: 'user_1',
+      status: 'active',
+      planId: 'plan_active',
+      planSlug: 'pro',
+      planName: 'Pro',
+      features: ['commx_shop'],
+      updatedAt: new Date().toISOString(),
+    })
+    getPlan.mockResolvedValueOnce({
+      slug: 'free_user',
+      name: 'Free',
+      features: [],
+    })
+    verifyWebhook.mockResolvedValueOnce({
+      type: 'subscriptionItem.active',
+      data: {
+        status: 'active',
+        plan_id: 'plan_free',
+        payer: { user_id: 'user_1' },
+      },
+    })
+    const req = buildRequest('{"type":"subscriptionItem.active"}', {
+      'svix-id': 'msg_1',
+      'svix-timestamp': '123',
+      'svix-signature': 'v1,signature',
+    })
+    const res = await POST(req)
+    expect(res.status).toBe(200)
+    expect(upsertUserEntitlements).not.toHaveBeenCalled()
+  })
 })
