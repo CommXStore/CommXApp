@@ -1,5 +1,53 @@
 {
   "apiKeys": {
     "title": "Chaves de API"
+  },
+  "paymentProviders": {
+    "title": "Provedores de pagamento",
+    "description": "Gerencie os provedores usados para receber webhooks externos de pagamento.",
+    "form": {
+      "nameLabel": "Nome",
+      "namePlaceholder": "Ex: Stripe",
+      "typeLabel": "Tipo",
+      "typePlaceholder": "Ex: stripe",
+      "secretLabel": "Segredo de assinatura",
+      "secretPlaceholder": "Cole o segredo fornecido pelo provedor",
+      "metadataLabel": "Metadados (JSON)",
+      "metadataPlaceholder": "{\"environment\":\"production\"}",
+      "enabledLabel": "Ativo",
+      "submit": "Adicionar provedor"
+    },
+    "table": {
+      "title": "Provedores cadastrados",
+      "headers": {
+        "name": "Nome",
+        "type": "Tipo",
+        "status": "Status",
+        "actions": "Ações"
+      },
+      "empty": "Nenhum provedor configurado."
+    },
+    "status": {
+      "enabled": "Ativo",
+      "disabled": "Inativo"
+    },
+    "actions": {
+      "enable": "Ativar",
+      "disable": "Desativar",
+      "delete": "Remover",
+      "refresh": "Atualizar"
+    },
+    "errors": {
+      "invalidMetadata": "Metadados inválidos. Use um JSON válido."
+    },
+    "toasts": {
+      "created": "Provedor criado com sucesso.",
+      "updated": "Provedor atualizado.",
+      "deleted": "Provedor removido.",
+      "loadFailed": "Falha ao carregar os provedores.",
+      "createFailed": "Falha ao criar o provedor.",
+      "updateFailed": "Falha ao atualizar o provedor.",
+      "deleteFailed": "Falha ao remover o provedor."
+    }
   }
 }

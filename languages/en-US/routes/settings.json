@@ -1,5 +1,53 @@
 {
   "apiKeys": {
     "title": "API keys"
+  },
+  "paymentProviders": {
+    "title": "Payment providers",
+    "description": "Manage the providers used to receive external payment webhooks.",
+    "form": {
+      "nameLabel": "Name",
+      "namePlaceholder": "e.g. Stripe",
+      "typeLabel": "Type",
+      "typePlaceholder": "e.g. stripe",
+      "secretLabel": "Signing secret",
+      "secretPlaceholder": "Paste the secret provided by the gateway",
+      "metadataLabel": "Metadata (JSON)",
+      "metadataPlaceholder": "{\"environment\":\"production\"}",
+      "enabledLabel": "Enabled",
+      "submit": "Add provider"
+    },
+    "table": {
+      "title": "Registered providers",
+      "headers": {
+        "name": "Name",
+        "type": "Type",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "empty": "No providers configured."
+    },
+    "status": {
+      "enabled": "Enabled",
+      "disabled": "Disabled"
+    },
+    "actions": {
+      "enable": "Enable",
+      "disable": "Disable",
+      "delete": "Remove",
+      "refresh": "Refresh"
+    },
+    "errors": {
+      "invalidMetadata": "Invalid metadata. Provide valid JSON."
+    },
+    "toasts": {
+      "created": "Provider created successfully.",
+      "updated": "Provider updated.",
+      "deleted": "Provider removed.",
+      "loadFailed": "Failed to load providers.",
+      "createFailed": "Failed to create provider.",
+      "updateFailed": "Failed to update provider.",
+      "deleteFailed": "Failed to remove provider."
+    }
   }
 }

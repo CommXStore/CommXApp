@@ -77,6 +77,7 @@
     "billing": "Upgrade",
     "settings": "Configurações",
     "members": "Membros",
+    "paymentProviders": "Provedores de pagamento",
     "apiKeys": "Chaves de API",
     "docs": "Docs",
     "github": "GitHub"

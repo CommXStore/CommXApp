@@ -135,6 +135,10 @@ export function AppSidebar({ ...props }: SidebarProps) {
                 title: t('common.nav.members'),
                 url: '/dashboard/settings/organization-members',
               },
+              {
+                title: t('common.nav.paymentProviders'),
+                url: '/dashboard/settings/payment-providers',
+              },
             ]
           : []),
         {

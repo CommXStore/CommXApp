@@ -77,6 +77,7 @@
     "billing": "Plans",
     "settings": "Settings",
     "members": "Members",
+    "paymentProviders": "Payment providers",
     "apiKeys": "API keys",
     "docs": "Docs",
     "github": "GitHub"
