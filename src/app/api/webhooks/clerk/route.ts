@@ -72,10 +72,36 @@ async function resolveEffectiveSubscription(
   if (typeof billing.getSubscriptionList !== 'function') {
     return payload
   }
-  const subscriptions = await billing.getSubscriptionList({
-    userId: payload.userId,
-  })
-  const active = subscriptions.data?.find(item => item.status === 'active')
+  const fetchSubscriptions = async () =>
+    billing.getSubscriptionList({
+      userId: payload.userId,
+    })
+
+  let subscriptions = await fetchSubscriptions()
+  const logSubscriptionSnapshot = (
+    data: SubscriptionRecord[] | undefined,
+    phase: string
+  ) => {
+    logger.info(
+      {
+        phase,
+        statuses: data?.map(item => item.status ?? 'unknown') ?? [],
+        planIds: data?.map(item => item.planId ?? 'unknown') ?? [],
+        planSlugs: data?.map(item => item.planSlug ?? 'unknown') ?? [],
+        userId: payload.userId,
+      },
+      'Subscription list snapshot.'
+    )
+  }
+
+  logSubscriptionSnapshot(subscriptions.data, 'initial')
+  let active = subscriptions.data?.find(item => item.status === 'active')
+  if (!active) {
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    subscriptions = await fetchSubscriptions()
+    logSubscriptionSnapshot(subscriptions.data, 'retry')
+    active = subscriptions.data?.find(item => item.status === 'active')
+  }
   if (!active) {
     return payload
   }
