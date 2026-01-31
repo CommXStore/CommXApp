@@ -5,19 +5,21 @@ import { POST } from '@/app/api/organizations/memberships/route'
 const createUser = vi.fn(async () => ({ id: 'user_1' }))
 const createOrganizationMembership = vi.fn(async () => ({ id: 'mem_1' }))
 const getOrganization = vi.fn(async () => ({ slug: 'app-1' }))
-const auth = vi.fn(async () => ({
-  isAuthenticated: true,
-  userId: 'user_admin',
-  orgId: 'org_1',
-  tokenType: 'api_key',
-}))
+const authMock = vi.hoisted(() =>
+  vi.fn(async () => ({
+    isAuthenticated: true,
+    userId: 'user_admin',
+    orgId: 'org_1',
+    tokenType: 'api_key',
+  }))
+)
 
 vi.mock('@clerk/nextjs/server', () => ({
   clerkClient: vi.fn(async () => ({
     users: { createUser, updateUser: vi.fn() },
     organizations: { createOrganizationMembership, getOrganization },
   })),
-  auth,
+  auth: authMock,
 }))
 
 vi.mock('@/lib/rate-limit', () => ({
