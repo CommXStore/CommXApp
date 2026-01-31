@@ -1,4 +1,4 @@
-import { act, fireEvent, screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ContentTypeForm } from '@/components/content-type-form'
 import { CustomFieldForm } from '@/components/custom-field-form'
@@ -72,15 +72,12 @@ describe('Forms flow', () => {
 
     await user.type(screen.getByLabelText('Nome'), 'Articles')
     const submitButton = screen.getByRole('button', { name: CREATE_TYPE_LABEL })
-    const form = submitButton.closest('form')
-    if (form) {
-      form.noValidate = true
-      act(() => {
-        fireEvent.submit(form)
-      })
-    }
+    submitButton.closest('form')?.setAttribute('novalidate', 'true')
+    await user.click(submitButton)
 
-    expect(createContentTypeAction).toHaveBeenCalled()
+    await waitFor(() => {
+      expect(createContentTypeAction).toHaveBeenCalled()
+    })
   })
 
   it('creates custom field', async () => {
@@ -93,15 +90,12 @@ describe('Forms flow', () => {
     const submitButton = screen.getByRole('button', {
       name: CREATE_FIELD_LABEL,
     })
-    const form = submitButton.closest('form')
-    if (form) {
-      form.noValidate = true
-      act(() => {
-        fireEvent.submit(form)
-      })
-    }
+    submitButton.closest('form')?.setAttribute('novalidate', 'true')
+    await user.click(submitButton)
 
-    expect(createCustomFieldAction).toHaveBeenCalled()
+    await waitFor(() => {
+      expect(createCustomFieldAction).toHaveBeenCalled()
+    })
   })
 
   it('creates content entry', async () => {
@@ -118,14 +112,11 @@ describe('Forms flow', () => {
     const submitButton = screen.getByRole('button', {
       name: CREATE_ENTRY_LABEL,
     })
-    const form = submitButton.closest('form')
-    if (form) {
-      form.noValidate = true
-      act(() => {
-        fireEvent.submit(form)
-      })
-    }
+    submitButton.closest('form')?.setAttribute('novalidate', 'true')
+    await user.click(submitButton)
 
-    expect(createContentEntryAction).toHaveBeenCalled()
+    await waitFor(() => {
+      expect(createContentEntryAction).toHaveBeenCalled()
+    })
   })
 })
