@@ -188,7 +188,7 @@ export function OrgSwitcher() {
               key={membership.id}
               onSelect={() => handleSelect(membership.organization.id)}
             >
-              <span className="flex size-6 items-center justify-center rounded-full border bg-muted font-semibold text-[10px] text-muted-foreground uppercase">
+              <span className="flex size-6 items-center justify-center rounded-full bg-muted font-semibold text-[10px] text-muted-foreground uppercase">
                 {membership.organization.imageUrl ? (
                   <Image
                     alt={membership.organization.name}
@@ -237,7 +237,7 @@ export function OrgSwitcher() {
                   router.push(`/dashboard/organizations/${org.slug}/join`)
                 }
               >
-                <span className="flex size-6 items-center justify-center rounded-full border bg-muted font-semibold text-[10px] text-muted-foreground uppercase">
+                <span className="flex size-6 items-center justify-center rounded-full bg-muted font-semibold text-[10px] text-muted-foreground uppercase">
                   {org.imageUrl ? (
                     <Image
                       alt={org.name}
