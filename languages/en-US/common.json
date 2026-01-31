@@ -61,6 +61,7 @@
     "switcher": "Select organization",
     "active": "Active",
     "available": "Available",
+    "autoSwitch": "We moved you to {org} because your current plan doesn't include the previous app.",
     "join": "Join",
     "empty": "No organizations found.",
     "none": "No organization"

@@ -10,6 +10,7 @@ import { ThemeToggle } from '@/components/theme-toggle'
 import { OrgRefresh } from '@/components/org-refresh'
 import { LanguageSwitcher } from '@/components/language-switcher'
 import { HeaderBreadcrumb } from '@/components/header-breadcrumb'
+import { AuthOrgGuard } from '@/components/auth-org-guard'
 
 export function AppLayout({
   children,
@@ -44,6 +45,7 @@ export function AppLayout({
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</div>
+        <AuthOrgGuard />
       </SidebarInset>
     </SidebarProvider>
   )

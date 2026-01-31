@@ -61,6 +61,7 @@
     "switcher": "Seleccionar organización",
     "active": "Activa",
     "available": "Disponibles",
+    "autoSwitch": "Te movimos a {org} porque tu plan actual no incluye la organización anterior.",
     "join": "Unirse",
     "empty": "No se encontraron organizaciones.",
     "none": "Sin organización"
