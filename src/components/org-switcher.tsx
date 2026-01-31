@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ChevronDown } from 'lucide-react'
 import { useOrganization, useOrganizationList } from '@clerk/nextjs'
@@ -27,6 +27,10 @@ export function OrgSwitcher() {
       userSuggestions: true,
     })
 
+  const [availableOrgs, setAvailableOrgs] = useState<
+    Array<{ id: string; name: string; slug: string; imageUrl: string | null }>
+  >([])
+
   const memberships = useMemo(
     () => userMemberships.data ?? [],
     [userMemberships.data]
@@ -41,6 +45,70 @@ export function OrgSwitcher() {
   const activeOrgId = organization?.id
   const activeName = organization?.name ?? t('common.organization.none')
   const activeImage = organization?.imageUrl ?? null
+
+  const memberOrgIds = useMemo(
+    () => new Set(memberships.map(item => item.organization.id)),
+    [memberships]
+  )
+
+  useEffect(() => {
+    if (!isLoaded) {
+      return
+    }
+    let isMounted = true
+    async function loadAvailableOrgs() {
+      try {
+        const res = await fetch('/api/organizations/available')
+        if (!res.ok) {
+          return
+        }
+        const payload = (await res.json()) as {
+          data?: Array<{
+            id: string
+            name: string
+            slug: string
+            imageUrl: string | null
+          }>
+        }
+        const next = payload.data ?? []
+        if (isMounted) {
+          setAvailableOrgs(next)
+        }
+      } catch {
+        if (isMounted) {
+          setAvailableOrgs([])
+        }
+      }
+    }
+
+    loadAvailableOrgs()
+    return () => {
+      isMounted = false
+    }
+  }, [isLoaded])
+
+  const available = useMemo(
+    () => availableOrgs.filter(org => !memberOrgIds.has(org.id)),
+    [availableOrgs, memberOrgIds]
+  )
+
+  const joinableOrgs = useMemo(() => {
+    if (available.length) {
+      return available.map(org => ({
+        id: org.id,
+        name: org.name,
+        slug: org.slug,
+        imageUrl: org.imageUrl,
+      }))
+    }
+
+    return suggestions.map(suggestion => ({
+      id: suggestion.id,
+      name: suggestion.publicOrganizationData.name,
+      slug: suggestion.publicOrganizationData.slug ?? '',
+      imageUrl: suggestion.publicOrganizationData.imageUrl,
+    }))
+  }, [available, suggestions])
 
   const handleSelect = useCallback(
     async (orgId: string) => {
@@ -131,39 +199,35 @@ export function OrgSwitcher() {
             {t('common.organization.empty')}
           </DropdownMenuItem>
         )}
-        {suggestions.length ? (
+        {joinableOrgs.length ? (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuLabel>
               {t('common.organization.available')}
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {suggestions.map(suggestion => (
+            {joinableOrgs.map(org => (
               <DropdownMenuItem
                 className="flex items-center gap-2"
-                key={suggestion.id}
+                key={org.id}
                 onSelect={() =>
-                  router.push(
-                    `/dashboard/organizations/${suggestion.publicOrganizationData.slug}/join`
-                  )
+                  router.push(`/dashboard/organizations/${org.slug}/join`)
                 }
               >
                 <span className="flex size-6 items-center justify-center rounded-md border bg-muted font-semibold text-[10px] text-muted-foreground uppercase">
-                  {suggestion.publicOrganizationData.imageUrl ? (
+                  {org.imageUrl ? (
                     <Image
-                      alt={suggestion.publicOrganizationData.name}
+                      alt={org.name}
                       className="size-6 rounded-md object-cover"
                       height={24}
-                      src={suggestion.publicOrganizationData.imageUrl}
+                      src={org.imageUrl}
                       width={24}
                     />
                   ) : (
-                    suggestion.publicOrganizationData.name.slice(0, 2)
+                    org.name.slice(0, 2)
                   )}
                 </span>
-                <span className="min-w-0 flex-1 truncate">
-                  {suggestion.publicOrganizationData.name}
-                </span>
+                <span className="min-w-0 flex-1 truncate">{org.name}</span>
                 <span className="text-muted-foreground text-xs">
                   {t('common.organization.join')}
                 </span>

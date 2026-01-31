@@ -10,6 +10,7 @@ As rotas aceitam session token (cookies) e organization API key (Bearer token). 
 
 ## Organizacoes
 
+- `GET /api/organizations/available` lista organizacoes disponiveis para o usuario logado
 - `POST /api/organizations/memberships` cria usuario e adiciona como member. Quando `joinAsCurrentUser=true`, adiciona o usuario atual; nesse caso pode receber `organizationId` se nao houver organizacao ativa.
 
 ## Tipos de conteudo
