@@ -5,11 +5,13 @@ import { PricingTable } from '@clerk/nextjs'
 type PricingTableSectionProps = {
   heading: string
   description: string
+  newSubscriptionRedirectUrl?: string
 }
 
 export function PricingTableSection({
   heading,
   description,
+  newSubscriptionRedirectUrl,
 }: PricingTableSectionProps) {
   return (
     <section className="mx-auto flex w-full max-w-4xl flex-col gap-6">
@@ -18,7 +20,7 @@ export function PricingTableSection({
         <p className="text-muted-foreground">{description}</p>
       </header>
       <div className="rounded-xl border bg-card p-6 shadow-sm">
-        <PricingTable />
+        <PricingTable newSubscriptionRedirectUrl={newSubscriptionRedirectUrl} />
       </div>
     </section>
   )

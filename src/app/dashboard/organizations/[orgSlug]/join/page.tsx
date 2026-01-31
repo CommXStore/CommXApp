@@ -54,6 +54,7 @@ export default async function JoinOrganizationPage({
       <JoinOrganizationForm
         orgId={organization.id}
         orgName={organization.name}
+        orgSlug={orgSlug}
         requiresSubscription={requiresSubscription}
       />
     </div>
