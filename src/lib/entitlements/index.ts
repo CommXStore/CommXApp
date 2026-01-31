@@ -82,7 +82,7 @@ const webhookEntitlements: EntitlementsProvider = {
     )
     const record = await getUserEntitlements(userId)
     if (!record) {
-      return { allowed: false, reason: 'No subscription record found.' }
+      return clerkEntitlements.canJoinOrg(userId, orgSlug)
     }
     if (record.status !== 'active') {
       return { allowed: false, reason: 'Subscription is not active.' }
