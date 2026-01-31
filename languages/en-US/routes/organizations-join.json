@@ -1,0 +1,25 @@
+{
+  "title": "Join {org}",
+  "subtitle": "Fill in your details to join as a member.",
+  "status": {
+    "free": "Free access",
+    "freeDescription": "This organization does not require a subscription to join.",
+    "requiresPlan": "Subscription required",
+    "requiresPlanDescription": "To join this organization, you need a plan that includes this app."
+  },
+  "form": {
+    "emailLabel": "Email",
+    "firstNameLabel": "First name",
+    "lastNameLabel": "Last name",
+    "firstNamePlaceholder": "Enter your first name",
+    "lastNamePlaceholder": "Enter your last name",
+    "submit": "Join as member"
+  },
+  "actions": {
+    "upgrade": "View plans"
+  },
+  "toasts": {
+    "joined": "You joined {org}.",
+    "failed": "Couldn't join the organization."
+  }
+}

@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import { clerkClient } from '@clerk/nextjs/server'
 import { normalizeFeatureList } from '@/lib/entitlements/features'
 
@@ -9,8 +10,40 @@ type EntitlementsProvider = {
   canJoinOrg: (userId: string, orgSlug: string) => Promise<EntitlementDecision>
 }
 
+const getPlanFeatureSlugs = cache(async () => {
+  const client = await clerkClient()
+  const plans = await client.billing.getPlanList()
+  const slugs = new Set<string>()
+
+  for (const plan of plans.data ?? []) {
+    for (const feature of normalizeFeatureList(plan.features)) {
+      slugs.add(feature)
+    }
+  }
+
+  return Array.from(slugs)
+})
+
+export async function requiresSubscriptionForOrg(
+  orgSlug: string
+): Promise<boolean> {
+  if (!orgSlug) {
+    return false
+  }
+  const slugs = await getPlanFeatureSlugs()
+  return slugs.includes(orgSlug)
+}
+
 const clerkEntitlements: EntitlementsProvider = {
   async canJoinOrg(userId: string, orgSlug: string) {
+    const requiresSubscription = await requiresSubscriptionForOrg(orgSlug)
+    if (!requiresSubscription) {
+      return { allowed: true }
+    }
+    if (!userId) {
+      return { allowed: false, reason: 'User is required.' }
+    }
+
     const client = await clerkClient()
     const subscriptions = await client.billing.getSubscriptionList({
       userId,
@@ -31,6 +64,14 @@ const clerkEntitlements: EntitlementsProvider = {
 
 const webhookEntitlements: EntitlementsProvider = {
   async canJoinOrg(userId: string, orgSlug: string) {
+    const requiresSubscription = await requiresSubscriptionForOrg(orgSlug)
+    if (!requiresSubscription) {
+      return { allowed: true }
+    }
+    if (!userId) {
+      return { allowed: false, reason: 'User is required.' }
+    }
+
     const { getUserEntitlements } = await import(
       '@/lib/supabase/entitlements-store'
     )

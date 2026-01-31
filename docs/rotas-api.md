@@ -1,6 +1,6 @@
 # Rotas de API
 
-As rotas aceitam session token (cookies) e organization API key (Bearer token). Todas sao escopadas pela organizacao ativa.
+As rotas aceitam session token (cookies) e organization API key (Bearer token). A maioria e escopada pela organizacao ativa.
 
 ## Agents
 
@@ -10,7 +10,7 @@ As rotas aceitam session token (cookies) e organization API key (Bearer token). 
 
 ## Organizacoes
 
-- `POST /api/organizations/memberships` cria usuario e adiciona como member
+- `POST /api/organizations/memberships` cria usuario e adiciona como member. Quando `joinAsCurrentUser=true`, adiciona o usuario atual; nesse caso pode receber `organizationId` se nao houver organizacao ativa.
 
 ## Tipos de conteudo
 

@@ -5,19 +5,19 @@ import { POST } from '@/app/api/organizations/memberships/route'
 const createUser = vi.fn(async () => ({ id: 'user_1' }))
 const createOrganizationMembership = vi.fn(async () => ({ id: 'mem_1' }))
 const getOrganization = vi.fn(async () => ({ slug: 'app-1' }))
+const auth = vi.fn(async () => ({
+  isAuthenticated: true,
+  userId: 'user_admin',
+  orgId: 'org_1',
+  tokenType: 'api_key',
+}))
 
 vi.mock('@clerk/nextjs/server', () => ({
   clerkClient: vi.fn(async () => ({
-    users: { createUser },
+    users: { createUser, updateUser: vi.fn() },
     organizations: { createOrganizationMembership, getOrganization },
   })),
-}))
-
-vi.mock('@/lib/clerk/check-auth', () => ({
-  checkAuth: vi.fn(async () => ({
-    success: true,
-    data: { orgId: 'org_1', userId: 'user_admin', tokenType: 'api_key' },
-  })),
+  auth,
 }))
 
 vi.mock('@/lib/rate-limit', () => ({
@@ -88,10 +88,12 @@ describe('organization memberships api route', () => {
   })
 
   it('returns 401 when auth fails', async () => {
-    const { checkAuth } = await import('@/lib/clerk/check-auth')
-    vi.mocked(checkAuth).mockResolvedValueOnce({
-      success: false,
-      error: { message: 'Unauthorized', status: 401 },
+    const { auth } = await import('@clerk/nextjs/server')
+    vi.mocked(auth).mockResolvedValueOnce({
+      isAuthenticated: false,
+      userId: null,
+      orgId: null,
+      tokenType: 'session_token',
     })
     const req = new NextRequest(
       'http://localhost/api/organizations/memberships',

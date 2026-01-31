@@ -1,0 +1,25 @@
+{
+  "title": "Unirse a {org}",
+  "subtitle": "Completa tus datos para unirte como miembro.",
+  "status": {
+    "free": "Acceso gratuito",
+    "freeDescription": "Esta organización no requiere suscripción para unirse.",
+    "requiresPlan": "Requiere suscripción",
+    "requiresPlanDescription": "Para unirte a esta organización, necesitas un plan que incluya esta app."
+  },
+  "form": {
+    "emailLabel": "Email",
+    "firstNameLabel": "Nombre",
+    "lastNameLabel": "Apellido",
+    "firstNamePlaceholder": "Ingresa tu nombre",
+    "lastNamePlaceholder": "Ingresa tu apellido",
+    "submit": "Unirse como miembro"
+  },
+  "actions": {
+    "upgrade": "Ver planes"
+  },
+  "toasts": {
+    "joined": "Te uniste a {org}.",
+    "failed": "No se pudo unir a la organización."
+  }
+}

@@ -60,6 +60,8 @@
     "label": "Organizations",
     "switcher": "Select organization",
     "active": "Active",
+    "available": "Available",
+    "join": "Join",
     "empty": "No organizations found.",
     "none": "No organization"
   },

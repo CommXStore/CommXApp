@@ -1,0 +1,25 @@
+{
+  "title": "Entrar em {org}",
+  "subtitle": "Complete seus dados para entrar como membro.",
+  "status": {
+    "free": "Acesso gratuito",
+    "freeDescription": "Esta organização não exige assinatura para ingresso.",
+    "requiresPlan": "Requer assinatura",
+    "requiresPlanDescription": "Para entrar nesta organização, você precisa de um plano que inclua este app."
+  },
+  "form": {
+    "emailLabel": "Email",
+    "firstNameLabel": "Nome",
+    "lastNameLabel": "Sobrenome",
+    "firstNamePlaceholder": "Digite seu nome",
+    "lastNamePlaceholder": "Digite seu sobrenome",
+    "submit": "Entrar como membro"
+  },
+  "actions": {
+    "upgrade": "Ver planos"
+  },
+  "toasts": {
+    "joined": "Você entrou em {org}.",
+    "failed": "Não foi possível entrar na organização."
+  }
+}
