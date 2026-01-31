@@ -11,7 +11,7 @@ function FieldSet({ className, ...props }: React.ComponentProps<'fieldset'>) {
   return (
     <fieldset
       className={cn(
-        'flex flex-col gap-6',
+        'flex flex-col gap-6 rounded-xl border bg-card p-6 shadow-sm',
         'has-[>[data-slot=checkbox-group]]:gap-3 has-[>[data-slot=radio-group]]:gap-3',
         className
       )}
