@@ -1,8 +1,22 @@
 import { PricingTableSection } from './pricing-table'
 import { getTranslations } from '@/i18n/server'
+import { headers } from 'next/headers'
 
 type BillingUpgradePageProps = {
   searchParams: Promise<{ redirect?: string }>
+}
+
+function buildAbsoluteUrl(path: string) {
+  if (/^https?:\/\//i.test(path)) {
+    return path
+  }
+  const headerStore = headers()
+  const host = headerStore.get('x-forwarded-host') ?? headerStore.get('host')
+  const proto = headerStore.get('x-forwarded-proto') ?? 'http'
+  if (!host) {
+    return path
+  }
+  return `${proto}://${host}${path.startsWith('/') ? path : `/${path}`}`
 }
 
 export default async function BillingUpgradePage({
@@ -10,13 +24,14 @@ export default async function BillingUpgradePage({
 }: BillingUpgradePageProps) {
   const t = await getTranslations()
   const { redirect } = await searchParams
+  const redirectUrl = redirect ? buildAbsoluteUrl(redirect) : undefined
 
   return (
     <main className="flex min-h-[calc(100vh-4rem)] w-full items-start justify-center px-4 py-10">
       <PricingTableSection
         description={t('routes.billing.upgrade.description')}
         heading={t('routes.billing.upgrade.title')}
-        newSubscriptionRedirectUrl={redirect}
+        newSubscriptionRedirectUrl={redirectUrl}
       />
     </main>
   )
