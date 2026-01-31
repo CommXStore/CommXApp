@@ -5,7 +5,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
-import { UserButton } from '@clerk/nextjs'
+import { ClerkLoaded, ClerkLoading, UserButton } from '@clerk/nextjs'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { OrgRefresh } from '@/components/org-refresh'
 import { LanguageSwitcher } from '@/components/language-switcher'
@@ -33,7 +33,12 @@ export function AppLayout({
             <div className="flex items-center gap-2">
               <LanguageSwitcher />
               <ThemeToggle />
-              <UserButton />
+              <ClerkLoaded>
+                <UserButton />
+              </ClerkLoaded>
+              <ClerkLoading>
+                <div className="size-8 rounded-full bg-muted" />
+              </ClerkLoading>
             </div>
             <OrgRefresh />
           </div>

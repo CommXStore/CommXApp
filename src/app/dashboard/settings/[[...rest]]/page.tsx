@@ -2,11 +2,12 @@ import { OrganizationProfile } from '@clerk/nextjs'
 import { requireOrgAdmin } from '@/lib/clerk/require-org-admin'
 
 type SettingsPageProps = {
-  params?: { rest?: string[] }
+  params?: Promise<{ rest?: string[] }>
 }
 
 export default async function SettingsPage({ params }: SettingsPageProps) {
-  if (params?.rest?.includes('organization-members')) {
+  const resolvedParams = await params
+  if (resolvedParams?.rest?.includes('organization-members')) {
     await requireOrgAdmin()
   }
 
