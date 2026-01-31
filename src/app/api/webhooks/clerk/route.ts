@@ -45,8 +45,11 @@ function getSubscriptionItemPayload(
 
 export async function POST(req: NextRequest) {
   try {
+    const signingSecret =
+      process.env.CLERK_WEBHOOK_SECRET ??
+      process.env.CLERK_WEBHOOK_SIGNING_SECRET
     const event = await verifyWebhook(req, {
-      signingSecret: process.env.CLERK_WEBHOOK_SECRET,
+      signingSecret,
     })
 
     if (!event.type.startsWith('subscriptionItem.')) {
