@@ -2,15 +2,19 @@ import { describe, expect, it, vi } from 'vitest'
 import { NextRequest } from 'next/server'
 import { POST } from '@/app/api/admin/entitlements/backfill/route'
 
-const getSubscriptionList = vi.fn(async () => ({
-  data: [{ status: 'active', planId: 'plan_1' }],
-}))
-const getPlan = vi.fn(async () => ({
-  id: 'plan_1',
-  slug: 'starter',
-  name: 'Starter',
-  features: ['app-1', 'app-2'],
-}))
+const getSubscriptionList = vi.hoisted(() =>
+  vi.fn(async () => ({
+    data: [{ status: 'active', planId: 'plan_1' }],
+  }))
+)
+const getPlan = vi.hoisted(() =>
+  vi.fn(async () => ({
+    id: 'plan_1',
+    slug: 'starter',
+    name: 'Starter',
+    features: ['app-1', 'app-2'],
+  }))
+)
 
 vi.mock('@clerk/nextjs/server', () => ({
   clerkClient: vi.fn(async () => ({
@@ -35,7 +39,7 @@ vi.mock('@/lib/rate-limit', () => ({
   getClientIp: vi.fn(() => '127.0.0.1'),
 }))
 
-const upsertUserEntitlements = vi.fn(async () => ({}))
+const upsertUserEntitlements = vi.hoisted(() => vi.fn(async () => ({})))
 
 vi.mock('@/lib/supabase/entitlements-store', () => ({
   upsertUserEntitlements,
