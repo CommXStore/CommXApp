@@ -11,21 +11,13 @@ import { OrgRefresh } from '@/components/org-refresh'
 import { LanguageSwitcher } from '@/components/language-switcher'
 import { HeaderBreadcrumb } from '@/components/header-breadcrumb'
 import { AuthOrgGuard } from '@/components/auth-org-guard'
-import { headers } from 'next/headers'
+import { NoticeBridge } from '@/components/notice-bridge'
 
 export function AppLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const headerStore = headers()
-  const search = headerStore.get('x-next-url') ?? ''
-  const params = new URLSearchParams(search.split('?')[1] ?? '')
-  const noticeId = params.get('orgNotice')
-  const noticeName = params.get('orgNoticeName')
-  const initialNotice =
-    noticeId && noticeName ? { orgId: noticeId, orgName: noticeName } : null
-
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -54,7 +46,8 @@ export function AppLayout({
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</div>
-        <AuthOrgGuard initialNotice={initialNotice} />
+        <NoticeBridge />
+        <AuthOrgGuard />
       </SidebarInset>
     </SidebarProvider>
   )

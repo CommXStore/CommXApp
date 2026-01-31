@@ -2,34 +2,18 @@
 
 import { useEffect, useRef } from 'react'
 import { useOrganization, useOrganizationList } from '@clerk/nextjs'
-import { toast } from 'sonner'
-import { useTranslations } from '@/i18n/provider'
 
 type EnsureActiveResponse =
   | { action: 'ok' }
   | { action: 'none' }
   | { action: 'switch'; orgId: string; orgName: string }
 
-type AuthOrgGuardProps = {
-  initialNotice?: { orgId: string; orgName: string } | null
-}
-
-export function AuthOrgGuard({ initialNotice }: AuthOrgGuardProps) {
-  const t = useTranslations()
+export function AuthOrgGuard() {
   const { organization, isLoaded: isOrgLoaded } = useOrganization()
   const { isLoaded, setActive } = useOrganizationList()
   const didRun = useRef(false)
-  const didNotify = useRef(false)
 
   useEffect(() => {
-    if (initialNotice && !didNotify.current) {
-      didNotify.current = true
-      toast.info(
-        t('common.organization.autoSwitch', { org: initialNotice.orgName })
-      )
-      return
-    }
-
     if (!isLoaded || !isOrgLoaded || didRun.current) {
       return
     }
@@ -62,12 +46,10 @@ export function AuthOrgGuard({ initialNotice }: AuthOrgGuardProps) {
 
     void ensureActiveOrg()
   }, [
-    initialNotice,
     isLoaded,
     isOrgLoaded,
     organization?.id,
     setActive,
-    t,
   ])
 
   return null
