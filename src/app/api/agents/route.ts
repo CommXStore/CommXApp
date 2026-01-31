@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server'
-import { checkAdmin, checkAuth } from '@/lib/clerk/check-auth'
+import { checkAuth } from '@/lib/clerk/check-auth'
 import { getAgents, createAgent, deleteAgent } from '@/lib/clerk/metadata-utils'
 import { logger } from '@/lib/logger'
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const { success, error, data } = await checkAdmin()
+  const { success, error, data } = await checkAuth()
 
   if (!success) {
     logger.warn(
@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const { success, error, data } = await checkAdmin()
+  const { success, error, data } = await checkAuth()
 
   if (!success) {
     logger.warn(
