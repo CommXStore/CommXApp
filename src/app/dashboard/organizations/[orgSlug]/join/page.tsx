@@ -1,5 +1,5 @@
-import { notFound } from 'next/navigation'
-import { clerkClient } from '@clerk/nextjs/server'
+import { notFound, redirect } from 'next/navigation'
+import { auth, clerkClient } from '@clerk/nextjs/server'
 import { getTranslations } from '@/i18n/server'
 import { requiresSubscriptionForOrg } from '@/lib/entitlements'
 import { JoinOrganizationForm } from './join-form'
@@ -13,6 +13,7 @@ export default async function JoinOrganizationPage({
 }: JoinOrganizationPageProps) {
   const { orgSlug: slugParam } = await params
   const t = await getTranslations()
+  const { userId } = await auth()
   const client = await clerkClient()
 
   const organization = await client.organizations
@@ -20,6 +21,19 @@ export default async function JoinOrganizationPage({
       slug: slugParam,
     })
     .catch(() => notFound())
+
+  if (userId) {
+    const membership = await client.organizations
+      .getOrganizationMembership({
+        organizationId: organization.id,
+        userId,
+      })
+      .catch(() => null)
+
+    if (membership) {
+      redirect('/dashboard')
+    }
+  }
 
   const orgSlug = organization.slug ?? slugParam
   const requiresSubscription = await requiresSubscriptionForOrg(orgSlug)
