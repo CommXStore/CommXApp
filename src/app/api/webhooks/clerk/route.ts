@@ -75,14 +75,28 @@ export async function POST(req: NextRequest) {
         : null
     const features = normalizeFeatureList(plan?.features)
 
-    await upsertUserEntitlements({
-      userId: payload.userId,
-      status: payload.status,
-      planId: payload.planId,
-      planSlug: plan?.slug ?? payload.planSlug,
-      planName: plan?.name ?? payload.planName,
-      features,
-    })
+    try {
+      await upsertUserEntitlements({
+        userId: payload.userId,
+        status: payload.status,
+        planId: payload.planId,
+        planSlug: plan?.slug ?? payload.planSlug,
+        planName: plan?.name ?? payload.planName,
+        features,
+      })
+    } catch (error) {
+      logger.error(
+        {
+          err: error,
+          ...buildLogContext('POST /api/webhooks/clerk', undefined, req),
+        },
+        'Failed to persist subscription entitlements.'
+      )
+      return NextResponse.json(
+        { error: 'Entitlements persistence failed.' },
+        { status: 503 }
+      )
+    }
 
     return NextResponse.json({ received: true }, { status: 200 })
   } catch (err) {

@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '@/lib/supabase/admin'
+import { getSupabaseAdmin } from '@/lib/supabase/admin'
 
 export type UserEntitlementsRecord = {
   userId: string
@@ -32,6 +32,7 @@ export async function upsertUserEntitlements(
     updated_at: new Date().toISOString(),
   }
 
+  const supabaseAdmin = getSupabaseAdmin()
   const { data, error } = await supabaseAdmin
     .from('user_entitlements')
     .upsert(payload, { onConflict: 'user_id' })
@@ -56,6 +57,7 @@ export async function upsertUserEntitlements(
 export async function getUserEntitlements(
   userId: string
 ): Promise<UserEntitlementsRecord | null> {
+  const supabaseAdmin = getSupabaseAdmin()
   const { data, error } = await supabaseAdmin
     .from('user_entitlements')
     .select('*')
