@@ -12,10 +12,13 @@
       "typePlaceholder": "e.g. stripe",
       "secretLabel": "Signing secret",
       "secretPlaceholder": "Paste the secret provided by the gateway",
+      "secretHint": "Leave blank to keep the current secret.",
       "metadataLabel": "Metadata (JSON)",
       "metadataPlaceholder": "{\"environment\":\"production\"}",
       "enabledLabel": "Enabled",
-      "submit": "Add provider"
+      "submit": "Add provider",
+      "update": "Save changes",
+      "cancel": "Cancel edit"
     },
     "table": {
       "title": "Registered providers",
@@ -34,6 +37,7 @@
     "actions": {
       "enable": "Enable",
       "disable": "Disable",
+      "edit": "Edit",
       "delete": "Remove",
       "refresh": "Refresh"
     },

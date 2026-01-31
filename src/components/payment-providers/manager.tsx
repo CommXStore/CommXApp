@@ -21,6 +21,7 @@ type PaymentProvider = {
   name: string
   type: string
   enabled: boolean
+  metadata?: Record<string, unknown>
 }
 
 type ProvidersResponse = {
@@ -38,6 +39,7 @@ export function PaymentProvidersManager() {
   const [enabled, setEnabled] = useState(true)
   const [metadata, setMetadata] = useState('')
   const [saving, setSaving] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
 
   async function loadProviders() {
     setLoading(true)
@@ -72,7 +74,27 @@ export function PaymentProvidersManager() {
     }
   }
 
-  async function handleCreate(event: React.FormEvent<HTMLFormElement>) {
+  function resetForm() {
+    setName('')
+    setType('')
+    setSigningSecret('')
+    setEnabled(true)
+    setMetadata('')
+    setEditingId(null)
+  }
+
+  function startEdit(provider: PaymentProvider) {
+    setEditingId(provider.id)
+    setName(provider.name)
+    setType(provider.type)
+    setEnabled(provider.enabled)
+    setMetadata(
+      provider.metadata ? JSON.stringify(provider.metadata, null, 2) : ''
+    )
+    setSigningSecret('')
+  }
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (saving) return
 
@@ -83,20 +105,35 @@ export function PaymentProvidersManager() {
     }
 
     setSaving(true)
+    const isEditing = Boolean(editingId)
+    const endpoint = isEditing
+      ? `/api/admin/payment-providers/${editingId}`
+      : '/api/admin/payment-providers'
+    const method = isEditing ? 'PATCH' : 'POST'
+    const body: Record<string, unknown> = {
+      name,
+      type,
+      enabled,
+      metadata: meta,
+    }
+    if (signingSecret.trim()) {
+      body.signingSecret = signingSecret
+    }
+
     try {
-      const res = await fetch('/api/admin/payment-providers', {
-        method: 'POST',
+      const res = await fetch(endpoint, {
+        method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          type,
-          signingSecret,
-          enabled,
-          metadata: meta,
-        }),
+        body: JSON.stringify(body),
       })
       if (!res.ok) {
-        toast.error(t('routes.settings.paymentProviders.toasts.createFailed'))
+        toast.error(
+          t(
+            isEditing
+              ? 'routes.settings.paymentProviders.toasts.updateFailed'
+              : 'routes.settings.paymentProviders.toasts.createFailed'
+          )
+        )
         return
       }
       const payload = (await res.json()) as {
@@ -104,18 +141,32 @@ export function PaymentProvidersManager() {
         data?: PaymentProvider
       }
       if (payload.data) {
-        setProviders(current => [payload.data!, ...current])
+        setProviders(current =>
+          isEditing
+            ? current.map(item =>
+                item.id === payload.data!.id ? payload.data! : item
+              )
+            : [payload.data!, ...current]
+        )
       } else {
         await loadProviders()
       }
-      setName('')
-      setType('')
-      setSigningSecret('')
-      setEnabled(true)
-      setMetadata('')
-      toast.success(t('routes.settings.paymentProviders.toasts.created'))
+      resetForm()
+      toast.success(
+        t(
+          isEditing
+            ? 'routes.settings.paymentProviders.toasts.updated'
+            : 'routes.settings.paymentProviders.toasts.created'
+        )
+      )
     } catch {
-      toast.error(t('routes.settings.paymentProviders.toasts.createFailed'))
+      toast.error(
+        t(
+          isEditing
+            ? 'routes.settings.paymentProviders.toasts.updateFailed'
+            : 'routes.settings.paymentProviders.toasts.createFailed'
+        )
+      )
     } finally {
       setSaving(false)
     }
@@ -167,7 +218,7 @@ export function PaymentProvidersManager() {
 
   return (
     <div className="space-y-8">
-      <form className="space-y-4" onSubmit={handleCreate}>
+      <form className="space-y-4" onSubmit={handleSubmit}>
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="provider-name">
@@ -211,8 +262,12 @@ export function PaymentProvidersManager() {
               placeholder={t(
                 'routes.settings.paymentProviders.form.secretPlaceholder'
               )}
-              required
             />
+            {editingId ? (
+              <p className="text-muted-foreground text-xs">
+                {t('routes.settings.paymentProviders.form.secretHint')}
+              </p>
+            ) : null}
           </div>
           <div className="space-y-2">
             <Label htmlFor="provider-metadata">
@@ -241,9 +296,25 @@ export function PaymentProvidersManager() {
             {t('routes.settings.paymentProviders.form.enabledLabel')}
           </Label>
         </div>
-        <Button type="submit" disabled={saving}>
-          {t('routes.settings.paymentProviders.form.submit')}
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button type="submit" disabled={saving}>
+            {t(
+              editingId
+                ? 'routes.settings.paymentProviders.form.update'
+                : 'routes.settings.paymentProviders.form.submit'
+            )}
+          </Button>
+          {editingId ? (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={resetForm}
+              disabled={saving}
+            >
+              {t('routes.settings.paymentProviders.form.cancel')}
+            </Button>
+          ) : null}
+        </div>
       </form>
 
       <div className="space-y-3">
@@ -308,6 +379,14 @@ export function PaymentProvidersManager() {
                         {provider.enabled
                           ? t('routes.settings.paymentProviders.actions.disable')
                           : t('routes.settings.paymentProviders.actions.enable')}
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => startEdit(provider)}
+                      >
+                        {t('routes.settings.paymentProviders.actions.edit')}
                       </Button>
                       <Button
                         type="button"

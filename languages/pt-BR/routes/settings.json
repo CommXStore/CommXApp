@@ -12,10 +12,13 @@
       "typePlaceholder": "Ex: stripe",
       "secretLabel": "Segredo de assinatura",
       "secretPlaceholder": "Cole o segredo fornecido pelo provedor",
+      "secretHint": "Deixe em branco para manter o segredo atual.",
       "metadataLabel": "Metadados (JSON)",
       "metadataPlaceholder": "{\"environment\":\"production\"}",
       "enabledLabel": "Ativo",
-      "submit": "Adicionar provedor"
+      "submit": "Adicionar provedor",
+      "update": "Salvar alterações",
+      "cancel": "Cancelar edição"
     },
     "table": {
       "title": "Provedores cadastrados",
@@ -34,6 +37,7 @@
     "actions": {
       "enable": "Ativar",
       "disable": "Desativar",
+      "edit": "Editar",
       "delete": "Remover",
       "refresh": "Atualizar"
     },
