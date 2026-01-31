@@ -27,6 +27,13 @@ type SubscriptionItemPayload = {
   status: string
 }
 
+type BillingPlan = {
+  id?: string | null
+  slug?: string | null
+  name?: string | null
+  features?: unknown
+}
+
 function getSubscriptionItemPayload(
   data: BillingSubscriptionItemPayload
 ): SubscriptionItemPayload | null {
@@ -41,6 +48,28 @@ function getSubscriptionItemPayload(
     planName: data.plan?.name ?? null,
     status: data.status,
   }
+}
+
+async function resolveBillingPlan(
+  client: Awaited<ReturnType<typeof clerkClient>>,
+  payload: SubscriptionItemPayload
+): Promise<BillingPlan | null> {
+  if (!payload.planId) {
+    return null
+  }
+  const billing = client.billing as {
+    getPlan?: (planId: string) => Promise<BillingPlan>
+    getPlanList?: () => Promise<{ data?: BillingPlan[] }>
+  }
+
+  if (typeof billing.getPlan === 'function') {
+    return billing.getPlan(payload.planId)
+  }
+  if (typeof billing.getPlanList === 'function') {
+    const plans = await billing.getPlanList()
+    return plans.data?.find(plan => plan.id === payload.planId) ?? null
+  }
+  return null
 }
 
 export async function POST(req: NextRequest) {
@@ -106,10 +135,20 @@ export async function POST(req: NextRequest) {
     }
 
     const client = await clerkClient()
-    const plan =
-      payload.planId != null
-        ? await client.billing.getPlan(payload.planId)
-        : null
+    const plan = await resolveBillingPlan(client, payload)
+    if (payload.planId && !plan) {
+      logger.error(
+        {
+          ...buildLogContext('POST /api/webhooks/clerk', undefined, req),
+          planId: payload.planId,
+        },
+        'Unable to resolve billing plan.'
+      )
+      return NextResponse.json(
+        { error: 'Plan lookup failed.' },
+        { status: 503 }
+      )
+    }
     const features = normalizeFeatureList(plan?.features)
 
     try {

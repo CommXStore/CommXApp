@@ -9,6 +9,18 @@ const getPlan = vi.hoisted(() =>
     features: [],
   }))
 )
+const getPlanList = vi.hoisted(() =>
+  vi.fn(async () => ({
+    data: [
+      {
+        id: 'plan_1',
+        slug: 'starter',
+        name: 'Starter',
+        features: [],
+      },
+    ],
+  }))
+)
 const upsertUserEntitlements = vi.hoisted(() =>
   vi.fn(async () => ({
     userId: 'user_1',
@@ -24,7 +36,7 @@ const verifyWebhook = vi.hoisted(() => vi.fn())
 
 vi.mock('@clerk/nextjs/server', () => ({
   clerkClient: vi.fn(async () => ({
-    billing: { getPlan },
+    billing: { getPlan, getPlanList },
   })),
 }))
 
