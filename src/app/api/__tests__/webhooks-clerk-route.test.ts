@@ -53,6 +53,7 @@ vi.mock('@clerk/nextjs/server', () => ({
 vi.mock('@clerk/backend/webhooks', () => ({ verifyWebhook }))
 
 vi.mock('@/lib/supabase/entitlements-store', () => ({
+  getUserEntitlements: vi.fn(async () => null),
   upsertUserEntitlements,
 }))
 
@@ -208,5 +209,37 @@ describe('clerk webhook route', () => {
       userId: 'user_1',
     })
     expect(getOrganization).toHaveBeenCalledWith({ slug: 'commx-shop' })
+  })
+
+  it('skips ended event when active entitlements exist', async () => {
+    process.env.CLERK_WEBHOOK_SECRET = 'whsec_test'
+    const { getUserEntitlements } = await import(
+      '@/lib/supabase/entitlements-store'
+    )
+    vi.mocked(getUserEntitlements).mockResolvedValueOnce({
+      userId: 'user_1',
+      status: 'active',
+      planId: 'plan_active',
+      planSlug: 'pro',
+      planName: 'Pro',
+      features: ['commx_shop'],
+      updatedAt: new Date().toISOString(),
+    })
+    verifyWebhook.mockResolvedValueOnce({
+      type: 'subscriptionItem.ended',
+      data: {
+        status: 'ended',
+        plan_id: 'plan_old',
+        payer: { user_id: 'user_1' },
+      },
+    })
+    const req = buildRequest('{"type":"subscriptionItem.ended"}', {
+      'svix-id': 'msg_1',
+      'svix-timestamp': '123',
+      'svix-signature': 'v1,signature',
+    })
+    const res = await POST(req)
+    expect(res.status).toBe(200)
+    expect(upsertUserEntitlements).not.toHaveBeenCalled()
   })
 })

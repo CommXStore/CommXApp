@@ -4,7 +4,10 @@ import { verifyWebhook } from '@clerk/backend/webhooks'
 import { logger } from '@/lib/logger'
 import { buildLogContext } from '@/lib/logger-context'
 import { normalizeFeatureList } from '@/lib/entitlements/features'
-import { upsertUserEntitlements } from '@/lib/supabase/entitlements-store'
+import {
+  getUserEntitlements,
+  upsertUserEntitlements,
+} from '@/lib/supabase/entitlements-store'
 
 export const runtime = 'nodejs'
 
@@ -250,6 +253,23 @@ export async function POST(req: NextRequest) {
     const features = normalizeFeatureList(plan?.features)
 
     try {
+      if (effectivePayload.status === 'ended') {
+        const existing = await getUserEntitlements(effectivePayload.userId)
+        if (existing?.status === 'active' && existing.features.length > 0) {
+          logger.info(
+            {
+              userId: effectivePayload.userId,
+              existingPlanId: existing.planId,
+              existingPlanSlug: existing.planSlug ?? 'unknown',
+              incomingPlanId: effectivePayload.planId,
+              incomingPlanSlug: effectivePayload.planSlug ?? 'unknown',
+            },
+            'Skipping ended event because active entitlements exist.'
+          )
+          return NextResponse.json({ received: true }, { status: 200 })
+        }
+      }
+
       await upsertUserEntitlements({
         userId: effectivePayload.userId,
         status: effectivePayload.status,
