@@ -1,4 +1,5 @@
 drop table if exists
+  payment_providers,
   user_entitlements,
   content_snapshots,
   content_entries,

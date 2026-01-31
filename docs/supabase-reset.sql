@@ -5,7 +5,8 @@ truncate table
   custom_fields,
   content_types,
   organization_agents,
-  user_entitlements
+  user_entitlements,
+  payment_providers
 restart identity;
 
 drop policy if exists org_agents_select on organization_agents;
@@ -39,3 +40,8 @@ drop policy if exists content_snapshots_update on content_snapshots;
 drop policy if exists content_snapshots_delete on content_snapshots;
 
 drop policy if exists user_entitlements_select on user_entitlements;
+
+drop policy if exists payment_providers_select on payment_providers;
+drop policy if exists payment_providers_insert on payment_providers;
+drop policy if exists payment_providers_update on payment_providers;
+drop policy if exists payment_providers_delete on payment_providers;
