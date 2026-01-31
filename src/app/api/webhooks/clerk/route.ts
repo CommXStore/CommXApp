@@ -48,6 +48,18 @@ export async function POST(req: NextRequest) {
     const signingSecret =
       process.env.CLERK_WEBHOOK_SECRET ??
       process.env.CLERK_WEBHOOK_SIGNING_SECRET
+    if (!signingSecret) {
+      logger.error(
+        {
+          ...buildLogContext('POST /api/webhooks/clerk', undefined, req),
+        },
+        'Missing Clerk webhook signing secret.'
+      )
+      return NextResponse.json(
+        { error: 'Missing webhook signing secret.' },
+        { status: 500 }
+      )
+    }
     const event = await verifyWebhook(req, {
       signingSecret,
     })
