@@ -258,6 +258,16 @@ export async function POST(req: NextRequest) {
         planName: plan?.name ?? effectivePayload.planName,
         features,
       })
+      logger.info(
+        {
+          userId: effectivePayload.userId,
+          status: effectivePayload.status,
+          planId: effectivePayload.planId,
+          planSlug: plan?.slug ?? effectivePayload.planSlug ?? 'unknown',
+          features,
+        },
+        'Entitlements persisted.'
+      )
     } catch (error) {
       logger.error(
         {
