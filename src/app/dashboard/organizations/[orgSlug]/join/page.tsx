@@ -5,22 +5,23 @@ import { requiresSubscriptionForOrg } from '@/lib/entitlements'
 import { JoinOrganizationForm } from './join-form'
 
 type JoinOrganizationPageProps = {
-  params: { orgSlug: string }
+  params: Promise<{ orgSlug: string }>
 }
 
 export default async function JoinOrganizationPage({
   params,
 }: JoinOrganizationPageProps) {
+  const { orgSlug: slugParam } = await params
   const t = await getTranslations()
   const client = await clerkClient()
 
   const organization = await client.organizations
     .getOrganization({
-      slug: params.orgSlug,
+      slug: slugParam,
     })
     .catch(() => notFound())
 
-  const orgSlug = organization.slug ?? params.orgSlug
+  const orgSlug = organization.slug ?? slugParam
   const requiresSubscription = await requiresSubscriptionForOrg(orgSlug)
 
   return (
