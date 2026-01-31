@@ -115,12 +115,21 @@ export async function updatePaymentProvider(
     updated_at: new Date().toISOString(),
   }
 
-  if (input.name !== undefined) payload.name = input.name
-  if (input.type !== undefined) payload.type = input.type
-  if (input.enabled !== undefined) payload.enabled = input.enabled
-  if (input.metadata !== undefined) payload.metadata = input.metadata
-  if (input.signingSecret !== undefined)
+  if (input.name !== undefined) {
+    payload.name = input.name
+  }
+  if (input.type !== undefined) {
+    payload.type = input.type
+  }
+  if (input.enabled !== undefined) {
+    payload.enabled = input.enabled
+  }
+  if (input.metadata !== undefined) {
+    payload.metadata = input.metadata
+  }
+  if (input.signingSecret !== undefined) {
     payload.signing_secret = input.signingSecret
+  }
 
   const { data, error } = await supabase
     .from('payment_providers')

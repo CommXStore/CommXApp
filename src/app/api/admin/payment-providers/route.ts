@@ -24,7 +24,10 @@ export async function GET(req: NextRequest) {
   try {
     const token = await getSupabaseToken()
     const providers = await listPaymentProviders(data.orgId, token)
-    return NextResponse.json({ success: true, data: providers }, { status: 200 })
+    return NextResponse.json(
+      { success: true, data: providers },
+      { status: 200 }
+    )
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unexpected error.'
     logger.error(
@@ -67,7 +70,7 @@ export async function POST(req: NextRequest) {
     const type = payload.type?.trim()
     const signingSecret = payload.signingSecret?.trim()
 
-    if (!name || !type || !signingSecret) {
+    if (!(name && type && signingSecret)) {
       return NextResponse.json(
         { error: 'name, type, and signingSecret are required.' },
         { status: 400 }

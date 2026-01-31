@@ -44,14 +44,20 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
       typeof payload.name === 'string' &&
       !payload.name.trim()
     ) {
-      return NextResponse.json({ error: 'name cannot be empty.' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'name cannot be empty.' },
+        { status: 400 }
+      )
     }
     if (
       payload.type !== undefined &&
       typeof payload.type === 'string' &&
       !payload.type.trim()
     ) {
-      return NextResponse.json({ error: 'type cannot be empty.' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'type cannot be empty.' },
+        { status: 400 }
+      )
     }
     if (
       payload.signingSecret !== undefined &&

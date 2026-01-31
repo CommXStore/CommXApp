@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server'
-import crypto from 'crypto'
+import crypto from 'node:crypto'
 import { clerkClient } from '@clerk/nextjs/server'
 import { logger } from '@/lib/logger'
 import { buildLogContext } from '@/lib/logger-context'
@@ -78,7 +78,10 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
   try {
     const provider = await getPaymentProviderForWebhook(providerId)
     if (!provider || provider.enabled === false) {
-      return NextResponse.json({ error: 'Provider not found.' }, { status: 404 })
+      return NextResponse.json(
+        { error: 'Provider not found.' },
+        { status: 404 }
+      )
     }
     if (!provider.signing_secret) {
       return NextResponse.json(
@@ -90,7 +93,7 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
     const rawBody = await req.text()
     const signature = req.headers.get('x-webhook-signature') ?? ''
     const expected = computeSignature(provider.signing_secret, rawBody)
-    if (!signature || !safeEqual(signature, expected)) {
+    if (!(signature && safeEqual(signature, expected))) {
       return NextResponse.json({ error: 'Invalid signature.' }, { status: 401 })
     }
 
@@ -112,11 +115,12 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
     }
 
     const client = await clerkClient()
-    const memberships = await client.organizations.getOrganizationMembershipList({
-      organizationId,
-      userId: [userId],
-      limit: 1,
-    })
+    const memberships =
+      await client.organizations.getOrganizationMembershipList({
+        organizationId,
+        userId: [userId],
+        limit: 1,
+      })
     if (memberships.data.length === 0) {
       await client.organizations.createOrganizationMembership({
         organizationId,

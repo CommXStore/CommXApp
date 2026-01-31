@@ -11,7 +11,11 @@ export const runtime = 'nodejs'
 type BillingSubscriptionItemPayload = {
   status: string
   plan_id?: string | null
-  plan?: { id?: string | null; slug?: string | null; name?: string | null } | null
+  plan?: {
+    id?: string | null
+    slug?: string | null
+    name?: string | null
+  } | null
   payer?: { user_id?: string | null } | null
 }
 
@@ -63,7 +67,9 @@ export async function POST(req: NextRequest) {
 
     const client = await clerkClient()
     const plan =
-      payload.planId != null ? await client.billing.getPlan(payload.planId) : null
+      payload.planId != null
+        ? await client.billing.getPlan(payload.planId)
+        : null
     const features = normalizeFeatureList(plan?.features)
 
     await upsertUserEntitlements({

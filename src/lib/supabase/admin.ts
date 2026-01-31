@@ -10,9 +10,7 @@ if (!supabaseUrl) {
 }
 
 if (!supabaseServiceKey) {
-  throw new Error(
-    'SUPABASE_SERVICE_ROLE_KEY or SUPABASE_SECRET_KEY is not set'
-  )
+  throw new Error('SUPABASE_SERVICE_ROLE_KEY or SUPABASE_SECRET_KEY is not set')
 }
 
 export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {

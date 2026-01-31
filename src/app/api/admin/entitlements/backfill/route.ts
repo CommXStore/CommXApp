@@ -53,7 +53,12 @@ export async function POST(req: NextRequest) {
     }
 
     const client = await clerkClient()
-    const results = []
+    const results: Array<{
+      userId: string
+      status: string
+      planId?: string
+      features: number
+    }> = []
 
     for (const userId of userIds) {
       const subscriptions = await client.billing.getSubscriptionList({ userId })

@@ -1,9 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { NextRequest } from 'next/server'
-import {
-  PATCH,
-  DELETE,
-} from '@/app/api/admin/payment-providers/[id]/route'
+import { PATCH, DELETE } from '@/app/api/admin/payment-providers/[id]/route'
 
 vi.mock('@/lib/clerk/check-auth', () => ({
   checkAdmin: vi.fn(async () => ({

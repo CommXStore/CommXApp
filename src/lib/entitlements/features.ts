@@ -15,7 +15,8 @@ export function normalizeFeatureList(value: unknown): string[] {
         return item.trim()
       }
       if (item && typeof item === 'object') {
-        const candidate = (item as FeatureInput).slug ?? (item as FeatureInput).name
+        const candidate =
+          (item as FeatureInput).slug ?? (item as FeatureInput).name
         return typeof candidate === 'string' ? candidate.trim() : ''
       }
       return ''
