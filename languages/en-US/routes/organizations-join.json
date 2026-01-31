@@ -16,7 +16,7 @@
     "submit": "Join as member"
   },
   "actions": {
-    "upgrade": "View plans"
+    "upgrade": "View upgrade"
   },
   "toasts": {
     "joined": "You joined {org}.",
