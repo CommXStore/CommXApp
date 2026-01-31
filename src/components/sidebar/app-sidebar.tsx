@@ -7,7 +7,7 @@ import {
   Settings2,
   SlidersHorizontal,
   SquareTerminal,
-  TicketCheck,
+  TrendingUp,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { ActiveOrg } from '@/components/sidebar/active-org'
@@ -121,7 +121,7 @@ export function AppSidebar({ ...props }: SidebarProps) {
     {
       title: t('common.nav.billing'),
       url: '/billing/upgrade',
-      icon: TicketCheck,
+      icon: TrendingUp,
       items: [],
     },
     {
