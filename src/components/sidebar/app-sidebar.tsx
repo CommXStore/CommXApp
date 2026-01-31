@@ -4,7 +4,7 @@ import { useEffect, useState, type ComponentProps } from 'react'
 import {
   Home,
   Layers,
-  Settings2,
+  Bolt,
   SlidersHorizontal,
   SquareTerminal,
   TrendingUp,
@@ -127,7 +127,7 @@ export function AppSidebar({ ...props }: SidebarProps) {
     {
       title: t('common.nav.settings'),
       url: '/dashboard/settings',
-      icon: Settings2,
+      icon: Bolt,
       items: [
         ...(isAdmin
           ? [
