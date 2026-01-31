@@ -26,7 +26,7 @@ export default async function JoinOrganizationPage({
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
       <div className="space-y-2">
-        <h1 className="text-2xl font-semibold">
+        <h1 className="font-semibold text-2xl">
           {t('routes.organizations-join.title', {
             org: organization.name,
           })}

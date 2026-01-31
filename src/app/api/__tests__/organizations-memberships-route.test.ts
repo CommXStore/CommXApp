@@ -88,8 +88,8 @@ describe('organization memberships api route', () => {
   })
 
   it('returns 401 when auth fails', async () => {
-    const { auth } = await import('@clerk/nextjs/server')
-    vi.mocked(auth).mockResolvedValueOnce({
+    const { auth: clerkAuth } = await import('@clerk/nextjs/server')
+    vi.mocked(clerkAuth).mockResolvedValueOnce({
       isAuthenticated: false,
       userId: null,
       orgId: null,
