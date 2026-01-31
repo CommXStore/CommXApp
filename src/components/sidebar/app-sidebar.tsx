@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type ComponentProps } from 'react'
 import {
-  Home,
+  CircleGauge,
   BotMessageSquare,
   Layers,
   Bolt,
@@ -88,7 +88,7 @@ export function AppSidebar({ ...props }: SidebarProps) {
     {
       title: t('common.nav.dashboard'),
       url: '/dashboard',
-      icon: Home,
+      icon: CircleGauge,
       items: [],
     },
     {
