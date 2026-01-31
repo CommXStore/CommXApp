@@ -1,6 +1,15 @@
 import { OrganizationProfile } from '@clerk/nextjs'
+import { requireOrgAdmin } from '@/lib/clerk/require-org-admin'
 
-export default function SettingsPage() {
+type SettingsPageProps = {
+  params?: { rest?: string[] }
+}
+
+export default async function SettingsPage({ params }: SettingsPageProps) {
+  if (params?.rest?.includes('organization-members')) {
+    await requireOrgAdmin()
+  }
+
   return (
     <div className="flex items-center justify-center">
       <OrganizationProfile

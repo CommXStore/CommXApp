@@ -129,10 +129,14 @@ export function AppSidebar({ ...props }: SidebarProps) {
       url: '/dashboard/settings',
       icon: Settings2,
       items: [
-        {
-          title: t('common.nav.members'),
-          url: '/dashboard/settings/organization-members',
-        },
+        ...(isAdmin
+          ? [
+              {
+                title: t('common.nav.members'),
+                url: '/dashboard/settings/organization-members',
+              },
+            ]
+          : []),
         {
           title: t('common.nav.apiKeys'),
           url: '/dashboard/settings/api-keys',
