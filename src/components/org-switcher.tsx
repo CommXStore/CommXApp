@@ -22,6 +22,7 @@ export function OrgSwitcher() {
   const t = useTranslations()
   const router = useRouter()
   const isMobile = useIsMobile()
+  const [mounted, setMounted] = useState(false)
   const { organization } = useOrganization()
   const { isLoaded, setActive, userMemberships, userSuggestions } =
     useOrganizationList({
@@ -52,6 +53,10 @@ export function OrgSwitcher() {
     () => new Set(memberships.map(item => item.organization.id)),
     [memberships]
   )
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     if (!isLoaded) {
@@ -121,6 +126,36 @@ export function OrgSwitcher() {
     },
     [setActive]
   )
+
+  if (!mounted) {
+    return (
+      <SidebarMenuButton
+        aria-label={t('common.organization.switcher')}
+        className="w-full justify-between gap-2 pl-0"
+        disabled
+        size="lg"
+      >
+        <span className="flex min-w-0 items-center gap-2">
+          <span className="flex aspect-square h-[30px] min-h-[30px] w-[30px] min-w-[30px] shrink-0 items-center justify-center rounded-full bg-muted font-semibold text-muted-foreground text-xs uppercase">
+            {activeImage ? (
+              <Image
+                alt={activeName}
+                className="aspect-square h-[30px] w-[30px] shrink-0 rounded-full object-cover"
+                height={30}
+                src={activeImage}
+                width={30}
+              />
+            ) : (
+              activeName.slice(0, 2)
+            )}
+          </span>
+          <span className="min-w-0 truncate font-medium text-sm">
+            {activeName}
+          </span>
+        </span>
+      </SidebarMenuButton>
+    )
+  }
 
   return (
     <DropdownMenu>
