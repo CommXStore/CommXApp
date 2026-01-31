@@ -134,14 +134,14 @@ export function OrgSwitcher() {
           <span className="flex min-w-0 items-center gap-2">
             <span
               className={cn(
-                'flex size-7 items-center justify-center rounded-full border bg-muted font-semibold text-muted-foreground text-xs uppercase',
+                'flex size-7 shrink-0 items-center justify-center rounded-full border bg-muted font-semibold text-muted-foreground text-xs uppercase',
                 activeImage ? 'border-transparent bg-transparent p-0' : ''
               )}
             >
               {activeImage ? (
                 <Image
                   alt={activeName}
-                  className="size-7 rounded-full object-cover"
+                  className="size-7 shrink-0 rounded-full object-cover"
                   height={28}
                   src={activeImage}
                   width={28}
@@ -157,14 +157,14 @@ export function OrgSwitcher() {
           {isMobile ? (
             <span
               className={cn(
-                'flex size-7 items-center justify-center rounded-full border bg-muted font-semibold text-muted-foreground text-xs uppercase',
+                'flex size-7 shrink-0 items-center justify-center rounded-full border bg-muted font-semibold text-muted-foreground text-xs uppercase',
                 activeImage ? 'border-transparent bg-transparent p-0' : ''
               )}
             >
               {activeImage ? (
                 <Image
                   alt={activeName}
-                  className="size-7 rounded-full object-cover"
+                  className="size-7 shrink-0 rounded-full object-cover"
                   height={28}
                   src={activeImage}
                   width={28}
