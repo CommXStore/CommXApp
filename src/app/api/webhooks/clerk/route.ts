@@ -62,6 +62,16 @@ export async function POST(req: NextRequest) {
       )
     }
     const rawBody = await req.clone().text()
+    logger.info(
+      {
+        bodyLength: rawBody.length,
+        hasSvixId: Boolean(req.headers.get('svix-id')),
+        hasSvixSignature: Boolean(req.headers.get('svix-signature')),
+        hasSvixTimestamp: Boolean(req.headers.get('svix-timestamp')),
+        ...buildLogContext('POST /api/webhooks/clerk', undefined, req),
+      },
+      'Webhook received.'
+    )
     if (!rawBody) {
       logger.error(
         {
