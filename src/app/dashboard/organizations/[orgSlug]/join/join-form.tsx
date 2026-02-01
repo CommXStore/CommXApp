@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useOrganizationList, useUser } from '@clerk/nextjs'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -11,24 +11,30 @@ import { Input } from '@/components/ui/input'
 import { useTranslations } from '@/i18n/provider'
 
 type JoinOrganizationFormProps = {
+  hasAccess: boolean
   orgId: string
   orgName: string
+  orgSlug: string
   requiresSubscription: boolean
 }
 
 export function JoinOrganizationForm({
+  hasAccess,
   orgId,
   orgName,
+  orgSlug,
   requiresSubscription,
 }: JoinOrganizationFormProps) {
   const t = useTranslations()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { user, isLoaded } = useUser()
   const { setActive } = useOrganizationList()
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const didInit = useRef(false)
+  const didAutoJoin = useRef(false)
 
   useEffect(() => {
     if (!isLoaded || didInit.current) {
@@ -41,8 +47,7 @@ export function JoinOrganizationForm({
 
   const email = user?.primaryEmailAddress?.emailAddress ?? ''
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+  const submitJoin = useCallback(async () => {
     if (isSubmitting) {
       return
     }
@@ -87,6 +92,61 @@ export function JoinOrganizationForm({
     } finally {
       setIsSubmitting(false)
     }
+  }, [firstName, isSubmitting, lastName, orgId, orgName, router, setActive, t])
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    await submitJoin()
+  }
+
+  useEffect(() => {
+    if (!isLoaded || didAutoJoin.current) {
+      return
+    }
+    if (searchParams.get('autoJoin') !== '1') {
+      return
+    }
+    didAutoJoin.current = true
+    if (!requiresSubscription || hasAccess) {
+      submitJoin().catch(() => null)
+    }
+  }, [hasAccess, isLoaded, requiresSubscription, searchParams, submitJoin])
+
+  const isLocked = requiresSubscription && !hasAccess
+
+  if (isLocked) {
+    return (
+      <div className="rounded-lg border bg-muted/30 p-4">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="space-y-1">
+            <p className="font-medium text-sm">
+              {t('routes.organizations-join.status.requiresPlan')}
+            </p>
+            <p className="text-muted-foreground text-sm">
+              {t('routes.organizations-join.status.requiresPlanDescription')}
+            </p>
+          </div>
+          <Button asChild size="sm" variant="secondary">
+            <Link
+              href={`/billing/upgrade?redirect=${encodeURIComponent(
+                `/dashboard/organizations/${orgSlug}/join?autoJoin=1`
+              )}`}
+            >
+              {t('routes.organizations-join.actions.upgrade')}
+            </Link>
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  let statusTitle = t('routes.organizations-join.status.free')
+  let statusDescription = t('routes.organizations-join.status.freeDescription')
+  if (requiresSubscription) {
+    statusTitle = t('routes.organizations-join.status.hasPlan')
+    statusDescription = t(
+      'routes.organizations-join.status.hasPlanDescription'
+    )
   }
 
   return (
@@ -94,24 +154,9 @@ export function JoinOrganizationForm({
       <div className="rounded-lg border bg-muted/30 p-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="space-y-1">
-            <p className="font-medium text-sm">
-              {requiresSubscription
-                ? t('routes.organizations-join.status.requiresPlan')
-                : t('routes.organizations-join.status.free')}
-            </p>
-            <p className="text-muted-foreground text-sm">
-              {requiresSubscription
-                ? t('routes.organizations-join.status.requiresPlanDescription')
-                : t('routes.organizations-join.status.freeDescription')}
-            </p>
+            <p className="font-medium text-sm">{statusTitle}</p>
+            <p className="text-muted-foreground text-sm">{statusDescription}</p>
           </div>
-          {requiresSubscription ? (
-            <Button asChild size="sm" variant="secondary">
-              <Link href="/billing/upgrade">
-                {t('routes.organizations-join.actions.upgrade')}
-              </Link>
-            </Button>
-          ) : null}
         </div>
       </div>
 
