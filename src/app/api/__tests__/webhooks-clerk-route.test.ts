@@ -53,7 +53,6 @@ vi.mock('@clerk/nextjs/server', () => ({
 vi.mock('@clerk/backend/webhooks', () => ({ verifyWebhook }))
 
 vi.mock('@/lib/supabase/entitlements-store', () => ({
-  getUserEntitlements: vi.fn(async () => null),
   upsertUserEntitlements,
 }))
 
@@ -158,6 +157,12 @@ describe('clerk webhook route', () => {
         },
       ],
     })
+    getPlan.mockResolvedValueOnce({
+      id: 'plan_active',
+      slug: 'pro',
+      name: 'Pro',
+      features: ['commx_shop'],
+    })
     verifyWebhook.mockResolvedValueOnce({
       type: 'subscriptionItem.ended',
       data: {
@@ -178,6 +183,54 @@ describe('clerk webhook route', () => {
         userId: 'user_1',
         status: 'active',
         planId: 'plan_active',
+      })
+    )
+  })
+
+  it('prefers active subscription with features over active without features', async () => {
+    process.env.CLERK_WEBHOOK_SECRET = 'whsec_test'
+    getSubscriptionList.mockResolvedValueOnce({
+      data: [
+        {
+          status: 'active',
+          planId: 'plan_free',
+          planSlug: 'free_user',
+          planName: 'Free',
+        },
+        {
+          status: 'active',
+          planId: 'plan_paid',
+          planSlug: 'lite',
+          planName: 'Lite',
+        },
+      ],
+    })
+    getPlan.mockImplementation(async (planId: string) => ({
+      id: planId,
+      slug: planId === 'plan_paid' ? 'lite' : 'free_user',
+      name: planId === 'plan_paid' ? 'Lite' : 'Free',
+      features: planId === 'plan_paid' ? ['commx_shop'] : [],
+    }))
+    verifyWebhook.mockResolvedValueOnce({
+      type: 'subscriptionItem.active',
+      data: {
+        status: 'active',
+        plan_id: 'plan_free',
+        payer: { user_id: 'user_1' },
+      },
+    })
+    const req = buildRequest('{"type":"subscriptionItem.active"}', {
+      'svix-id': 'msg_1',
+      'svix-timestamp': '123',
+      'svix-signature': 'v1,signature',
+    })
+    const res = await POST(req)
+    expect(res.status).toBe(200)
+    expect(upsertUserEntitlements).toHaveBeenCalledWith(
+      expect.objectContaining({
+        userId: 'user_1',
+        status: 'active',
+        planId: 'plan_paid',
       })
     )
   })
@@ -211,72 +264,4 @@ describe('clerk webhook route', () => {
     expect(getOrganization).toHaveBeenCalledWith({ slug: 'commx-shop' })
   })
 
-  it('skips ended event when active entitlements exist', async () => {
-    process.env.CLERK_WEBHOOK_SECRET = 'whsec_test'
-    const { getUserEntitlements } = await import(
-      '@/lib/supabase/entitlements-store'
-    )
-    vi.mocked(getUserEntitlements).mockResolvedValueOnce({
-      userId: 'user_1',
-      status: 'active',
-      planId: 'plan_active',
-      planSlug: 'pro',
-      planName: 'Pro',
-      features: ['commx_shop'],
-      updatedAt: new Date().toISOString(),
-    })
-    verifyWebhook.mockResolvedValueOnce({
-      type: 'subscriptionItem.ended',
-      data: {
-        status: 'ended',
-        plan_id: 'plan_old',
-        payer: { user_id: 'user_1' },
-      },
-    })
-    const req = buildRequest('{"type":"subscriptionItem.ended"}', {
-      'svix-id': 'msg_1',
-      'svix-timestamp': '123',
-      'svix-signature': 'v1,signature',
-    })
-    const res = await POST(req)
-    expect(res.status).toBe(200)
-    expect(upsertUserEntitlements).not.toHaveBeenCalled()
-  })
-
-  it('skips active event without features when existing entitlements have features', async () => {
-    process.env.CLERK_WEBHOOK_SECRET = 'whsec_test'
-    const { getUserEntitlements } = await import(
-      '@/lib/supabase/entitlements-store'
-    )
-    vi.mocked(getUserEntitlements).mockResolvedValueOnce({
-      userId: 'user_1',
-      status: 'active',
-      planId: 'plan_active',
-      planSlug: 'pro',
-      planName: 'Pro',
-      features: ['commx_shop'],
-      updatedAt: new Date().toISOString(),
-    })
-    getPlan.mockResolvedValueOnce({
-      slug: 'free_user',
-      name: 'Free',
-      features: [],
-    })
-    verifyWebhook.mockResolvedValueOnce({
-      type: 'subscriptionItem.active',
-      data: {
-        status: 'active',
-        plan_id: 'plan_free',
-        payer: { user_id: 'user_1' },
-      },
-    })
-    const req = buildRequest('{"type":"subscriptionItem.active"}', {
-      'svix-id': 'msg_1',
-      'svix-timestamp': '123',
-      'svix-signature': 'v1,signature',
-    })
-    const res = await POST(req)
-    expect(res.status).toBe(200)
-    expect(upsertUserEntitlements).not.toHaveBeenCalled()
-  })
 })

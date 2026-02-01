@@ -4,10 +4,7 @@ import { verifyWebhook } from '@clerk/backend/webhooks'
 import { logger } from '@/lib/logger'
 import { buildLogContext } from '@/lib/logger-context'
 import { normalizeFeatureList } from '@/lib/entitlements/features'
-import {
-  getUserEntitlements,
-  upsertUserEntitlements,
-} from '@/lib/supabase/entitlements-store'
+import { upsertUserEntitlements } from '@/lib/supabase/entitlements-store'
 
 export const runtime = 'nodejs'
 
@@ -63,24 +60,40 @@ function getSubscriptionItemPayload(
 async function resolveEffectiveSubscription(
   client: Awaited<ReturnType<typeof clerkClient>>,
   payload: SubscriptionItemPayload
-): Promise<SubscriptionItemPayload> {
-  if (payload.status === 'active') {
-    return payload
-  }
+): Promise<{
+  payload: SubscriptionItemPayload
+  plan: BillingPlan | null
+  features: string[]
+}> {
   const billing = client.billing as {
     getSubscriptionList?: (input: {
       userId: string
     }) => Promise<{ data?: SubscriptionRecord[] }>
+    getPlan?: (planId: string) => Promise<BillingPlan>
+    getPlanList?: () => Promise<{ data?: BillingPlan[] }>
   }
-  if (typeof billing.getSubscriptionList !== 'function') {
-    return payload
+  const resolvePlanById = async (planId: string | null) => {
+    if (!planId) {
+      return null
+    }
+    if (typeof billing.getPlan === 'function') {
+      return billing.getPlan(planId)
+    }
+    if (typeof billing.getPlanList === 'function') {
+      const plans = await billing.getPlanList()
+      return plans.data?.find(plan => plan.id === planId) ?? null
+    }
+    return null
   }
-  const fetchSubscriptions = async () =>
-    billing.getSubscriptionList({
-      userId: payload.userId,
-    })
 
-  let subscriptions = await fetchSubscriptions()
+  if (typeof billing.getSubscriptionList !== 'function') {
+    const plan = await resolvePlanById(payload.planId)
+    return { payload, plan, features: normalizeFeatureList(plan?.features) }
+  }
+
+  let subscriptions = await billing.getSubscriptionList({
+    userId: payload.userId,
+  })
   const logSubscriptionSnapshot = (
     data: SubscriptionRecord[] | undefined,
     phase: string
@@ -98,45 +111,57 @@ async function resolveEffectiveSubscription(
   }
 
   logSubscriptionSnapshot(subscriptions.data, 'initial')
-  let active = subscriptions.data?.find(item => item.status === 'active')
-  if (!active) {
+  let activeSubs =
+    subscriptions.data?.filter(item => item.status === 'active') ?? []
+  if (activeSubs.length === 0) {
     await new Promise(resolve => setTimeout(resolve, 2000))
-    subscriptions = await fetchSubscriptions()
+    subscriptions = await billing.getSubscriptionList({
+      userId: payload.userId,
+    })
     logSubscriptionSnapshot(subscriptions.data, 'retry')
-    active = subscriptions.data?.find(item => item.status === 'active')
+    activeSubs = subscriptions.data?.filter(item => item.status === 'active') ?? []
   }
-  if (!active) {
-    return payload
+
+  if (activeSubs.length > 0) {
+    for (const sub of activeSubs) {
+      const plan = await resolvePlanById(sub.planId ?? null)
+      const features = normalizeFeatureList(plan?.features)
+      if (features.length > 0) {
+        return {
+          payload: {
+            userId: payload.userId,
+            status: 'active',
+            planId: sub.planId ?? payload.planId,
+            planSlug: sub.planSlug ?? plan?.slug ?? payload.planSlug,
+            planName: sub.planName ?? plan?.name ?? payload.planName,
+          },
+          plan,
+          features,
+        }
+      }
+    }
+
+    const primary = activeSubs[0]
+    const plan = await resolvePlanById(primary.planId ?? null)
+    return {
+      payload: {
+        userId: payload.userId,
+        status: 'active',
+        planId: primary.planId ?? payload.planId,
+        planSlug: primary.planSlug ?? plan?.slug ?? payload.planSlug,
+        planName: primary.planName ?? plan?.name ?? payload.planName,
+      },
+      plan,
+      features: normalizeFeatureList(plan?.features),
+    }
   }
+
+  const plan = await resolvePlanById(payload.planId)
   return {
-    userId: payload.userId,
-    status: 'active',
-    planId: active.planId ?? payload.planId,
-    planSlug: active.planSlug ?? payload.planSlug,
-    planName: active.planName ?? payload.planName,
+    payload,
+    plan,
+    features: normalizeFeatureList(plan?.features),
   }
-}
-
-async function resolveBillingPlan(
-  client: Awaited<ReturnType<typeof clerkClient>>,
-  payload: SubscriptionItemPayload
-): Promise<BillingPlan | null> {
-  if (!payload.planId) {
-    return null
-  }
-  const billing = client.billing as {
-    getPlan?: (planId: string) => Promise<BillingPlan>
-    getPlanList?: () => Promise<{ data?: BillingPlan[] }>
-  }
-
-  if (typeof billing.getPlan === 'function') {
-    return billing.getPlan(payload.planId)
-  }
-  if (typeof billing.getPlanList === 'function') {
-    const plans = await billing.getPlanList()
-    return plans.data?.find(plan => plan.id === payload.planId) ?? null
-  }
-  return null
 }
 
 async function revokeMembershipsForFeatures(
@@ -232,11 +257,11 @@ export async function POST(req: NextRequest) {
     }
 
     const client = await clerkClient()
-    const effectivePayload = await resolveEffectiveSubscription(
-      client,
-      payload
-    )
-    const plan = await resolveBillingPlan(client, effectivePayload)
+    const {
+      payload: effectivePayload,
+      plan,
+      features,
+    } = await resolveEffectiveSubscription(client, payload)
     if (effectivePayload.planId && !plan) {
       logger.error(
         {
@@ -250,48 +275,8 @@ export async function POST(req: NextRequest) {
         { status: 503 }
       )
     }
-    const features = normalizeFeatureList(plan?.features)
 
     try {
-      const existing = await getUserEntitlements(effectivePayload.userId)
-
-      if (
-        effectivePayload.status === 'ended' &&
-        existing?.status === 'active' &&
-        existing.features.length > 0
-      ) {
-        logger.info(
-          {
-            userId: effectivePayload.userId,
-            existingPlanId: existing.planId,
-            existingPlanSlug: existing.planSlug ?? 'unknown',
-            incomingPlanId: effectivePayload.planId,
-            incomingPlanSlug: effectivePayload.planSlug ?? 'unknown',
-          },
-          'Skipping ended event because active entitlements exist.'
-        )
-        return NextResponse.json({ received: true }, { status: 200 })
-      }
-
-      if (
-        effectivePayload.status === 'active' &&
-        features.length === 0 &&
-        existing?.status === 'active' &&
-        existing.features.length > 0
-      ) {
-        logger.info(
-          {
-            userId: effectivePayload.userId,
-            existingPlanId: existing.planId,
-            existingPlanSlug: existing.planSlug ?? 'unknown',
-            incomingPlanId: effectivePayload.planId,
-            incomingPlanSlug: effectivePayload.planSlug ?? 'unknown',
-          },
-          'Skipping active event because existing entitlements have features.'
-        )
-        return NextResponse.json({ received: true }, { status: 200 })
-      }
-
       await upsertUserEntitlements({
         userId: effectivePayload.userId,
         status: effectivePayload.status,
