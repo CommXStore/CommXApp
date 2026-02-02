@@ -47,8 +47,8 @@ export async function createCustomFieldAction(payload: CustomFieldInput) {
   }
   const token = await getSupabaseToken()
   const field = await createCustomField(data.orgId, payload, token)
-  revalidateTag(cacheTags.customFields(data.orgId))
-  revalidateTag(cacheTags.contentTypes(data.orgId))
+  revalidateTag(cacheTags.customFields(data.orgId), 'default')
+  revalidateTag(cacheTags.contentTypes(data.orgId), 'default')
   return field
 }
 
@@ -62,8 +62,8 @@ export async function updateCustomFieldAction(
   }
   const token = await getSupabaseToken()
   const field = await updateCustomField(data.orgId, id, payload, token)
-  revalidateTag(cacheTags.customFields(data.orgId))
-  revalidateTag(cacheTags.contentTypes(data.orgId))
+  revalidateTag(cacheTags.customFields(data.orgId), 'default')
+  revalidateTag(cacheTags.contentTypes(data.orgId), 'default')
   return field
 }
 
@@ -74,7 +74,7 @@ export async function deleteCustomFieldAction(id: string) {
   }
   const token = await getSupabaseToken()
   const result = await deleteCustomField(data.orgId, id, token)
-  revalidateTag(cacheTags.customFields(data.orgId))
-  revalidateTag(cacheTags.contentTypes(data.orgId))
+  revalidateTag(cacheTags.customFields(data.orgId), 'default')
+  revalidateTag(cacheTags.contentTypes(data.orgId), 'default')
   return result
 }

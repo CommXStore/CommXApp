@@ -2,7 +2,12 @@ import { cache } from 'react'
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
 import { defaultLocale, isLocale, type Locale } from './config'
-import { formatMessage, resolveMessage, type TranslationParams } from './utils'
+import {
+  formatMessage,
+  resolveMessage,
+  type MessageValue,
+  type TranslationParams,
+} from './utils'
 import { getLocale } from './get-locale'
 
 type RouteMessages = Record<string, Record<string, unknown>>
@@ -82,7 +87,7 @@ export async function getTranslations(locale?: Locale) {
   const messages = await getMessages(resolvedLocale)
 
   return (key: string, params?: TranslationParams) => {
-    const value = resolveMessage(messages as Record<string, unknown>, key)
+    const value = resolveMessage(messages as Record<string, MessageValue>, key)
     if (!value) {
       return key
     }

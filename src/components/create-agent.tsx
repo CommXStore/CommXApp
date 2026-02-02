@@ -28,7 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import type { Agent } from '@/lib/clerk/metadata-utils'
+import type { Agent } from '@/lib/agents/schema'
 import { useTranslations } from '@/i18n/provider'
 
 type CreateAgentProps = {

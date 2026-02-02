@@ -44,7 +44,7 @@ import {
   createAgentAction,
   deleteAgentAction,
 } from '@/lib/clerk/actions/agents'
-import type { Agent } from '@/lib/clerk/metadata-utils'
+import type { Agent } from '@/lib/agents/schema'
 import { useTranslations } from '@/i18n/provider'
 import { PageHeader, PageLayout } from '@/components/page-layout'
 

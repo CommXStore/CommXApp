@@ -1,6 +1,6 @@
 export type TranslationParams = Record<string, string | number>
 
-type MessageValue = string | Record<string, MessageValue>
+export type MessageValue = string | Record<string, unknown>
 
 export function resolveMessage(
   messages: Record<string, MessageValue>,
@@ -12,7 +12,9 @@ export function resolveMessage(
     if (!current || typeof current !== 'object') {
       return
     }
-    current = current[part]
+    current = (current as Record<string, unknown>)[part] as
+      | MessageValue
+      | undefined
   }
   return typeof current === 'string' ? current : undefined
 }

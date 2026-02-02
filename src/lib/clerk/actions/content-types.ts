@@ -74,8 +74,8 @@ export async function createContentTypeAction(payload: ContentTypeInput) {
   }
   const token = await getSupabaseToken()
   const contentType = await createContentType(data.orgId, payload, token)
-  revalidateTag(cacheTags.contentTypes(data.orgId))
-  revalidateTag(cacheTags.customFields(data.orgId))
+  revalidateTag(cacheTags.contentTypes(data.orgId), 'default')
+  revalidateTag(cacheTags.customFields(data.orgId), 'default')
   return contentType
 }
 
@@ -90,13 +90,19 @@ export async function updateContentTypeAction(
   const token = await getSupabaseToken()
   const existing = await getContentType(data.orgId, id, token)
   const contentType = await updateContentType(data.orgId, id, payload, token)
-  revalidateTag(cacheTags.contentTypes(data.orgId))
-  revalidateTag(cacheTags.customFields(data.orgId))
+  revalidateTag(cacheTags.contentTypes(data.orgId), 'default')
+  revalidateTag(cacheTags.customFields(data.orgId), 'default')
   if (existing?.slug) {
-    revalidateTag(cacheTags.contentEntries(data.orgId, existing.slug))
+    revalidateTag(
+      cacheTags.contentEntries(data.orgId, existing.slug),
+      'default'
+    )
   }
   if (contentType?.slug && contentType.slug !== existing?.slug) {
-    revalidateTag(cacheTags.contentEntries(data.orgId, contentType.slug))
+    revalidateTag(
+      cacheTags.contentEntries(data.orgId, contentType.slug),
+      'default'
+    )
   }
   return contentType
 }
@@ -109,10 +115,13 @@ export async function deleteContentTypeAction(id: string) {
   const token = await getSupabaseToken()
   const existing = await getContentType(data.orgId, id, token)
   const result = await deleteContentType(data.orgId, id, token)
-  revalidateTag(cacheTags.contentTypes(data.orgId))
-  revalidateTag(cacheTags.customFields(data.orgId))
+  revalidateTag(cacheTags.contentTypes(data.orgId), 'default')
+  revalidateTag(cacheTags.customFields(data.orgId), 'default')
   if (existing?.slug) {
-    revalidateTag(cacheTags.contentEntries(data.orgId, existing.slug))
+    revalidateTag(
+      cacheTags.contentEntries(data.orgId, existing.slug),
+      'default'
+    )
   }
   return result
 }

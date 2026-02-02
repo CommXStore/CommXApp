@@ -51,8 +51,9 @@ export async function checkAuth(): Promise<CheckAuthResponse> {
       tokenType: res.tokenType,
       userId: res.userId,
       orgId: res.orgId,
-      orgRole: res.orgRole ?? undefined,
-      orgPermissions: res.orgPermissions ?? undefined,
+      orgRole: (res as { orgRole?: string }).orgRole ?? undefined,
+      orgPermissions:
+        (res as { orgPermissions?: string[] }).orgPermissions ?? undefined,
     },
   }
 }

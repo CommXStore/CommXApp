@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { zodToTs, printNode } from 'zod-to-ts'
+import { zodToTs, printNode, createAuxiliaryTypeStore } from 'zod-to-ts'
 import {
   contentTypeSchema,
   customFieldSchema,
@@ -16,10 +16,16 @@ const definitions = [
 
 const TYPE_PREFIX = /^type /
 
+const auxiliaryTypeStore = createAuxiliaryTypeStore()
+
 const types = definitions
   .map(({ name, schema }) => {
-    const { node } = zodToTs(schema, name)
-    return printNode(node).replace(TYPE_PREFIX, 'export type ')
+    const { node } = zodToTs(schema, { auxiliaryTypeStore })
+    const typeDef = printNode(node).replace(
+      TYPE_PREFIX,
+      `export type ${name} = `
+    )
+    return typeDef
   })
   .join('\n\n')
 

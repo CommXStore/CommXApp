@@ -66,11 +66,14 @@ export function ContentEntriesTable({
   const t = useTranslations()
   const [apiOpen, setApiOpen] = useState(false)
   const [apiEntry, setApiEntry] = useState<ContentEntry | null>(null)
-  const [apiResponse, setApiResponse] = useState<unknown>(null)
+  const [apiResponse, setApiResponse] = useState<Record<
+    string,
+    unknown
+  > | null>(null)
   const [apiError, setApiError] = useState<string | null>(null)
   const [apiLoading, setApiLoading] = useState(false)
   const { orgId, userId, getToken } = useAuth()
-  const { clerk } = useClerk()
+  const clerk = useClerk()
 
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -110,7 +113,19 @@ export function ContentEntriesTable({
 
     try {
       const result = await apiKeysClient.getAll()
-      const keys = Array.isArray(result) ? result : (result?.data ?? [])
+      const keys: Array<{
+        subject?: string
+        organizationId?: string
+        userId?: string
+        secret?: string
+      }> = Array.isArray(result)
+        ? result
+        : (((result as { data?: unknown })?.data ?? []) as Array<{
+            subject?: string
+            organizationId?: string
+            userId?: string
+            secret?: string
+          }>)
       const orgKey = orgId
         ? keys.find(
             (key: { subject?: string; organizationId?: string }) =>
@@ -255,7 +270,11 @@ export function ContentEntriesTable({
             )}
             {!(apiLoading || apiError) && apiResponse && (
               <pre className="whitespace-pre-wrap">
-                {JSON.stringify(apiResponse, null, 2)}
+                {JSON.stringify(
+                  apiResponse as unknown as Record<string, unknown>,
+                  null,
+                  2
+                )}
               </pre>
             )}
           </div>

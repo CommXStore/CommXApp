@@ -5,7 +5,7 @@ import { cacheTags } from '@/lib/cache-tags'
 import { getSupabaseToken } from '@/lib/supabase/clerk-token'
 import { checkAuth } from '../check-auth'
 import { getAgents, createAgent, deleteAgent } from '../metadata-utils'
-import type { AgentInput } from '../metadata-utils'
+import type { AgentInput } from '@/lib/agents/schema'
 import { withCache } from './cache'
 
 export async function getAgentsAction() {
@@ -26,7 +26,7 @@ export async function createAgentAction(payload: AgentInput) {
   }
   const token = await getSupabaseToken()
   const agent = await createAgent(data.orgId, payload, token)
-  revalidateTag(cacheTags.agents(data.orgId))
+  revalidateTag(cacheTags.agents(data.orgId), 'default')
   return agent
 }
 
@@ -37,6 +37,6 @@ export async function deleteAgentAction(agentId: string) {
   }
   const token = await getSupabaseToken()
   const result = await deleteAgent(data.orgId, agentId, token)
-  revalidateTag(cacheTags.agents(data.orgId))
+  revalidateTag(cacheTags.agents(data.orgId), 'default')
   return result
 }

@@ -66,7 +66,10 @@ export async function createContentEntryAction(
     payload,
     token
   )
-  revalidateTag(cacheTags.contentEntries(data.orgId, contentTypeSlug))
+  revalidateTag(
+    cacheTags.contentEntries(data.orgId, contentTypeSlug),
+    'default'
+  )
   return entry
 }
 
@@ -84,7 +87,10 @@ export async function updateContentEntryAction(
     input: payload,
     token,
   })
-  revalidateTag(cacheTags.contentEntries(data.orgId, contentTypeSlug))
+  revalidateTag(
+    cacheTags.contentEntries(data.orgId, contentTypeSlug),
+    'default'
+  )
   return entry
 }
 
@@ -103,6 +109,9 @@ export async function deleteContentEntryAction(
     entryId,
     token
   )
-  revalidateTag(cacheTags.contentEntries(data.orgId, contentTypeSlug))
+  revalidateTag(
+    cacheTags.contentEntries(data.orgId, contentTypeSlug),
+    'default'
+  )
   return result
 }

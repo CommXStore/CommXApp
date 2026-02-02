@@ -4,7 +4,7 @@ import { Trash } from 'lucide-react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import type { Agent } from '@/lib/clerk/metadata-utils'
+import type { Agent } from '@/lib/agents/schema'
 
 export const createColumns = (
   t: (key: string, params?: Record<string, string | number>) => string,

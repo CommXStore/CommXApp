@@ -33,7 +33,7 @@ export function LanguageSwitcher() {
           name: localeCookieName,
           value: nextLocale,
           path: '/',
-          maxAge: 31_536_000,
+          expires: Date.now() + 31_536_000 * 1000,
         })
       } else {
         // biome-ignore lint/suspicious/noDocumentCookie: fallback for browsers without Cookie Store API.

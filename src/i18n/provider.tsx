@@ -6,6 +6,7 @@ import type { Messages } from '@/i18n/server'
 import {
   formatMessage,
   resolveMessage,
+  type MessageValue,
   type TranslationParams,
 } from '@/i18n/utils'
 
@@ -36,7 +37,7 @@ export function useTranslations() {
   }
   return (key: string, params?: TranslationParams) => {
     const value = resolveMessage(
-      context.messages as unknown as Record<string, unknown>,
+      context.messages as unknown as Record<string, MessageValue>,
       key
     )
     if (!value) {

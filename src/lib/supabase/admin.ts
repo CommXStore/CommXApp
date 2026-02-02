@@ -1,7 +1,56 @@
 import 'server-only'
 import { createClient } from '@supabase/supabase-js'
 
-let cachedAdmin: ReturnType<typeof createClient> | null = null
+export type Database = {
+  public: {
+    Tables: {
+      user_entitlements: {
+        Row: {
+          user_id: string
+          status: string
+          plan_id: string | null
+          plan_slug: string | null
+          plan_name: string | null
+          features: string[]
+          updated_at: string | null
+        }
+        Insert: {
+          user_id: string
+          status: string
+          plan_id?: string | null
+          plan_slug?: string | null
+          plan_name?: string | null
+          features?: string[]
+          updated_at?: string | null
+        }
+        Update: Partial<
+          Database['public']['Tables']['user_entitlements']['Insert']
+        >
+      }
+      organization_store: {
+        Row: {
+          organization_id: string
+          agents: unknown
+          content_types: unknown
+          custom_fields: unknown
+          updated_at: string | null
+        }
+        Insert: {
+          organization_id: string
+          agents?: unknown
+          content_types?: unknown
+          custom_fields?: unknown
+          updated_at?: string | null
+        }
+        Update: Partial<
+          Database['public']['Tables']['organization_store']['Insert']
+        >
+      }
+    }
+  }
+}
+
+let cachedAdmin: ReturnType<typeof createClient<Database>> | null = null
 
 export function getSupabaseAdmin() {
   if (cachedAdmin) {
@@ -21,7 +70,7 @@ export function getSupabaseAdmin() {
     )
   }
 
-  cachedAdmin = createClient(supabaseUrl, supabaseServiceKey, {
+  cachedAdmin = createClient<Database>(supabaseUrl, supabaseServiceKey, {
     auth: {
       autoRefreshToken: false,
       persistSession: false,

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { getSupabaseAdmin } from '@/lib/supabase/admin'
 
 export type UserEntitlementsRecord = {
@@ -33,11 +34,15 @@ export async function upsertUserEntitlements(
   }
 
   const supabaseAdmin = getSupabaseAdmin()
-  const { data, error } = await supabaseAdmin
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const client = supabaseAdmin as any
+  const result = await client
     .from('user_entitlements')
     .upsert(payload, { onConflict: 'user_id' })
     .select('*')
     .single()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = result as any
 
   if (error) {
     throw new Error(`Supabase upsert failed: ${error.message}`)
@@ -58,11 +63,15 @@ export async function getUserEntitlements(
   userId: string
 ): Promise<UserEntitlementsRecord | null> {
   const supabaseAdmin = getSupabaseAdmin()
-  const { data, error } = await supabaseAdmin
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const client = supabaseAdmin as any
+  const result = await client
     .from('user_entitlements')
     .select('*')
     .eq('user_id', userId)
     .maybeSingle()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = result as any
 
   if (error) {
     throw new Error(`Supabase fetch failed: ${error.message}`)

@@ -1,8 +1,4 @@
-type FeatureInput =
-  | string
-  | { slug?: string | null; name?: string | null }
-  | null
-  | undefined
+type FeatureObject = { slug?: string | null; name?: string | null }
 
 export function normalizeFeatureList(value: unknown): string[] {
   if (!Array.isArray(value)) {
@@ -15,8 +11,8 @@ export function normalizeFeatureList(value: unknown): string[] {
         return item.trim()
       }
       if (item && typeof item === 'object') {
-        const candidate =
-          (item as FeatureInput).slug ?? (item as FeatureInput).name
+        const obj = item as FeatureObject
+        const candidate = obj.slug ?? obj.name
         return typeof candidate === 'string' ? candidate.trim() : ''
       }
       return ''

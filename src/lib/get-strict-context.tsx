@@ -4,7 +4,13 @@ import type { ReactNode } from 'react'
 function getStrictContext<T>(
   name?: string
 ): readonly [
-  ({ value, children }: { value: T; children?: ReactNode }) => JSX.Element,
+  ({
+    value,
+    children,
+  }: {
+    value: T
+    children?: ReactNode
+  }) => React.ReactElement,
   () => T,
 ] {
   const Context = createContext<T | undefined>(undefined)

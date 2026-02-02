@@ -31,6 +31,7 @@ const nextConfig: NextConfig = {
       fullUrl: true,
     },
   },
+  serverExternalPackages: ['pino', 'thread-stream'],
 }
 
 export default nextConfig

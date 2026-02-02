@@ -201,7 +201,7 @@ async function validateEntitlements(
         err: error,
         ...buildLogContext(
           'POST /api/organizations/memberships',
-          { orgSlug, userId: authResult.userId },
+          { orgId: authResult.orgId ?? undefined, userId: authResult.userId },
           req
         ),
       },
@@ -352,5 +352,5 @@ export async function POST(req: NextRequest) {
     return unauthorizedResponse(req)
   }
 
-  return handleCreateMembership(req, authResult)
+  return handleCreateMembership(req, authResult as AuthResult)
 }
