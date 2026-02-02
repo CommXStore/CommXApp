@@ -11,7 +11,8 @@
         "agents": "Agents",
         "contentTypes": "Content Types"
       },
-      "inputPlaceholder": "Enter your API key to fill the examples"
+      "inputPlaceholder": "Enter your API key to fill the examples",
+      "noContentTypes": "No published content types available."
     }
   },
   "paymentProviders": {

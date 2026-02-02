@@ -11,7 +11,8 @@
         "agents": "Agentes",
         "contentTypes": "Tipos de contenido"
       },
-      "inputPlaceholder": "Ingresa tu clave de API para llenar los ejemplos"
+      "inputPlaceholder": "Ingresa tu clave de API para llenar los ejemplos",
+      "noContentTypes": "No hay tipos de contenido publicados disponibles."
     }
   },
   "paymentProviders": {

@@ -117,34 +117,25 @@ export function ApiTabs({ contentTypes }: ApiTabsProps) {
           />
         </TabsContent>
         <TabsContent value="contentTypes">
-          <Tabs className="w-full" defaultValue="content-types">
-            <TabsList className="mb-4">
-              <TabsTrigger value="content-types">Content Types API</TabsTrigger>
-              {publishedTypes.map(ct => (
-                <TabsTrigger key={ct.id} value={ct.slug}>
-                  {ct.name}
+          {publishedTypes.length === 0 ? (
+            <div className="rounded-lg border bg-muted/30 p-4 text-center text-muted-foreground">
+              {t('routes.settings.apiKeys.apiUsage.noContentTypes')}
+            </div>
+          ) : (
+            <Tabs className="w-full" defaultValue="content-types">
+              <TabsList className="mb-4">
+                <TabsTrigger value="content-types">
+                  Content Types API
                 </TabsTrigger>
-              ))}
-            </TabsList>
-            <TabsContent value="content-types">
-              <CodeTabs
-                codes={contentTypesCodes}
-                lang="bash"
-                onCopiedChange={async (copied, content) => {
-                  if (!(copied && content)) {
-                    return
-                  }
-                  await navigator.clipboard.writeText(content)
-                }}
-              />
-            </TabsContent>
-            {publishedTypes.map(ct => (
-              <TabsContent key={ct.id} value={ct.slug}>
-                <div className="mb-2 text-muted-foreground text-sm">
-                  Rotas de API para entradas do tipo &quot;{ct.name}&quot;
-                </div>
+                {publishedTypes.map(ct => (
+                  <TabsTrigger key={ct.id} value={ct.slug}>
+                    {ct.name}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+              <TabsContent value="content-types">
                 <CodeTabs
-                  codes={generateEntryCodes(ct.slug, ct.name)}
+                  codes={contentTypesCodes}
                   lang="bash"
                   onCopiedChange={async (copied, content) => {
                     if (!(copied && content)) {
@@ -154,8 +145,25 @@ export function ApiTabs({ contentTypes }: ApiTabsProps) {
                   }}
                 />
               </TabsContent>
-            ))}
-          </Tabs>
+              {publishedTypes.map(ct => (
+                <TabsContent key={ct.id} value={ct.slug}>
+                  <div className="mb-2 text-muted-foreground text-sm">
+                    Rotas de API para entradas do tipo &quot;{ct.name}&quot;
+                  </div>
+                  <CodeTabs
+                    codes={generateEntryCodes(ct.slug, ct.name)}
+                    lang="bash"
+                    onCopiedChange={async (copied, content) => {
+                      if (!(copied && content)) {
+                        return
+                      }
+                      await navigator.clipboard.writeText(content)
+                    }}
+                  />
+                </TabsContent>
+              ))}
+            </Tabs>
+          )}
         </TabsContent>
       </Tabs>
     </div>

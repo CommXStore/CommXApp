@@ -78,9 +78,7 @@ export function JoinOrganizationForm({
       if (setActive) {
         await setActive({ organization: orgId })
       }
-      toast.success(
-        t('routes.apps-join.toasts.joined', { org: orgName })
-      )
+      toast.success(t('routes.apps-join.toasts.joined', { org: orgName }))
       router.push('/')
       router.refresh()
     } catch (error) {
@@ -183,9 +181,7 @@ export function JoinOrganizationForm({
               id="firstName"
               name="firstName"
               onChange={event => setFirstName(event.target.value)}
-              placeholder={t(
-                'routes.apps-join.form.firstNamePlaceholder'
-              )}
+              placeholder={t('routes.apps-join.form.firstNamePlaceholder')}
               type="text"
               value={firstName}
             />
@@ -199,9 +195,7 @@ export function JoinOrganizationForm({
               id="lastName"
               name="lastName"
               onChange={event => setLastName(event.target.value)}
-              placeholder={t(
-                'routes.apps-join.form.lastNamePlaceholder'
-              )}
+              placeholder={t('routes.apps-join.form.lastNamePlaceholder')}
               type="text"
               value={lastName}
             />
