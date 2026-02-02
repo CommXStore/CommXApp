@@ -20,16 +20,15 @@ FROM base AS build
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential pkg-config python3
 
-# Copy package files
+# Copy application code first (to bust cache on any code change)
+COPY . .
+
+# Copy package files after code to ensure npm ci runs on every code change
 COPY package.json package-lock.json* ./
 
 # Install node modules (need devDependencies for build)
 # Important: Don't use --ignore-scripts as it breaks @tailwindcss/postcss
-# Cache bust: always reinstall dependencies to ensure postinstall scripts run
 RUN rm -rf node_modules && npm ci
-
-# Copy application code
-COPY . .
 
 # Build application
 RUN npm run build
