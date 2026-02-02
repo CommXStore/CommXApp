@@ -1,4 +1,6 @@
 {
+  "title": "Content types",
+  "description": "Manage your organization's custom content types.",
   "new": {
     "title": "New content type",
     "description": "Create a custom content type."

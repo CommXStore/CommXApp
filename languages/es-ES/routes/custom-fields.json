@@ -1,4 +1,6 @@
 {
+  "title": "Campos personalizados",
+  "description": "Crea campos reutilizables para tus tipos de contenido.",
   "new": {
     "title": "Nuevo campo personalizado",
     "description": "Crea un campo y vincúlalo a un tipo de contenido."

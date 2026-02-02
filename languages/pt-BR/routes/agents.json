@@ -1,4 +1,6 @@
 {
+  "title": "Agentes",
+  "description": "Gerencie os agentes de IA da sua organização.",
   "create": {
     "button": "Adicionar agente",
     "title": "Adicionar agente",

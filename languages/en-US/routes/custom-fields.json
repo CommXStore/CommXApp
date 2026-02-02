@@ -1,4 +1,6 @@
 {
+  "title": "Custom fields",
+  "description": "Create reusable fields for your content types.",
   "new": {
     "title": "New custom field",
     "description": "Create a field and link it to a content type."

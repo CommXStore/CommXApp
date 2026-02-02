@@ -1,4 +1,6 @@
 {
+  "title": "Tipos de contenido",
+  "description": "Administra los tipos de contenido personalizados de tu organización.",
   "new": {
     "title": "Nuevo tipo de contenido",
     "description": "Crea un tipo de contenido personalizado."

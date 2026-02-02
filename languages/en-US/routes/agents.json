@@ -1,4 +1,6 @@
 {
+  "title": "Agents",
+  "description": "Manage your organization's AI agents.",
   "create": {
     "button": "Add agent",
     "title": "Add agent",
