@@ -16,7 +16,9 @@ export function getSupabaseAdmin() {
   }
 
   if (!supabaseServiceKey) {
-    throw new Error('SUPABASE_SERVICE_ROLE_KEY or SUPABASE_SECRET_KEY is not set')
+    throw new Error(
+      'SUPABASE_SERVICE_ROLE_KEY or SUPABASE_SECRET_KEY is not set'
+    )
   }
 
   cachedAdmin = createClient(supabaseUrl, supabaseServiceKey, {
