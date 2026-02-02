@@ -38,6 +38,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { PaymentProviderFormDialog } from './form-dialog'
 import type { PaymentProvider } from './types'
 import { useTranslations } from '@/i18n/provider'
@@ -53,6 +61,12 @@ export function PaymentProvidersTable({
   const [editingProvider, setEditingProvider] =
     useState<PaymentProvider | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [togglingProviderId, setTogglingProviderId] = useState<string | null>(
+    null
+  )
+  const [deleteProvider, setDeleteProvider] = useState<PaymentProvider | null>(
+    null
+  )
 
   const loadProviders = useCallback(async () => {
     setLoading(true)
@@ -129,6 +143,7 @@ export function PaymentProvidersTable({
   }
 
   async function toggleProvider(provider: PaymentProvider) {
+    setTogglingProviderId(provider.id)
     try {
       const res = await fetch(`/api/admin/payment-providers/${provider.id}`, {
         method: 'PATCH',
@@ -151,10 +166,12 @@ export function PaymentProvidersTable({
       toast.success('Provider updated.')
     } catch {
       toast.error('Failed to update provider.')
+    } finally {
+      setTogglingProviderId(null)
     }
   }
 
-  async function deleteProvider(provider: PaymentProvider) {
+  async function confirmDelete(provider: PaymentProvider) {
     try {
       const res = await fetch(`/api/admin/payment-providers/${provider.id}`, {
         method: 'DELETE',
@@ -167,6 +184,8 @@ export function PaymentProvidersTable({
       toast.success('Provider removed.')
     } catch {
       toast.error('Failed to remove provider.')
+    } finally {
+      setDeleteProvider(null)
     }
   }
 
@@ -199,6 +218,7 @@ export function PaymentProvidersTable({
       cell: ({ row }: { row: { original: PaymentProvider } }) => (
         <div className="flex items-center justify-end gap-2">
           <Button
+            disabled={togglingProviderId === row.original.id}
             onClick={() => toggleProvider(row.original)}
             size="sm"
             type="button"
@@ -209,6 +229,7 @@ export function PaymentProvidersTable({
               : t('routes.settings.paymentProviders.actions.enable')}
           </Button>
           <Button
+            disabled={loading}
             onClick={() => {
               setEditingProvider(row.original)
               setIsDialogOpen(true)
@@ -220,7 +241,7 @@ export function PaymentProvidersTable({
             {t('routes.settings.paymentProviders.actions.edit')}
           </Button>
           <Button
-            onClick={() => deleteProvider(row.original)}
+            onClick={() => setDeleteProvider(row.original)}
             size="sm"
             type="button"
             variant="destructive"
@@ -415,6 +436,40 @@ export function PaymentProvidersTable({
         provider={editingProvider}
         trigger={null}
       />
+
+      <Dialog
+        onOpenChange={(value: boolean) => {
+          if (!value) {
+            setDeleteProvider(null)
+          }
+        }}
+        open={deleteProvider !== null}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Remove Provider</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to remove "{deleteProvider?.name}"? This
+              action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={() => setDeleteProvider(null)} variant="outline">
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                if (deleteProvider) {
+                  confirmDelete(deleteProvider)
+                }
+              }}
+              variant="destructive"
+            >
+              Remove
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
