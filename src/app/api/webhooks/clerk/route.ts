@@ -57,6 +57,84 @@ function getSubscriptionItemPayload(
   }
 }
 
+function logSubscriptionSnapshot(
+  data: SubscriptionRecord[] | undefined,
+  phase: string,
+  userId: string
+) {
+  logger.info(
+    {
+      phase,
+      statuses: data?.map(item => item.status ?? 'unknown') ?? [],
+      planIds: data?.map(item => item.planId ?? 'unknown') ?? [],
+      planSlugs: data?.map(item => item.planSlug ?? 'unknown') ?? [],
+      userId,
+    },
+    'Subscription list snapshot.'
+  )
+}
+
+function buildActivePayload(
+  payload: SubscriptionItemPayload,
+  subscription: SubscriptionRecord,
+  plan: BillingPlan | null
+): SubscriptionItemPayload {
+  return {
+    userId: payload.userId,
+    status: 'active',
+    planId: subscription.planId ?? payload.planId,
+    planSlug: subscription.planSlug ?? plan?.slug ?? payload.planSlug,
+    planName: subscription.planName ?? plan?.name ?? payload.planName,
+  }
+}
+
+async function resolvePlanById(
+  billing: {
+    getPlan?: (planId: string) => Promise<BillingPlan>
+    getPlanList?: () => Promise<{ data?: BillingPlan[] }>
+  },
+  planId: string | null
+) {
+  if (!planId) {
+    return null
+  }
+  if (typeof billing.getPlan === 'function') {
+    return billing.getPlan(planId)
+  }
+  if (typeof billing.getPlanList === 'function') {
+    const plans = await billing.getPlanList()
+    return plans.data?.find(item => item.id === planId) ?? null
+  }
+  return null
+}
+
+async function pickActiveSubscription(
+  billing: {
+    getPlan?: (planId: string) => Promise<BillingPlan>
+    getPlanList?: () => Promise<{ data?: BillingPlan[] }>
+  },
+  payload: SubscriptionItemPayload,
+  activeSubs: SubscriptionRecord[]
+): Promise<{ payload: SubscriptionItemPayload; plan: BillingPlan | null }> {
+  for (const sub of activeSubs) {
+    const plan = await resolvePlanById(billing, sub.planId ?? null)
+    const features = normalizeFeatureList(plan?.features)
+    if (features.length > 0) {
+      return {
+        payload: buildActivePayload(payload, sub, plan),
+        plan,
+      }
+    }
+  }
+
+  const primary = activeSubs[0]
+  const plan = await resolvePlanById(billing, primary.planId ?? null)
+  return {
+    payload: buildActivePayload(payload, primary, plan),
+    plan,
+  }
+}
+
 async function resolveEffectiveSubscription(
   client: Awaited<ReturnType<typeof clerkClient>>,
   payload: SubscriptionItemPayload
@@ -72,45 +150,17 @@ async function resolveEffectiveSubscription(
     getPlan?: (planId: string) => Promise<BillingPlan>
     getPlanList?: () => Promise<{ data?: BillingPlan[] }>
   }
-  const resolvePlanById = async (planId: string | null) => {
-    if (!planId) {
-      return null
-    }
-    if (typeof billing.getPlan === 'function') {
-      return billing.getPlan(planId)
-    }
-    if (typeof billing.getPlanList === 'function') {
-      const plans = await billing.getPlanList()
-      return plans.data?.find(plan => plan.id === planId) ?? null
-    }
-    return null
-  }
 
   if (typeof billing.getSubscriptionList !== 'function') {
-    const plan = await resolvePlanById(payload.planId)
+    const plan = await resolvePlanById(billing, payload.planId)
     return { payload, plan, features: normalizeFeatureList(plan?.features) }
   }
 
   let subscriptions = await billing.getSubscriptionList({
     userId: payload.userId,
   })
-  const logSubscriptionSnapshot = (
-    data: SubscriptionRecord[] | undefined,
-    phase: string
-  ) => {
-    logger.info(
-      {
-        phase,
-        statuses: data?.map(item => item.status ?? 'unknown') ?? [],
-        planIds: data?.map(item => item.planId ?? 'unknown') ?? [],
-        planSlugs: data?.map(item => item.planSlug ?? 'unknown') ?? [],
-        userId: payload.userId,
-      },
-      'Subscription list snapshot.'
-    )
-  }
 
-  logSubscriptionSnapshot(subscriptions.data, 'initial')
+  logSubscriptionSnapshot(subscriptions.data, 'initial', payload.userId)
   let activeSubs =
     subscriptions.data?.filter(item => item.status === 'active') ?? []
   if (activeSubs.length === 0) {
@@ -118,49 +168,26 @@ async function resolveEffectiveSubscription(
     subscriptions = await billing.getSubscriptionList({
       userId: payload.userId,
     })
-    logSubscriptionSnapshot(subscriptions.data, 'retry')
-    activeSubs = subscriptions.data?.filter(item => item.status === 'active') ?? []
+    logSubscriptionSnapshot(subscriptions.data, 'retry', payload.userId)
+    activeSubs =
+      subscriptions.data?.filter(item => item.status === 'active') ?? []
   }
 
   if (activeSubs.length > 0) {
-    for (const sub of activeSubs) {
-      const plan = await resolvePlanById(sub.planId ?? null)
-      const features = normalizeFeatureList(plan?.features)
-      if (features.length > 0) {
-        return {
-          payload: {
-            userId: payload.userId,
-            status: 'active',
-            planId: sub.planId ?? payload.planId,
-            planSlug: sub.planSlug ?? plan?.slug ?? payload.planSlug,
-            planName: sub.planName ?? plan?.name ?? payload.planName,
-          },
-          plan,
-          features,
-        }
-      }
-    }
-
-    const primary = activeSubs[0]
-    const plan = await resolvePlanById(primary.planId ?? null)
+    const { payload: nextPayload, plan: activePlan } =
+      await pickActiveSubscription(billing, payload, activeSubs)
     return {
-      payload: {
-        userId: payload.userId,
-        status: 'active',
-        planId: primary.planId ?? payload.planId,
-        planSlug: primary.planSlug ?? plan?.slug ?? payload.planSlug,
-        planName: primary.planName ?? plan?.name ?? payload.planName,
-      },
-      plan,
-      features: normalizeFeatureList(plan?.features),
+      payload: nextPayload,
+      plan: activePlan,
+      features: normalizeFeatureList(activePlan?.features),
     }
   }
 
-  const plan = await resolvePlanById(payload.planId)
+  const fallbackPlan = await resolvePlanById(billing, payload.planId)
   return {
     payload,
-    plan,
-    features: normalizeFeatureList(plan?.features),
+    plan: fallbackPlan,
+    features: normalizeFeatureList(fallbackPlan?.features),
   }
 }
 
