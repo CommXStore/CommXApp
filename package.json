@@ -17,7 +17,7 @@
     "test:e2e": "playwright test",
     "generate:types": "tsx scripts/generate-schema-types.ts",
     "clean": "rm -rf .turbo node_modules .next",
-    "prepare": "lefthook install"
+    "prepare": "if [ -d .git ]; then lefthook install; fi"
   },
   "dependencies": {
     "@clerk/localizations": "^3.35.3",

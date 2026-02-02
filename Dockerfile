@@ -23,8 +23,8 @@ RUN apt-get update -qq && \
 # Copy package files
 COPY package.json package-lock.json* ./
 
-# Install node modules (skip prepare script during install)
-RUN npm ci --ignore-scripts
+# Install node modules (need devDependencies for build)
+RUN npm ci || npm install
 
 # Copy application code
 COPY . .

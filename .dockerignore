@@ -45,4 +45,8 @@ yarn-error.log*
 next-env.d.ts
 
 
-.vscode
+# vscode
+
+# git
+.git
+.gitignore
