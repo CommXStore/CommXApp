@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-const TITLE_REGEX = /CommX Shop/i
+const TITLE_REGEX = /CommX/i
 
 test('home page loads', async ({ page }) => {
   await page.goto('/')

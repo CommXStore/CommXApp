@@ -1,4 +1,4 @@
-# Plano de Melhoria - CommX Shop
+# Plano de Melhoria - CommX
 
 ## Status
 - Concluido em 29 de janeiro de 2026.
