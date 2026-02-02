@@ -1,6 +1,7 @@
 {
   "apiKeys": {
-    "title": "Chaves de API"
+    "title": "Chaves de API",
+    "description": "Gerencie suas chaves de API para autenticação externa."
   },
   "paymentProviders": {
     "title": "Provedores de pagamento",

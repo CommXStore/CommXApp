@@ -33,7 +33,7 @@ export function RequestTester() {
   }, [apiKey, t])
 
   return (
-    <div className="mt-4 flex flex-col gap-2">
+    <div className="flex flex-col gap-2">
       <div className="max-w-md">
         <Input
           onChange={e => setApiKey(e.target.value)}

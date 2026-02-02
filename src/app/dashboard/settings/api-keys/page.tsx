@@ -1,16 +1,21 @@
 import { APIKeys } from '@clerk/nextjs'
 import { RequestTester } from '@/components/request-tester'
 import { getTranslations } from '@/i18n/server'
+import { PageHeader, PageLayout } from '@/components/page-layout'
 
 export default async function SettingsPage() {
   const t = await getTranslations()
   return (
-    <div className="flex flex-col gap-4 p-8 pt-6">
-      <h1 className="font-semibold text-lg">
-        {t('routes.settings.apiKeys.title')}
-      </h1>
+    <PageLayout
+      header={
+        <PageHeader
+          description={t('routes.settings.apiKeys.description')}
+          title={t('routes.settings.apiKeys.title')}
+        />
+      }
+    >
       <APIKeys showDescription />
       <RequestTester />
-    </div>
+    </PageLayout>
   )
 }
