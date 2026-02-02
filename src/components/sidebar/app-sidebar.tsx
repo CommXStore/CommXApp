@@ -134,7 +134,7 @@ export function AppSidebar({ ...props }: SidebarProps) {
         ? [
             {
               title: t('common.nav.paymentProviders'),
-              url: '/dashboard/settings/payment-providers',
+              url: '/settings/payment-providers',
             },
           ]
         : [],

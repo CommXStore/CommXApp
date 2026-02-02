@@ -5,6 +5,12 @@
   "paymentProviders": {
     "title": "Provedores de pagamento",
     "description": "Gerencie os provedores usados para receber webhooks externos de pagamento.",
+    "deleteDialog": {
+      "title": "Remover provedor",
+      "description": "Tem certeza que deseja remover \"{name}\"? Esta ação não pode ser desfeita.",
+      "cancel": "Cancelar",
+      "remove": "Remover"
+    },
     "form": {
       "createTitle": "Adicionar provedor de pagamento",
       "createDescription": "Configure um novo provedor para receber webhooks de pagamento.",

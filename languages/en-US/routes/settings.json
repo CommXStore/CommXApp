@@ -5,6 +5,12 @@
   "paymentProviders": {
     "title": "Payment providers",
     "description": "Manage the providers used to receive external payment webhooks.",
+    "deleteDialog": {
+      "title": "Remove provider",
+      "description": "Are you sure you want to remove \"{name}\"? This action cannot be undone.",
+      "cancel": "Cancel",
+      "remove": "Remove"
+    },
     "form": {
       "createTitle": "Add payment provider",
       "createDescription": "Configure a new provider to receive payment webhooks.",
@@ -16,7 +22,7 @@
       "typePlaceholder": "e.g. stripe",
       "secretLabel": "Signing secret",
       "secretPlaceholder": "Paste the secret provided by the gateway",
-      "secretHint": "The secret cannot be viewed after creation. To change it, please contact support.",,
+      "secretHint": "The secret cannot be viewed after creation. To change it, please contact support."
       "metadataLabel": "Metadata (JSON)",
       "metadataPlaceholder": "{\"environment\":\"production\"}",
       "enabledLabel": "Enabled",

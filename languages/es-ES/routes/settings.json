@@ -5,6 +5,12 @@
   "paymentProviders": {
     "title": "Proveedores de pago",
     "description": "Administra los proveedores usados para recibir webhooks externos de pago.",
+    "deleteDialog": {
+      "title": "Eliminar proveedor",
+      "description": "¿Está seguro de que desea eliminar \"{name}\"? Esta acción no se puede deshacer.",
+      "cancel": "Cancelar",
+      "remove": "Eliminar"
+    },
     "form": {
       "createTitle": "Agregar proveedor de pago",
       "createDescription": "Configura un nuevo proveedor para recibir webhooks de pago.",
@@ -16,7 +22,7 @@
       "typePlaceholder": "Ej: stripe",
       "secretLabel": "Secreto de firma",
       "secretPlaceholder": "Pega el secreto proporcionado por el proveedor",
-      "secretHint": "El secreto no puede verse después de la creación. Para cambiarlo, contacte con soporte.",,
+      "secretHint": "El secreto no puede verse después de la creación. Para cambiarlo, contacte con soporte."
       "metadataLabel": "Metadatos (JSON)",
       "metadataPlaceholder": "{\"environment\":\"production\"}",
       "enabledLabel": "Activo",
