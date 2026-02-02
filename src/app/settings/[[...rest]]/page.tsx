@@ -2,6 +2,7 @@ import { getContentTypesAction } from '@/lib/clerk/actions/content-types'
 import { getTranslations } from '@/i18n/server'
 import { PageHeader, PageLayout } from '@/components/page-layout'
 import { ApiTabs } from '@/components/api-tabs'
+import { checkAdmin } from '@/lib/clerk/check-auth'
 
 type SettingsPageProps = {
   params?: Promise<{ rest?: string[] }>
@@ -15,7 +16,8 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
     return null
   }
 
-  const contentTypes = await getContentTypesAction()
+  const { success } = await checkAdmin()
+  const contentTypes = success ? await getContentTypesAction() : []
 
   return (
     <PageLayout
