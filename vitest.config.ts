@@ -11,7 +11,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
-    setupFiles: ['tests/setup.ts'],
+    setupFiles: ['tests/test/setup.ts'],
     include: ['src/**/*.test.{ts,tsx}', 'src/**/__tests__/**/*.{ts,tsx}'],
     exclude: ['node_modules/**', 'tests/**', 'playwright.config.ts'],
   },
