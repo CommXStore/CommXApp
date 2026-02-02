@@ -2,12 +2,14 @@ import { PricingTableSection } from './pricing-table'
 import { getTranslations } from '@/i18n/server'
 import { headers } from 'next/headers'
 
+const absoluteUrlRegex = /^https?:\/\//i
+
 type BillingUpgradePageProps = {
   searchParams: Promise<{ redirect?: string }>
 }
 
 async function buildAbsoluteUrl(path: string) {
-  if (/^https?:\/\//i.test(path)) {
+  if (absoluteUrlRegex.test(path)) {
     return path
   }
   const headerStore = await headers()
