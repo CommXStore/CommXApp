@@ -120,31 +120,18 @@ export function AppSidebar({ ...props }: SidebarProps) {
           },
         ]
       : []),
-    {
-      title: t('common.nav.billing'),
-      url: '/billing/upgrade',
-      icon: TrendingUp,
-      items: [],
-    },
-    {
-      title: t('common.nav.settings'),
-      url: '/dashboard/settings',
-      icon: Bolt,
-      items: isAdmin
-        ? [
-            {
-              title: t('common.nav.paymentProviders'),
-              url: '/settings/payment-providers',
-            },
-          ]
-        : [],
-    },
     ...(isAdmin
       ? [
           {
             title: t('common.nav.members'),
             url: '/dashboard/settings/organization-members',
             icon: Users,
+            items: [],
+          },
+          {
+            title: t('common.nav.paymentProviders'),
+            url: '/settings/payment-providers',
+            icon: Bolt,
             items: [],
           },
         ]
@@ -159,12 +146,14 @@ export function AppSidebar({ ...props }: SidebarProps) {
 
   const navSecondary = [
     {
-      title: t('common.nav.docs'),
-      url: 'https://clerk.com/docs/guides/development/machine-auth/overview#api-keys',
+      title: t('common.nav.billing'),
+      url: '/billing/upgrade',
+      icon: TrendingUp,
     },
     {
-      title: t('common.nav.github'),
-      url: 'https://github.com/commx-app/commx-app',
+      title: t('common.nav.settings'),
+      url: '/dashboard/settings',
+      icon: Bolt,
     },
   ]
 
