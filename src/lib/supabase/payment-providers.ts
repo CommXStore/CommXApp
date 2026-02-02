@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid'
 import { getSupabaseServerClient } from '@/lib/supabase/server'
-import { supabaseAdmin } from '@/lib/supabase/admin'
+import { getSupabaseAdmin } from '@/lib/supabase/admin'
 
 export type PaymentProvider = {
   id: string
@@ -168,6 +168,7 @@ export async function deletePaymentProvider(
 }
 
 export async function getPaymentProviderForWebhook(providerId: string) {
+  const supabaseAdmin = getSupabaseAdmin()
   const { data, error } = await supabaseAdmin
     .from('payment_providers')
     .select(
