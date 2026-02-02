@@ -31,7 +31,12 @@ const nextConfig: NextConfig = {
       fullUrl: true,
     },
   },
-  serverExternalPackages: ['pino', 'thread-stream'],
+  serverExternalPackages: [
+    'pino',
+    'thread-stream',
+    '@tailwindcss/postcss',
+    'tailwindcss',
+  ],
 }
 
 export default nextConfig
