@@ -6,7 +6,6 @@ import {
   BotMessageSquare,
   Layers,
   Bolt,
-  KeyRound,
   SlidersHorizontal,
   TrendingUp,
   Users,
@@ -136,12 +135,6 @@ export function AppSidebar({ ...props }: SidebarProps) {
           },
         ]
       : []),
-    {
-      title: t('common.nav.apiKeys'),
-      url: '/dashboard/settings',
-      icon: KeyRound,
-      items: [],
-    },
   ]
 
   const navSecondary = [
