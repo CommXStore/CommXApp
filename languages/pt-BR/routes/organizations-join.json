@@ -4,6 +4,8 @@
   "status": {
     "free": "Acesso gratuito",
     "freeDescription": "Esta organização não exige assinatura para ingresso.",
+    "hasPlan": "Assinatura ativa",
+    "hasPlanDescription": "Seu plano atual inclui este app. Você já pode entrar.",
     "requiresPlan": "Requer assinatura",
     "requiresPlanDescription": "Para entrar nesta organização, você precisa de um plano que inclua este app."
   },

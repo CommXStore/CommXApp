@@ -4,6 +4,8 @@
   "status": {
     "free": "Free access",
     "freeDescription": "This organization does not require a subscription to join.",
+    "hasPlan": "Subscription active",
+    "hasPlanDescription": "Your current plan includes this app. You can join now.",
     "requiresPlan": "Subscription required",
     "requiresPlanDescription": "To join this organization, you need a plan that includes this app."
   },
