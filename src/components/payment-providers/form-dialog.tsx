@@ -137,7 +137,7 @@ export function PaymentProviderFormDialog({
               {t('routes.settings.paymentProviders.form.secretLabel')}
             </Label>
             <Input
-              defaultValue=""
+              defaultValue={isEditing ? '••••••••••••••••' : ''}
               id="signingSecret"
               name="signingSecret"
               placeholder={t(
