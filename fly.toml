@@ -1,10 +1,10 @@
-# fly.toml app configuration file generated for commxapp on 2026-02-02T16:01:41Z
+# fly.toml app configuration file generated for commxapp on 2026-02-02T19:13:09Z
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
 app = 'commxapp'
-primary_region = 'gru'
+primary_region = 'iad'
 
 [build]
 
@@ -20,4 +20,4 @@ primary_region = 'gru'
   memory = '1gb'
   cpu_kind = 'shared'
   cpus = 1
-  memory_mb = 256
+  memory_mb = 1024
