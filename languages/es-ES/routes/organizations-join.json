@@ -1,6 +1,7 @@
 {
   "title": "Unirse a {org}",
   "subtitle": "Completa tus datos para unirte como miembro.",
+  "breadcrumb": "Suscripción",
   "status": {
     "free": "Acceso gratuito",
     "freeDescription": "Esta organización no requiere suscripción para unirse.",

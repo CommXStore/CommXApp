@@ -1,6 +1,7 @@
 {
   "title": "Entrar em {org}",
   "subtitle": "Complete seus dados para entrar como membro.",
+  "breadcrumb": "Assinatura",
   "status": {
     "free": "Acesso gratuito",
     "freeDescription": "Esta aplicação não exige assinatura para ingresso.",

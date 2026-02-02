@@ -1,6 +1,7 @@
 {
   "title": "Join {org}",
   "subtitle": "Fill in your details to join as a member.",
+  "breadcrumb": "Subscription",
   "status": {
     "free": "Free access",
     "freeDescription": "This organization does not require a subscription to join.",

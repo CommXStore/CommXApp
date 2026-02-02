@@ -172,6 +172,15 @@ function buildBreadcrumbItems(
     return buildBillingItems(t)
   }
 
+  if (root === 'organizations' && segments.includes('join')) {
+    return [
+      {
+        label: t('routes.organizations-join.breadcrumb'),
+        key: 'organizations:join',
+      },
+    ]
+  }
+
   return buildDefaultItems(segments, t)
 }
 
