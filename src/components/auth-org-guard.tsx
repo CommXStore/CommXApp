@@ -14,7 +14,7 @@ export function AuthOrgGuard() {
   const didRun = useRef(false)
 
   useEffect(() => {
-    if (!isLoaded || !isOrgLoaded || didRun.current) {
+    if (!(isLoaded && isOrgLoaded) || didRun.current) {
       return
     }
     didRun.current = true
@@ -44,13 +44,8 @@ export function AuthOrgGuard() {
       }
     }
 
-    void ensureActiveOrg()
-  }, [
-    isLoaded,
-    isOrgLoaded,
-    organization?.id,
-    setActive,
-  ])
+    ensureActiveOrg().catch(() => null)
+  }, [isLoaded, isOrgLoaded, organization?.id, setActive])
 
   return null
 }
