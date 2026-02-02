@@ -44,7 +44,7 @@ export default async function JoinOrganizationPage({
     : { allowed: false, reason: 'User is required.' }
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-6 py-8">
       <PageHeader
         description={t('routes.organizations-join.subtitle')}
         title={t('routes.organizations-join.title', {
