@@ -1,7 +1,7 @@
 import { notFound, redirect } from 'next/navigation'
 import { auth, clerkClient } from '@clerk/nextjs/server'
 import { getTranslations } from '@/i18n/server'
-import { requiresSubscriptionForOrg } from '@/lib/entitlements'
+import { entitlements, requiresSubscriptionForOrg } from '@/lib/entitlements'
 import { JoinOrganizationForm } from './join-form'
 
 type JoinOrganizationPageProps = {
@@ -38,6 +38,9 @@ export default async function JoinOrganizationPage({
 
   const orgSlug = organization.slug ?? slugParam
   const requiresSubscription = await requiresSubscriptionForOrg(orgSlug)
+  const joinDecision = userId
+    ? await entitlements.canJoinOrg(userId, orgSlug)
+    : { allowed: false, reason: 'User is required.' }
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
@@ -52,6 +55,7 @@ export default async function JoinOrganizationPage({
         </p>
       </div>
       <JoinOrganizationForm
+        hasAccess={joinDecision.allowed}
         orgId={organization.id}
         orgName={organization.name}
         orgSlug={orgSlug}
