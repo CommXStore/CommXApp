@@ -18,10 +18,7 @@ const nextConfig: NextConfig = {
     ],
   },
   experimental: {
-    turbopackFileSystemCacheForDev: true,
-  },
-  turbopack: {
-    debugIds: true,
+    turbopack: false,
   },
   devIndicators: {
     position: 'bottom-right',
