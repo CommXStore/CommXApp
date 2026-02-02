@@ -50,20 +50,26 @@ const clerkEntitlements: EntitlementsProvider = {
     }
 
     const client = await clerkClient()
-    const subscriptions = await client.billing.getSubscriptionList({
-      userId,
-    })
-    const active = subscriptions.data.find(item => item.status === 'active')
-    if (!active) {
+    const subscription = await client.billing.getUserBillingSubscription(userId)
+    if (!subscription) {
       return { allowed: false, reason: 'No active subscription.' }
     }
-
-    const plan = await client.billing.getPlan(active.planId)
-    const features = normalizeFeatureList(plan.features)
-    if (features.includes(normalizeOrgSlug(orgSlug))) {
-      return { allowed: true }
+    if (subscription.status !== 'active') {
+      return { allowed: false, reason: 'Subscription is not active.' }
     }
-    return { allowed: false, reason: 'Plan does not include this app.' }
+
+    const requiredFeature = normalizeOrgSlug(orgSlug)
+    const plans = await client.billing.getPlanList()
+    const planWithFeature = plans.data?.find(plan => {
+      const features = normalizeFeatureList(plan.features)
+      return features.includes(requiredFeature)
+    })
+
+    if (!planWithFeature) {
+      return { allowed: false, reason: 'Plan does not include this app.' }
+    }
+
+    return { allowed: true }
   },
 }
 
@@ -95,8 +101,8 @@ const webhookEntitlements: EntitlementsProvider = {
 }
 
 const allowAll: EntitlementsProvider = {
-  canJoinOrg() {
-    return { allowed: true }
+  canJoinOrg(_userId: string, _orgSlug: string) {
+    return Promise.resolve({ allowed: true })
   },
 }
 
