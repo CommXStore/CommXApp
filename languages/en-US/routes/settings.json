@@ -16,7 +16,7 @@
       "typePlaceholder": "e.g. stripe",
       "secretLabel": "Signing secret",
       "secretPlaceholder": "Paste the secret provided by the gateway",
-      "secretHint": "Leave blank to keep the current secret.",
+      "secretHint": "The secret cannot be viewed after creation. To change it, please contact support.",,
       "metadataLabel": "Metadata (JSON)",
       "metadataPlaceholder": "{\"environment\":\"production\"}",
       "enabledLabel": "Enabled",

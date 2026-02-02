@@ -16,7 +16,7 @@
       "typePlaceholder": "Ej: stripe",
       "secretLabel": "Secreto de firma",
       "secretPlaceholder": "Pega el secreto proporcionado por el proveedor",
-      "secretHint": "Déjalo en blanco para mantener el secreto actual.",
+      "secretHint": "El secreto no puede verse después de la creación. Para cambiarlo, contacte con soporte.",,
       "metadataLabel": "Metadatos (JSON)",
       "metadataPlaceholder": "{\"environment\":\"production\"}",
       "enabledLabel": "Activo",

@@ -16,7 +16,7 @@
       "typePlaceholder": "Ex: stripe",
       "secretLabel": "Segredo de assinatura",
       "secretPlaceholder": "Cole o segredo fornecido pelo provedor",
-      "secretHint": "Deixe em branco para manter o segredo atual.",
+      "secretHint": "O segredo não pode ser visualizado após a criação. Para alterá-lo, entre em contato com o suporte.",
       "metadataLabel": "Metadados (JSON)",
       "metadataPlaceholder": "{\"environment\":\"production\"}",
       "enabledLabel": "Ativo",
