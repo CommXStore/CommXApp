@@ -281,10 +281,15 @@ export function PaymentProvidersTable({
   return (
     <div className="flex flex-1 flex-col justify-between gap-4">
       <div className="flex h-full flex-col gap-4">
-        <div className="flex items-center justify-end gap-2">
-          <Button onClick={loadProviders} size="sm" variant="outline">
-            {t('routes.settings.paymentProviders.actions.refresh')}
-          </Button>
+        <div className="space-y-2">
+          <h1 className="font-semibold text-2xl">
+            {t('routes.settings.paymentProviders.title')}
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            {t('routes.settings.paymentProviders.description')}
+          </p>
+        </div>
+        <div className="flex items-center justify-end">
           <PaymentProviderFormDialog
             isPending={loading}
             onSave={createProvider}
