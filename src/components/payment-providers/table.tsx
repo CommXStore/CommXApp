@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { toast } from 'sonner'
 import {
   ChevronsLeft,
@@ -42,30 +42,19 @@ import { PaymentProviderFormDialog } from './form-dialog'
 import type { PaymentProvider } from './types'
 import { useTranslations } from '@/i18n/provider'
 
-type PaymentProvidersTableProps = {
-  data: PaymentProvider[]
-}
-
 export function PaymentProvidersTable({
   data: initialData,
-}: PaymentProvidersTableProps) {
+}: {
+  data: PaymentProvider[]
+}) {
   const t = useTranslations()
   const [data, setData] = useState<PaymentProvider[]>(initialData)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(initialData.length === 0)
   const [editingProvider, setEditingProvider] =
     useState<PaymentProvider | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
-  const [rowSelection, setRowSelection] = useState({})
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [pagination, setPagination] = useState({
-    pageIndex: 0,
-    pageSize: 10,
-  })
-
-  async function loadProviders() {
+  const loadProviders = useCallback(async () => {
     setLoading(true)
     try {
       const res = await fetch('/api/admin/payment-providers')
@@ -79,7 +68,22 @@ export function PaymentProvidersTable({
     } finally {
       setLoading(false)
     }
-  }
+  }, [t])
+
+  useEffect(() => {
+    if (initialData.length === 0) {
+      loadProviders()
+    }
+  }, [initialData, loadProviders])
+
+  const [rowSelection, setRowSelection] = useState({})
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  })
 
   async function createProvider(payload: PaymentProvider) {
     setLoading(true)
