@@ -142,7 +142,7 @@ export function PaymentProviderFormDialog({
               placeholder={t(
                 'routes.settings.paymentProviders.form.secretPlaceholder'
               )}
-              type="password"
+              type="text"
             />
             {isEditing ? (
               <p className="text-muted-foreground text-xs">
