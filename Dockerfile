@@ -25,7 +25,8 @@ COPY package.json package-lock.json* ./
 
 # Install node modules (need devDependencies for build)
 # Important: Don't use --ignore-scripts as it breaks @tailwindcss/postcss
-RUN npm ci
+# Cache bust: always reinstall dependencies to ensure postinstall scripts run
+RUN rm -rf node_modules && npm ci
 
 # Copy application code
 COPY . .
