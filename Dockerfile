@@ -30,6 +30,9 @@ COPY package.json package-lock.json* ./
 # Important: Don't use --ignore-scripts as it breaks @tailwindcss/postcss
 RUN rm -rf node_modules && npm ci
 
+# Install @tsconfig/next for Turbopack tsconfig resolution
+RUN npm install @tsconfig/next
+
 # Build application
 RUN npm run build
 
