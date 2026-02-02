@@ -43,6 +43,7 @@ import { createContentTypeColumns } from './columns'
 import { deleteContentTypeAction } from '@/lib/clerk/actions/content-types'
 import type { ContentType } from '@/lib/clerk/content-schemas'
 import { useTranslations } from '@/i18n/provider'
+import { PageHeader, PageLayout } from '@/components/page-layout'
 
 export function ContentTypesTable({
   data: initialData,
@@ -108,70 +109,75 @@ export function ContentTypesTable({
   })
 
   return (
-    <div className="flex flex-1 flex-col justify-between gap-4">
-      <div className="flex h-full flex-col gap-4">
-        <div className="flex items-center justify-end">
-          <Button asChild>
-            <Link href="/content-types/new">
-              {t('routes.content-types.table.add')}
-            </Link>
-          </Button>
-        </div>
-        <div className="overflow-hidden rounded-lg border">
-          <Table>
-            <TableHeader className="sticky top-0 z-10 bg-muted">
-              {table.getHeaderGroups().map(headerGroup => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map(header => (
-                    <TableHead colSpan={header.colSpan} key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
+    <PageLayout
+      header={
+        <PageHeader
+          action={
+            <Button asChild>
+              <Link href="/content-types/new">
+                {t('routes.content-types.table.add')}
+              </Link>
+            </Button>
+          }
+          description={t('routes.content-types.description')}
+          title={t('routes.content-types.title')}
+        />
+      }
+    >
+      <div className="overflow-hidden rounded-lg border">
+        <Table>
+          <TableHeader className="sticky top-0 z-10 bg-muted">
+            {table.getHeaderGroups().map(headerGroup => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map(header => (
+                  <TableHead colSpan={header.colSpan} key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody className="**:data-[slot=table-cell]:first:w-8">
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map(row => (
+                <TableRow
+                  data-state={row.getIsSelected() && 'selected'}
+                  key={row.id}
+                >
+                  {row.getVisibleCells().map(cell => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
                   ))}
                 </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody className="**:data-[slot=table-cell]:first:w-8">
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map(row => (
-                  <TableRow
-                    data-state={row.getIsSelected() && 'selected'}
-                    key={row.id}
-                  >
-                    {row.getVisibleCells().map(cell => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    className="h-24 text-center"
-                    colSpan={columns.length}
-                  >
-                    <div className="flex flex-col items-center gap-2">
-                      <span>{t('routes.content-types.table.empty.title')}</span>
-                      <Button asChild size="sm" variant="outline">
-                        <Link href="/content-types/new">
-                          {t('routes.content-types.table.empty.cta')}
-                        </Link>
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  className="h-24 text-center"
+                  colSpan={columns.length}
+                >
+                  <div className="flex flex-col items-center gap-2">
+                    <span>{t('routes.content-types.table.empty.title')}</span>
+                    <Button asChild size="sm" variant="outline">
+                      <Link href="/content-types/new">
+                        {t('routes.content-types.table.empty.cta')}
+                      </Link>
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
       </div>
       <div className="flex items-center justify-between px-4">
         <div className="hidden flex-1 text-muted-foreground text-sm lg:flex">
@@ -256,6 +262,6 @@ export function ContentTypesTable({
           </div>
         </div>
       </div>
-    </div>
+    </PageLayout>
   )
 }

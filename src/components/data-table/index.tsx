@@ -46,6 +46,7 @@ import {
 } from '@/lib/clerk/actions/agents'
 import type { Agent } from '@/lib/clerk/metadata-utils'
 import { useTranslations } from '@/i18n/provider'
+import { PageHeader, PageLayout } from '@/components/page-layout'
 
 export function DataTable({ data: initialData }: { data: Agent[] }) {
   const [data, setData] = useState<Agent[]>(initialData)
@@ -124,59 +125,64 @@ export function DataTable({ data: initialData }: { data: Agent[] }) {
   })
 
   return (
-    <div className="flex flex-1 flex-col justify-between gap-4">
-      <div className="flex h-full flex-col gap-4">
-        <div className="flex items-center justify-end">
-          <CreateAgentButton createAgent={createAgent} isPending={loading} />
-        </div>
-        <div className="overflow-hidden rounded-lg border">
-          <Table>
-            <TableHeader className="sticky top-0 z-10 bg-muted">
-              {table.getHeaderGroups().map(headerGroup => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map(header => (
-                    <TableHead colSpan={header.colSpan} key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
+    <PageLayout
+      header={
+        <PageHeader
+          action={
+            <CreateAgentButton createAgent={createAgent} isPending={loading} />
+          }
+          description={t('routes.agents.description')}
+          title={t('routes.agents.title')}
+        />
+      }
+    >
+      <div className="overflow-hidden rounded-lg border">
+        <Table>
+          <TableHeader className="sticky top-0 z-10 bg-muted">
+            {table.getHeaderGroups().map(headerGroup => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map(header => (
+                  <TableHead colSpan={header.colSpan} key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody className="**:data-[slot=table-cell]:first:w-8">
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map(row => (
+                <TableRow
+                  data-state={row.getIsSelected() && 'selected'}
+                  key={row.id}
+                >
+                  {row.getVisibleCells().map(cell => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
                   ))}
                 </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody className="**:data-[slot=table-cell]:first:w-8">
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map(row => (
-                  <TableRow
-                    data-state={row.getIsSelected() && 'selected'}
-                    key={row.id}
-                  >
-                    {row.getVisibleCells().map(cell => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    className="h-24 text-center"
-                    colSpan={columns.length}
-                  >
-                    {t('common.table.noResults')}
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  className="h-24 text-center"
+                  colSpan={columns.length}
+                >
+                  {t('common.table.noResults')}
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
       </div>
       <div className="flex items-center justify-between px-4">
         <div className="hidden flex-1 text-muted-foreground text-sm lg:flex">
@@ -261,6 +267,6 @@ export function DataTable({ data: initialData }: { data: Agent[] }) {
           </div>
         </div>
       </div>
-    </div>
+    </PageLayout>
   )
 }
