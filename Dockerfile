@@ -24,7 +24,8 @@ RUN apt-get update -qq && \
 COPY package.json package-lock.json* ./
 
 # Install node modules (need devDependencies for build)
-RUN npm ci || npm install
+# Important: Don't use --ignore-scripts as it breaks @tailwindcss/postcss
+RUN npm ci
 
 # Copy application code
 COPY . .
