@@ -129,7 +129,7 @@ export function JoinOrganizationForm({
           <Button asChild size="sm" variant="secondary">
             <Link
               href={`/billing/upgrade?redirect=${encodeURIComponent(
-                `//organizations/${orgSlug}/join?autoJoin=1`
+                `/organizations/${orgSlug}/join?autoJoin=1`
               )}`}
             >
               {t('routes.organizations-join.actions.upgrade')}
@@ -144,9 +144,7 @@ export function JoinOrganizationForm({
   let statusDescription = t('routes.organizations-join.status.freeDescription')
   if (requiresSubscription) {
     statusTitle = t('routes.organizations-join.status.hasPlan')
-    statusDescription = t(
-      'routes.organizations-join.status.hasPlanDescription'
-    )
+    statusDescription = t('routes.organizations-join.status.hasPlanDescription')
   }
 
   return (
