@@ -32,7 +32,7 @@ export default async function JoinOrganizationPage({
       .catch(() => null)
 
     if (memberships && memberships.data.length > 0) {
-      redirect('/dashboard')
+      redirect('/')
     }
   }
 

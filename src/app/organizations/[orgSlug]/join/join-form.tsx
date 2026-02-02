@@ -81,7 +81,7 @@ export function JoinOrganizationForm({
       toast.success(
         t('routes.organizations-join.toasts.joined', { org: orgName })
       )
-      router.push('/dashboard')
+      router.push('/')
       router.refresh()
     } catch (error) {
       const message =
@@ -129,7 +129,7 @@ export function JoinOrganizationForm({
           <Button asChild size="sm" variant="secondary">
             <Link
               href={`/billing/upgrade?redirect=${encodeURIComponent(
-                `/dashboard/organizations/${orgSlug}/join?autoJoin=1`
+                `//organizations/${orgSlug}/join?autoJoin=1`
               )}`}
             >
               {t('routes.organizations-join.actions.upgrade')}

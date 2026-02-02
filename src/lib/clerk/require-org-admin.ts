@@ -7,7 +7,7 @@ export async function requireOrgAdmin() {
     if (result.error.status === 401) {
       redirect('/sign-in')
     }
-    redirect('/dashboard')
+    redirect('/')
   }
 
   return result.data

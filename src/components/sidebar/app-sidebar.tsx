@@ -87,7 +87,7 @@ export function AppSidebar({ ...props }: SidebarProps) {
   const navMain = [
     {
       title: t('common.nav.dashboard'),
-      url: '/dashboard',
+      url: '/',
       icon: CircleGauge,
       items: [],
     },
@@ -123,7 +123,7 @@ export function AppSidebar({ ...props }: SidebarProps) {
       ? [
           {
             title: t('common.nav.members'),
-            url: '/dashboard/settings/organization-members',
+            url: '/settings/organization-members',
             icon: Users,
             items: [],
           },
@@ -145,7 +145,7 @@ export function AppSidebar({ ...props }: SidebarProps) {
     },
     {
       title: t('common.nav.settings'),
-      url: '/dashboard/settings',
+      url: '/settings',
       icon: Bolt,
     },
   ]

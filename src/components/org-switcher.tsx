@@ -269,7 +269,7 @@ export function OrgSwitcher() {
                 className="flex items-center gap-2"
                 key={org.id}
                 onSelect={() =>
-                  router.push(`/dashboard/organizations/${org.slug}/join`)
+                  router.push(`//organizations/${org.slug}/join`)
                 }
               >
                 <span className="flex size-6 items-center justify-center rounded-full bg-muted font-semibold text-[10px] text-muted-foreground uppercase">
