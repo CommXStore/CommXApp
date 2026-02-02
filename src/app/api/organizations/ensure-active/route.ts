@@ -11,7 +11,7 @@ type EnsureActiveResponse =
 
 export async function POST(req: NextRequest) {
   const authResult = await auth({ acceptsToken: ['api_key', 'session_token'] })
-  if (!authResult.isAuthenticated || !authResult.userId) {
+  if (!(authResult.isAuthenticated && authResult.userId)) {
     return NextResponse.json({ action: 'none' }, { status: 200 })
   }
 
