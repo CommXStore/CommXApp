@@ -138,7 +138,7 @@ export function AppSidebar({ ...props }: SidebarProps) {
       : []),
     {
       title: t('common.nav.apiKeys'),
-      url: '/dashboard/settings/api-keys',
+      url: '/dashboard/settings',
       icon: KeyRound,
       items: [],
     },
