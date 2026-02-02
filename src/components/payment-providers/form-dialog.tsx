@@ -59,9 +59,7 @@ export function PaymentProviderFormDialog({
       try {
         metadata = JSON.parse(metadataRaw)
       } catch {
-        toast.error(
-          t('routes.settings.paymentProviders.errors.invalidMetadata')
-        )
+        toast.error('Invalid metadata. Provide valid JSON.')
         return
       }
     }

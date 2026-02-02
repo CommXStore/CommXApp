@@ -64,11 +64,11 @@ export function PaymentProvidersTable({
       const payload = (await res.json()) as { data?: PaymentProvider[] }
       setData(payload.data ?? [])
     } catch {
-      toast.error(t('routes.settings.paymentProviders.toasts.loadFailed'))
+      toast.error('Failed to load providers.')
     } finally {
       setLoading(false)
     }
-  }, [t])
+  }, [])
 
   useEffect(() => {
     if (initialData.length === 0) {
@@ -94,7 +94,7 @@ export function PaymentProvidersTable({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       })
-      toast.success(t('routes.settings.paymentProviders.toasts.created'))
+      toast.success('Provider created successfully.')
     } catch (error) {
       setData(prevData => prevData.filter(item => item.id !== payload.id))
       console.error(error)
@@ -114,7 +114,7 @@ export function PaymentProvidersTable({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       })
-      toast.success(t('routes.settings.paymentProviders.toasts.updated'))
+      toast.success('Provider updated.')
     } catch (error) {
       setData(prevData =>
         prevData.map(item =>
@@ -136,7 +136,7 @@ export function PaymentProvidersTable({
         body: JSON.stringify({ enabled: !provider.enabled }),
       })
       if (!res.ok) {
-        toast.error(t('routes.settings.paymentProviders.toasts.updateFailed'))
+        toast.error('Failed to update provider.')
         return
       }
       const payload = (await res.json()) as { data?: PaymentProvider }
@@ -148,9 +148,9 @@ export function PaymentProvidersTable({
           )
         )
       }
-      toast.success(t('routes.settings.paymentProviders.toasts.updated'))
+      toast.success('Provider updated.')
     } catch {
-      toast.error(t('routes.settings.paymentProviders.toasts.updateFailed'))
+      toast.error('Failed to update provider.')
     }
   }
 
@@ -160,13 +160,13 @@ export function PaymentProvidersTable({
         method: 'DELETE',
       })
       if (!res.ok) {
-        toast.error(t('routes.settings.paymentProviders.toasts.deleteFailed'))
+        toast.error('Failed to remove provider.')
         return
       }
       setData(prevData => prevData.filter(item => item.id !== provider.id))
-      toast.success(t('routes.settings.paymentProviders.toasts.deleted'))
+      toast.success('Provider removed.')
     } catch {
-      toast.error(t('routes.settings.paymentProviders.toasts.deleteFailed'))
+      toast.error('Failed to remove provider.')
     }
   }
 
