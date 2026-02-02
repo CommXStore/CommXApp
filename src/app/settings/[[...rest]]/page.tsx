@@ -1,3 +1,4 @@
+import { getContentTypesAction } from '@/lib/clerk/actions/content-types'
 import { getTranslations } from '@/i18n/server'
 import { PageHeader, PageLayout } from '@/components/page-layout'
 import { ApiTabs } from '@/components/api-tabs'
@@ -14,6 +15,8 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
     return null
   }
 
+  const contentTypes = await getContentTypesAction()
+
   return (
     <PageLayout
       header={
@@ -26,7 +29,7 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
       <h2 className="font-semibold text-lg">
         {t('routes.settings.apiKeys.sectionTitle')}
       </h2>
-      <ApiTabs />
+      <ApiTabs contentTypes={contentTypes} />
     </PageLayout>
   )
 }

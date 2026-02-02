@@ -11,7 +11,23 @@ const SITE_URL =
     ? 'http://localhost:3000'
     : `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
 
-export function ApiTabs() {
+type ContentType = {
+  id: string
+  name: string
+  slug: string
+  status: 'draft' | 'published'
+  fields: string[]
+  createdAt: string
+  updatedAt: string
+  description?: string
+  icon?: string
+}
+
+type ApiTabsProps = {
+  contentTypes: ContentType[]
+}
+
+export function ApiTabs({ contentTypes }: ApiTabsProps) {
   const [apiKey, setApiKey] = useState('')
   const t = useTranslations()
 
@@ -47,6 +63,28 @@ export function ApiTabs() {
     }
   }, [apiKey])
 
+  function generateEntryCodes(slug: string, name: string) {
+    const safeApiKey = apiKey.trim() || '<API_KEY>'
+    return {
+      [`get-${slug}`]: `curl -X GET ${SITE_URL}/api/content/${slug} \\
+  -H "Authorization: Bearer ${safeApiKey}"`,
+      [`create-${slug}`]: `curl -X POST ${SITE_URL}/api/content/${slug} \\
+  -H "Authorization: Bearer ${safeApiKey}" \\
+  -H "Content-Type: application/json" \\
+  -d '{"data": {}}'`,
+      [`get-${slug}-entry`]: `curl -X GET ${SITE_URL}/api/content/${slug}/entry_1 \\
+  -H "Authorization: Bearer ${safeApiKey}"`,
+      [`update-${slug}-entry`]: `curl -X PATCH ${SITE_URL}/api/content/${slug}/entry_1 \\
+  -H "Authorization: Bearer ${safeApiKey}" \\
+  -H "Content-Type: application/json" \\
+  -d '{"data": {}}'`,
+      [`delete-${slug}-entry`]: `curl -X DELETE ${SITE_URL}/api/content/${slug}/entry_1 \\
+  -H "Authorization: Bearer ${safeApiKey}"`,
+    }
+  }
+
+  const publishedTypes = contentTypes.filter(ct => ct.status === 'published')
+
   return (
     <div className="flex flex-col gap-4">
       <div className="max-w-md">
@@ -79,16 +117,45 @@ export function ApiTabs() {
           />
         </TabsContent>
         <TabsContent value="contentTypes">
-          <CodeTabs
-            codes={contentTypesCodes}
-            lang="bash"
-            onCopiedChange={async (copied, content) => {
-              if (!(copied && content)) {
-                return
-              }
-              await navigator.clipboard.writeText(content)
-            }}
-          />
+          <Tabs className="w-full" defaultValue="content-types">
+            <TabsList className="mb-4">
+              <TabsTrigger value="content-types">Content Types API</TabsTrigger>
+              {publishedTypes.map(ct => (
+                <TabsTrigger key={ct.id} value={ct.slug}>
+                  {ct.name}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            <TabsContent value="content-types">
+              <CodeTabs
+                codes={contentTypesCodes}
+                lang="bash"
+                onCopiedChange={async (copied, content) => {
+                  if (!(copied && content)) {
+                    return
+                  }
+                  await navigator.clipboard.writeText(content)
+                }}
+              />
+            </TabsContent>
+            {publishedTypes.map(ct => (
+              <TabsContent key={ct.id} value={ct.slug}>
+                <div className="mb-2 text-muted-foreground text-sm">
+                  Rotas de API para entradas do tipo &quot;{ct.name}&quot;
+                </div>
+                <CodeTabs
+                  codes={generateEntryCodes(ct.slug, ct.name)}
+                  lang="bash"
+                  onCopiedChange={async (copied, content) => {
+                    if (!(copied && content)) {
+                      return
+                    }
+                    await navigator.clipboard.writeText(content)
+                  }}
+                />
+              </TabsContent>
+            ))}
+          </Tabs>
         </TabsContent>
       </Tabs>
     </div>
