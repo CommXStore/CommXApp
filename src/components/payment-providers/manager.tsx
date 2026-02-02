@@ -46,17 +46,16 @@ export function PaymentProvidersManager() {
     try {
       const res = await fetch('/api/admin/payment-providers')
       if (!res.ok) {
-        toast.error(t('routes.settings.paymentProviders.toasts.loadFailed'))
         return
       }
       const payload = (await res.json()) as ProvidersResponse
       setProviders(payload.data ?? [])
     } catch {
-      toast.error(t('routes.settings.paymentProviders.toasts.loadFailed'))
+      return
     } finally {
       setLoading(false)
     }
-  }, [t])
+  }, [])
 
   useEffect(() => {
     loadProviders()
@@ -78,7 +77,7 @@ export function PaymentProvidersManager() {
     current: PaymentProvider[],
     provider: PaymentProvider,
     isEditing: boolean
-  ) {
+  ): PaymentProvider[] {
     if (isEditing) {
       return current.map(item => (item.id === provider.id ? provider : item))
     }
@@ -210,8 +209,11 @@ export function PaymentProvidersManager() {
         data?: PaymentProvider
       }
       if (payload.data) {
+        const savedProvider = payload.data
         setProviders(current =>
-          current.map(item => (item.id === provider.id ? payload.data : item))
+          current.map(item =>
+            item.id === savedProvider.id ? savedProvider : item
+          )
         )
       } else {
         await loadProviders()
