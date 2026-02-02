@@ -26,9 +26,7 @@ const getSubscriptionList = vi.hoisted(() =>
     data: [],
   }))
 )
-const getOrganization = vi.hoisted(() =>
-  vi.fn(async () => ({ id: 'org_1' }))
-)
+const getOrganization = vi.hoisted(() => vi.fn(async () => ({ id: 'org_1' })))
 const deleteOrganizationMembership = vi.hoisted(() => vi.fn(async () => ({})))
 const upsertUserEntitlements = vi.hoisted(() =>
   vi.fn(async () => ({
@@ -77,8 +75,8 @@ describe('clerk webhook route', () => {
   })
 
   it('returns 500 when webhook secret is missing', async () => {
-    delete process.env.CLERK_WEBHOOK_SECRET
-    delete process.env.CLERK_WEBHOOK_SIGNING_SECRET
+    process.env.CLERK_WEBHOOK_SECRET = undefined
+    process.env.CLERK_WEBHOOK_SIGNING_SECRET = undefined
     const req = buildRequest('{"type":"subscriptionItem.created"}', {
       'svix-id': 'msg_1',
       'svix-timestamp': '123',
@@ -263,5 +261,4 @@ describe('clerk webhook route', () => {
     })
     expect(getOrganization).toHaveBeenCalledWith({ slug: 'commx-shop' })
   })
-
 })
