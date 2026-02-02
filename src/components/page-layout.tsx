@@ -27,9 +27,9 @@ type PageLayoutProps = {
 
 export function PageLayout({ children, header }: PageLayoutProps) {
   return (
-    <div className="flex flex-1 flex-col justify-between gap-4">
+    <div className="flex h-full flex-1 flex-col gap-4">
       {header}
-      <div className="flex h-full flex-col gap-4">{children}</div>
+      <div className="flex flex-1 flex-col gap-4">{children}</div>
     </div>
   )
 }
