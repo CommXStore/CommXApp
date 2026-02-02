@@ -3,11 +3,11 @@
   "subtitle": "Complete seus dados para entrar como membro.",
   "status": {
     "free": "Acesso gratuito",
-    "freeDescription": "Esta organização não exige assinatura para ingresso.",
+    "freeDescription": "Esta aplicação não exige assinatura para ingresso.",
     "hasPlan": "Assinatura ativa",
     "hasPlanDescription": "Seu plano atual inclui este app. Você já pode entrar.",
     "requiresPlan": "Requer assinatura",
-    "requiresPlanDescription": "Para entrar nesta organização, você precisa de um plano que inclua este app."
+    "requiresPlanDescription": "Para entrar nesta aplicação, você precisa de um plano que inclua este app."
   },
   "form": {
     "emailLabel": "Email",
@@ -22,6 +22,6 @@
   },
   "toasts": {
     "joined": "Você entrou em {org}.",
-    "failed": "Não foi possível entrar na organização."
+    "failed": "Não foi possível entrar na aplicação."
   }
 }

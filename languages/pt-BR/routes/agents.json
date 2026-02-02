@@ -1,10 +1,10 @@
 {
   "title": "Agentes",
-  "description": "Gerencie os agentes de IA da sua organização.",
+  "description": "Gerencie os agentes de IA da sua aplicação.",
   "create": {
     "button": "Adicionar agente",
     "title": "Adicionar agente",
-    "description": "Adicione um agente à sua organização.",
+    "description": "Adicione um agente à sua aplicação.",
     "fields": {
       "name": {
         "label": "Nome",

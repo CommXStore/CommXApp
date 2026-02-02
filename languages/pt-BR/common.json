@@ -57,14 +57,14 @@
     }
   },
   "organization": {
-    "label": "Organizações",
-    "switcher": "Selecionar organização",
+    "label": "Aplicações",
+    "switcher": "Selecionar aplicação",
     "active": "Ativa",
     "available": "Disponíveis",
-    "autoSwitch": "Movemos você para {org} porque seu plano atual não inclui a organização anterior.",
+    "autoSwitch": "Movemos você para {org} porque seu plano atual não inclui a aplicação anterior.",
     "join": "Entrar",
-    "empty": "Nenhuma organização encontrada.",
-    "none": "Sem organização"
+    "empty": "Nenhuma aplicação encontrada.",
+    "none": "Sem aplicação"
   },
   "breadcrumbs": {
     "new": "Novo",
