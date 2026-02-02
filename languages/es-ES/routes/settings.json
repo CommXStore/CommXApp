@@ -1,7 +1,18 @@
 {
+  "title": "Configuración",
+  "description": "Administra la configuración de tu aplicación.",
   "apiKeys": {
     "title": "Claves de API",
-    "description": "Administra tus claves de API para autenticación externa."
+    "description": "Administra tus claves de API para autenticación externa.",
+    "sectionTitle": "Claves de API",
+    "apiUsage": {
+      "title": "Ejemplos de uso de la API",
+      "tabs": {
+        "agents": "Agentes",
+        "contentTypes": "Tipos de contenido"
+      },
+      "inputPlaceholder": "Ingresa tu clave de API para llenar los ejemplos"
+    }
   },
   "paymentProviders": {
     "title": "Proveedores de pago",
@@ -23,7 +34,7 @@
       "typePlaceholder": "Ej: stripe",
       "secretLabel": "Secreto de firma",
       "secretPlaceholder": "Pega el secreto proporcionado por el proveedor",
-      "secretHint": "El secreto no puede verse después de la creación. Para cambiarlo, contacte con soporte."
+      "secretHint": "El secreto no puede verse después de la creación. Para cambiarlo, contacte con soporte.",
       "metadataLabel": "Metadatos (JSON)",
       "metadataPlaceholder": "{\"environment\":\"production\"}",
       "enabledLabel": "Activo",

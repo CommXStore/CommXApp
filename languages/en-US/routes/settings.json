@@ -1,7 +1,18 @@
 {
+  "title": "Settings",
+  "description": "Manage your application settings.",
   "apiKeys": {
     "title": "API keys",
-    "description": "Manage your API keys for external authentication."
+    "description": "Manage your API keys for external authentication.",
+    "sectionTitle": "API Keys",
+    "apiUsage": {
+      "title": "API Usage Examples",
+      "tabs": {
+        "agents": "Agents",
+        "contentTypes": "Content Types"
+      },
+      "inputPlaceholder": "Enter your API key to fill the examples"
+    }
   },
   "paymentProviders": {
     "title": "Payment providers",
@@ -23,7 +34,7 @@
       "typePlaceholder": "e.g. stripe",
       "secretLabel": "Signing secret",
       "secretPlaceholder": "Paste the secret provided by the gateway",
-      "secretHint": "The secret cannot be viewed after creation. To change it, please contact support."
+      "secretHint": "The secret cannot be viewed after creation. To change it, please contact support.",
       "metadataLabel": "Metadata (JSON)",
       "metadataPlaceholder": "{\"environment\":\"production\"}",
       "enabledLabel": "Enabled",

@@ -1,7 +1,6 @@
-import { APIKeys } from '@clerk/nextjs'
-import { RequestTester } from '@/components/request-tester'
 import { getTranslations } from '@/i18n/server'
 import { PageHeader, PageLayout } from '@/components/page-layout'
+import { ApiTabs } from '@/components/api-tabs'
 
 type SettingsPageProps = {
   params?: Promise<{ rest?: string[] }>
@@ -19,13 +18,15 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
     <PageLayout
       header={
         <PageHeader
-          description={t('routes.settings.apiKeys.description')}
-          title={t('routes.settings.apiKeys.title')}
+          description={t('routes.settings.description')}
+          title={t('routes.settings.title')}
         />
       }
     >
-      <APIKeys showDescription />
-      <RequestTester />
+      <h2 className="font-semibold text-lg">
+        {t('routes.settings.apiKeys.sectionTitle')}
+      </h2>
+      <ApiTabs />
     </PageLayout>
   )
 }
