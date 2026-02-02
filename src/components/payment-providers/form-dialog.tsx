@@ -40,10 +40,10 @@ export function PaymentProviderFormDialog({
   const formRef = useRef<HTMLFormElement>(null)
   const [internalOpen, setInternalOpen] = useState(false)
   const isEditing = Boolean(provider)
-  const isControlled = open !== undefined
+  const isControlled = open !== undefined && onOpenChange !== undefined
   const dialogOpen = isControlled ? open : internalOpen
   const setDialogOpen = isControlled
-    ? onOpenChange!
+    ? onOpenChange
     : (value: boolean) => setInternalOpen(value)
 
   async function formAction(formData: FormData) {
