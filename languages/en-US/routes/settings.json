@@ -6,6 +6,10 @@
     "title": "Payment providers",
     "description": "Manage the providers used to receive external payment webhooks.",
     "form": {
+      "createTitle": "Add payment provider",
+      "createDescription": "Configure a new provider to receive payment webhooks.",
+      "editTitle": "Edit provider",
+      "editDescription": "Update the payment provider information.",
       "nameLabel": "Name",
       "namePlaceholder": "e.g. Stripe",
       "typeLabel": "Type",
@@ -18,7 +22,7 @@
       "enabledLabel": "Enabled",
       "submit": "Add provider",
       "update": "Save changes",
-      "cancel": "Cancel edit"
+      "cancel": "Cancel"
     },
     "table": {
       "title": "Registered providers",

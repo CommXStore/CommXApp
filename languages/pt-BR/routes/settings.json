@@ -6,6 +6,10 @@
     "title": "Provedores de pagamento",
     "description": "Gerencie os provedores usados para receber webhooks externos de pagamento.",
     "form": {
+      "createTitle": "Adicionar provedor de pagamento",
+      "createDescription": "Configure um novo provedor para receber webhooks de pagamento.",
+      "editTitle": "Editar provedor",
+      "editDescription": "Atualize as informações do provedor de pagamento.",
       "nameLabel": "Nome",
       "namePlaceholder": "Ex: Stripe",
       "typeLabel": "Tipo",
@@ -18,7 +22,7 @@
       "enabledLabel": "Ativo",
       "submit": "Adicionar provedor",
       "update": "Salvar alterações",
-      "cancel": "Cancelar edição"
+      "cancel": "Cancelar"
     },
     "table": {
       "title": "Provedores cadastrados",

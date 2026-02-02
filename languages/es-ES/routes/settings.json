@@ -6,6 +6,10 @@
     "title": "Proveedores de pago",
     "description": "Administra los proveedores usados para recibir webhooks externos de pago.",
     "form": {
+      "createTitle": "Agregar proveedor de pago",
+      "createDescription": "Configura un nuevo proveedor para recibir webhooks de pago.",
+      "editTitle": "Editar proveedor",
+      "editDescription": "Actualiza la información del proveedor de pago.",
       "nameLabel": "Nombre",
       "namePlaceholder": "Ej: Stripe",
       "typeLabel": "Tipo",
@@ -18,7 +22,7 @@
       "enabledLabel": "Activo",
       "submit": "Agregar proveedor",
       "update": "Guardar cambios",
-      "cancel": "Cancelar edición"
+      "cancel": "Cancelar"
     },
     "table": {
       "title": "Proveedores registrados",
