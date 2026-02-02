@@ -71,7 +71,7 @@ export function JoinOrganizationForm({
       }
 
       if (!response.ok) {
-        toast.error(data.error ?? t('routes.organizations-join.toasts.failed'))
+        toast.error(data.error ?? t('routes.apps-join.toasts.failed'))
         return
       }
 
@@ -79,7 +79,7 @@ export function JoinOrganizationForm({
         await setActive({ organization: orgId })
       }
       toast.success(
-        t('routes.organizations-join.toasts.joined', { org: orgName })
+        t('routes.apps-join.toasts.joined', { org: orgName })
       )
       router.push('/')
       router.refresh()
@@ -87,7 +87,7 @@ export function JoinOrganizationForm({
       const message =
         error instanceof Error
           ? error.message
-          : t('routes.organizations-join.toasts.failed')
+          : t('routes.apps-join.toasts.failed')
       toast.error(message)
     } finally {
       setIsSubmitting(false)
@@ -120,19 +120,19 @@ export function JoinOrganizationForm({
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="space-y-1">
             <p className="font-medium text-sm">
-              {t('routes.organizations-join.status.requiresPlan')}
+              {t('routes.apps-join.status.requiresPlan')}
             </p>
             <p className="text-muted-foreground text-sm">
-              {t('routes.organizations-join.status.requiresPlanDescription')}
+              {t('routes.apps-join.status.requiresPlanDescription')}
             </p>
           </div>
           <Button asChild size="sm" variant="secondary">
             <Link
               href={`/billing/upgrade?redirect=${encodeURIComponent(
-                `/organizations/${orgSlug}/join?autoJoin=1`
+                `/apps/${orgSlug}/join?autoJoin=1`
               )}`}
             >
-              {t('routes.organizations-join.actions.upgrade')}
+              {t('routes.apps-join.actions.upgrade')}
             </Link>
           </Button>
         </div>
@@ -140,11 +140,11 @@ export function JoinOrganizationForm({
     )
   }
 
-  let statusTitle = t('routes.organizations-join.status.free')
-  let statusDescription = t('routes.organizations-join.status.freeDescription')
+  let statusTitle = t('routes.apps-join.status.free')
+  let statusDescription = t('routes.apps-join.status.freeDescription')
   if (requiresSubscription) {
-    statusTitle = t('routes.organizations-join.status.hasPlan')
-    statusDescription = t('routes.organizations-join.status.hasPlanDescription')
+    statusTitle = t('routes.apps-join.status.hasPlan')
+    statusDescription = t('routes.apps-join.status.hasPlanDescription')
   }
 
   return (
@@ -162,7 +162,7 @@ export function JoinOrganizationForm({
         <FieldGroup>
           <Field>
             <FieldLabel htmlFor="email">
-              {t('routes.organizations-join.form.emailLabel')}
+              {t('routes.apps-join.form.emailLabel')}
             </FieldLabel>
             <Input
               autoComplete="email"
@@ -176,7 +176,7 @@ export function JoinOrganizationForm({
           </Field>
           <Field>
             <FieldLabel htmlFor="firstName">
-              {t('routes.organizations-join.form.firstNameLabel')}
+              {t('routes.apps-join.form.firstNameLabel')}
             </FieldLabel>
             <Input
               autoComplete="given-name"
@@ -184,7 +184,7 @@ export function JoinOrganizationForm({
               name="firstName"
               onChange={event => setFirstName(event.target.value)}
               placeholder={t(
-                'routes.organizations-join.form.firstNamePlaceholder'
+                'routes.apps-join.form.firstNamePlaceholder'
               )}
               type="text"
               value={firstName}
@@ -192,7 +192,7 @@ export function JoinOrganizationForm({
           </Field>
           <Field>
             <FieldLabel htmlFor="lastName">
-              {t('routes.organizations-join.form.lastNameLabel')}
+              {t('routes.apps-join.form.lastNameLabel')}
             </FieldLabel>
             <Input
               autoComplete="family-name"
@@ -200,7 +200,7 @@ export function JoinOrganizationForm({
               name="lastName"
               onChange={event => setLastName(event.target.value)}
               placeholder={t(
-                'routes.organizations-join.form.lastNamePlaceholder'
+                'routes.apps-join.form.lastNamePlaceholder'
               )}
               type="text"
               value={lastName}
@@ -211,7 +211,7 @@ export function JoinOrganizationForm({
 
       <div className="flex justify-end">
         <Button disabled={!isLoaded || isSubmitting} type="submit">
-          {t('routes.organizations-join.form.submit')}
+          {t('routes.apps-join.form.submit')}
         </Button>
       </div>
     </form>
