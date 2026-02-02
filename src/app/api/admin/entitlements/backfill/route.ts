@@ -61,8 +61,10 @@ export async function POST(req: NextRequest) {
     }> = []
 
     for (const userId of userIds) {
-      const subscriptions = await client.billing.getSubscriptionList({ userId })
-      const active = subscriptions.data.find(item => item.status === 'active')
+      const subscription =
+        await client.billing.getUserBillingSubscription(userId)
+      const active =
+        subscription && subscription.status === 'active' ? subscription : null
 
       if (!active) {
         await upsertUserEntitlements({
@@ -74,22 +76,23 @@ export async function POST(req: NextRequest) {
         continue
       }
 
-      const plan = await client.billing.getPlan(active.planId)
-      const features = normalizeFeatureList(plan.features)
+      const plans = await client.billing.getPlanList()
+      const plan = plans.data?.[0]
+      const features = normalizeFeatureList(plan?.features ?? [])
 
       await upsertUserEntitlements({
         userId,
         status: active.status,
-        planId: active.planId,
-        planSlug: plan.slug,
-        planName: plan.name,
+        planId: plan?.id ?? null,
+        planSlug: plan?.slug ?? null,
+        planName: plan?.name ?? null,
         features,
       })
 
       results.push({
         userId,
         status: active.status,
-        planId: plan.id,
+        planId: plan?.id ?? null,
         features: features.length,
       })
     }
