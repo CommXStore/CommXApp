@@ -48,22 +48,9 @@ export function ApiTabs({ contentTypes }: ApiTabsProps) {
       }),
     }
   }, [apiKey, t])
+  const publishedTypes = contentTypes.filter(ct => ct.status === 'published')
 
-  const contentTypesCodes = useMemo(() => {
-    const safeApiKey = apiKey.trim() || '<API_KEY>'
-    return {
-      'get-content-types': `curl -X GET ${SITE_URL}/api/content-types \\
-  -H "Authorization: Bearer ${safeApiKey}"`,
-      'create-content-type': `curl -X POST ${SITE_URL}/api/content-types \\
-  -H "Authorization: Bearer ${safeApiKey}" \\
-  -H "Content-Type: application/json" \\
-  -d '{"name": "Meu Tipo", "slug": "meu-tipo", "description": "Descrição do tipo"}'`,
-      'get-content-type': `curl -X GET ${SITE_URL}/api/content-types/ct_1 \\
-  -H "Authorization: Bearer ${safeApiKey}"`,
-    }
-  }, [apiKey])
-
-  function generateEntryCodes(slug: string, name: string) {
+  function generateEntryCodes(slug: string) {
     const safeApiKey = apiKey.trim() || '<API_KEY>'
     return {
       [`get-${slug}`]: `curl -X GET ${SITE_URL}/api/content/${slug} \\
@@ -82,8 +69,6 @@ export function ApiTabs({ contentTypes }: ApiTabsProps) {
   -H "Authorization: Bearer ${safeApiKey}"`,
     }
   }
-
-  const publishedTypes = contentTypes.filter(ct => ct.status === 'published')
 
   return (
     <div className="flex flex-col gap-4">
@@ -122,36 +107,21 @@ export function ApiTabs({ contentTypes }: ApiTabsProps) {
               {t('routes.settings.apiKeys.apiUsage.noContentTypes')}
             </div>
           ) : (
-            <Tabs className="w-full" defaultValue="content-types">
+            <Tabs className="w-full">
               <TabsList className="mb-4">
-                <TabsTrigger value="content-types">
-                  Content Types API
-                </TabsTrigger>
                 {publishedTypes.map(ct => (
                   <TabsTrigger key={ct.id} value={ct.slug}>
                     {ct.name}
                   </TabsTrigger>
                 ))}
               </TabsList>
-              <TabsContent value="content-types">
-                <CodeTabs
-                  codes={contentTypesCodes}
-                  lang="bash"
-                  onCopiedChange={async (copied, content) => {
-                    if (!(copied && content)) {
-                      return
-                    }
-                    await navigator.clipboard.writeText(content)
-                  }}
-                />
-              </TabsContent>
               {publishedTypes.map(ct => (
                 <TabsContent key={ct.id} value={ct.slug}>
                   <div className="mb-2 text-muted-foreground text-sm">
                     Rotas de API para entradas do tipo &quot;{ct.name}&quot;
                   </div>
                   <CodeTabs
-                    codes={generateEntryCodes(ct.slug, ct.name)}
+                    codes={generateEntryCodes(ct.slug)}
                     lang="bash"
                     onCopiedChange={async (copied, content) => {
                       if (!(copied && content)) {
