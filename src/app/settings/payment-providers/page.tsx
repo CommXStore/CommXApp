@@ -11,13 +11,15 @@ export default async function PaymentProvidersPage() {
   const t = await getTranslations()
 
   return (
-    <div className="flex flex-col gap-4 p-8 pt-6">
-      <h1 className="font-semibold text-lg">
-        {t('routes.settings.paymentProviders.title')}
-      </h1>
-      <p className="text-muted-foreground text-sm">
-        {t('routes.settings.paymentProviders.description')}
-      </p>
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <h1 className="font-semibold text-2xl">
+          {t('routes.settings.paymentProviders.title')}
+        </h1>
+        <p className="text-muted-foreground text-sm">
+          {t('routes.settings.paymentProviders.description')}
+        </p>
+      </div>
       <PaymentProvidersTable data={providers} />
     </div>
   )
