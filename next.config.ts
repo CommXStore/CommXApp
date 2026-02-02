@@ -17,9 +17,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  experimental: {
-    turbopack: false,
-  },
   devIndicators: {
     position: 'bottom-right',
   },
