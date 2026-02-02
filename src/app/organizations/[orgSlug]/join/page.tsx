@@ -3,6 +3,7 @@ import { auth, clerkClient } from '@clerk/nextjs/server'
 import { getTranslations } from '@/i18n/server'
 import { entitlements, requiresSubscriptionForOrg } from '@/lib/entitlements'
 import { JoinOrganizationForm } from './join-form'
+import { PageHeader, PageLayout } from '@/components/page-layout'
 
 type JoinOrganizationPageProps = {
   params: Promise<{ orgSlug: string }>
@@ -43,17 +44,16 @@ export default async function JoinOrganizationPage({
     : { allowed: false, reason: 'User is required.' }
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
-      <div className="space-y-2">
-        <h1 className="font-semibold text-2xl">
-          {t('routes.organizations-join.title', {
+    <PageLayout
+      header={
+        <PageHeader
+          description={t('routes.organizations-join.subtitle')}
+          title={t('routes.organizations-join.title', {
             org: organization.name,
           })}
-        </h1>
-        <p className="text-muted-foreground">
-          {t('routes.organizations-join.subtitle')}
-        </p>
-      </div>
+        />
+      }
+    >
       <JoinOrganizationForm
         hasAccess={joinDecision.allowed}
         orgId={organization.id}
@@ -61,6 +61,6 @@ export default async function JoinOrganizationPage({
         orgSlug={orgSlug}
         requiresSubscription={requiresSubscription}
       />
-    </div>
+    </PageLayout>
   )
 }
